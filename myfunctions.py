@@ -14,12 +14,12 @@ def get_content(path):
         with zipfile.ZipFile(path, "r") as zip_ref:
             zip_ref.extractall("data")
         path = "data/_chat.txt" 
-    with open(path, "r", errors = "ignore") as f: # read the content of the file
+    with open(path, "r", encoding="utf-16") as f: # read the content of the file
         contents = f.readlines()
     return contents
 
 
-PATTERN = r"^\u200E?\[([\d./]*), ([\d:]*)\] \u200E?([\w ]*): (.*)$"
+PATTERN = r"^\u200E? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$"
 def convert_chat(wa_listed):
     """
     Convert the chat history to a pandas DataFrame (with columns: date, time, 
@@ -27,17 +27,21 @@ def convert_chat(wa_listed):
     """
     chat = list() # list of all messages
     sender_messages = dict() # dictionary with key: sender, value: list of messages
-    
+    matched_before = False 
+
     for line in wa_listed:
         if re.match(PATTERN, line): # check if a new message starts in line
             res = re.search(PATTERN, line) # get groups of line
             # groups are: 1:date, 2:time, 3:sender, 4:message
             chat.append([res.group(1), res.group(2), res.group(3), res.group(4)])
+            matched_before = True
             if res.group(3) not in sender_messages:
                 sender_messages[res.group(3)] = [res.group(4)]
             else:
                 sender_messages[res.group(3)].append(res.group(4))
         else:
+            if not matched_before:
+                sys.exit("ERROR: Sorry, the chat is not in the correct format")
             current_line = " " + line.strip("\n")
             chat[-1][3] += current_line
             sender_messages[chat[-1][2]][-1] += current_line
