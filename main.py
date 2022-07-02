@@ -47,8 +47,8 @@ for i, s in enumerate(senders):
 		{s} sent a total amound of {msg_tot} messages.
 		The average length of a message is {msg_avg} characters, the longest message contained {msg_max} characters.
 		{s} sent {stats["audio"]} audio messages, {stats["image"]} images, {stats["video"]} videos and {stats["sticker"]} stickers.
-		{s} shared {stats["contact"]} contact cards, {""} locations and {""} documents.
-		{s} changed {""} their mind and deleted a message.
+		{s} shared {stats["contact"]} contact cards, {"##"} locations and {"##"} documents.
+		{s} changed their mind {"##"} times and deleted a message.
 			""")
 
 
