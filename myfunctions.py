@@ -7,9 +7,11 @@ def get_content(path: str):
 	Gets file from given path, checks for desired fileformat and extracts the
 	content of the file.
 	"""
+	if not os.path.isfile(path):
+		sys.exit(BOLD(RED("ERROR: File not found")))
 	_name, extension = os.path.splitext(path)
 	if extension != ".zip" and extension != ".txt": # check for fileformat
-		sys.exit("ERROR: Sorry, only .txt or .zip files are supported")
+		sys.exit(BOLD(RED("ERROR: Only .txt or .zip files are supported")))
 	elif extension == ".zip": # extract the content of zip file
 		with zipfile.ZipFile(path, "r") as zip_ref:
 			zip_ref.extractall("data")
@@ -41,12 +43,12 @@ def convert_chat(wa_listed: list):
 				sender_messages[res.group(3)].append(res.group(4))
 		else:
 			if not matched_before:
-				sys.exit("ERROR: Sorry, the chat is not in the correct format")
+				sys.exit(BOLD(RED("ERROR: Sorry, the chat is not in the correct format")))
 			current_line = " " + line.strip("\n")
 			chat[-1][3] += current_line
 			sender_messages[chat[-1][2]][-1] += current_line
 	chat_df = pd.DataFrame (chat, columns = ["date", "time", "sender", "message"])
-	chat_df['date'] = pd.to_datetime(chat_df['date'], infer_datetime_format=True)
+	chat_df["date"] = pd.to_datetime(chat_df["date"], infer_datetime_format=True)
 	return chat_df, sender_messages
 
 
