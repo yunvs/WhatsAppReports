@@ -1,7 +1,8 @@
-from myfunctions import *
+from myFunctions import *
+from textStyle import *
 import pandas as pd
 from timeit import default_timer as timer
-start = timer()
+start = timer() 
 
 paths = ["data/chat_small.txt", "data/chat_mum.txt",
 		"data/chat_mum.zip", "tash.trash", "data/chat_AB.txt"]
@@ -24,10 +25,10 @@ for i, s in enumerate(sender_dict):
 
 
 
-# Exporting for testing purposes
-chat_df.to_csv("data/chat_df.csv", index=False) # save the dataframe to a csv file
-sender0_df.to_csv("data/sender0_df.csv", index=False) # save the dataframe to a csv file
-sender1_df.to_csv("data/sender1_df.csv", index=False) # save the dataframe to a csv file
+# # Exporting for testing purposes
+# chat_df.to_csv("data/chat_df.csv", index=False) # save the dataframe to a csv file
+# sender0_df.to_csv("data/sender0_df.csv", index=False) # save the dataframe to a csv file
+# sender1_df.to_csv("data/sender1_df.csv", index=False) # save the dataframe to a csv file
 
 
 # print()
@@ -43,13 +44,13 @@ for i, s in enumerate(senders):
 
 
 	print(f"""
-		This is the WA-Report for {s}:
-		{s} sent a total amound of {msg_tot} messages.
-		The average length of a message is {msg_avg} characters, the longest message contained {msg_max} characters.
-		{s} sent {stats["audio"]} audio messages, {stats["image"]} images, {stats["video"]} videos and {stats["sticker"]} stickers.
-		{s} shared {stats["contact"]} contact cards, {"##"} locations and {"##"} documents.
-		{s} changed their mind {"##"} times and deleted a message.
-			""")
+	{GREEN(BLINK(f"WA-Report for {BOLD(s)}"))}:
+	{s} sent a total amound of {BOLD(f"{msg_tot} messages")} in this chat.
+	The average length of a message, written by {s}, is {BOLD(f"{msg_avg} characters")}, 
+	     the longest message, {s} sent, contained {BOLD(f"{msg_max} characters")}.
+	{s} sent {BOLD(f'{stats["audio"]} audio messages, {stats["image"]} images, {stats["video"]} videos and {stats["sticker"]} stickers')}.
+	# {s} shared {BOLD(f'{stats["contact"]} contact cards, {"##"} locations and {"##"} documents')}.
+	# {s} changed their mind {BOLD(f'{"##"} times and deleted a message')}.""")
 
 
 
