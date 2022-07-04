@@ -1,5 +1,6 @@
 import re, os, sys, zipfile
 import pandas as pd
+from textStyle import *
 
 
 def get_content(path: str):
@@ -75,33 +76,49 @@ def cleanse_df(sender_df: pd.DataFrame):
 	"""
 	# DataFrame with stats about non-message enties in chat of sender
 	stats = dict()
-	sender = sender_df.columns[0]
+	s_clean = sender_df.copy()
+	sender = s_clean.columns[0]
+
 	# Extract and drop non-message enties
-	image_df = sender_df[sender_df[sender] == "‎image omitted"]
-	messages_df = sender_df.drop(image_df.index)
-	audio_df = sender_df[sender_df[sender] == "‎audio omitted"]
-	messages_df = messages_df.drop(audio_df.index)
-	sticker_df = sender_df[sender_df[sender] == "‎sticker omitted"]
-	messages_df = messages_df.drop(sticker_df.index)
-	video_df = sender_df[sender_df[sender] == "‎video omitted"]
-	messages_df = messages_df.drop(video_df.index)
-	contact_df = sender_df[sender_df[sender] == "‎Contact card omitted"]
-	messages_df = messages_df.drop(contact_df.index)
-	# location_df = sender_df[sender_df[sender].startswith("\"‎Location: https://maps.google.com/")]
-	# messages_df = messages_df.drop(location_df.index)
-	# document_df = sender_df[sender_df[sender].endswith("‎document omitted")]
-	# messages_df = messages_df.drop(document_df.index)
-	# deleted_df = sender_df[sender_df[sender].endswith("‎You deleted this message.", "‎This message was deleted.")]
-	# messages_df = messages_df.drop(deleted_df.index)
+	image_df = s_clean[s_clean[sender] == "‎image omitted"]
+	s_clean = s_clean.drop(image_df.index)
+	audio_df = s_clean[s_clean[sender] == "‎audio omitted"]
+	s_clean = s_clean.drop(audio_df.index)
+	sticker_df = s_clean[s_clean[sender] == "‎sticker omitted"]
+	s_clean = s_clean.drop(sticker_df.index)
+	video_df = s_clean[s_clean[sender] == "‎video omitted"]
+	s_clean = s_clean.drop(video_df.index)
+	gif_df = s_clean[s_clean[sender] == "‎GIF omitted"]
+	s_clean = s_clean.drop(gif_df.index)
+	missed_df = s_clean[s_clean[sender].str.startswith("‎Missed ")]
+	s_clean = s_clean.drop(missed_df.index)
+	contact_df = s_clean[s_clean[sender] == "‎Contact card omitted"]
+	s_clean = s_clean.drop(contact_df.index)
+	location_df = s_clean[s_clean[sender].str.startswith("‎Location: https://maps.google.com/")]
+	s_clean = s_clean.drop(location_df.index)
+	document_df = s_clean[s_clean[sender].str.endswith("‎document omitted")]
+	s_clean = s_clean.drop(document_df.index)
+	deleted_df = s_clean[s_clean[sender].str.startswith(("‎You deleted this message.", "‎This message was deleted."))]
+	s_clean = s_clean.drop(deleted_df.index)
+	rest_df = s_clean[s_clean[sender].str.contains("‎")]
+	s_clean = s_clean.drop(rest_df.index)
+
+	# Testing purposes only
+	sender_df.to_csv(f"data/testing/sender_df_{sender}.csv", index=True) # save the dataframe to a csv file
+	s_clean.to_csv(f"data/testing/s_clean_{sender}.csv", index=True) # save the dataframe to a csv file
+
 	
 	# enter the extracted counts into the stats
 	stats["image"] = image_df.shape[0]
 	stats["audio"] = audio_df.shape[0]
 	stats["sticker"] = sticker_df.shape[0]
 	stats["video"] = video_df.shape[0]
+	stats["gif"] = gif_df.shape[0]
 	stats["contact"] = contact_df.shape[0]
-	# stats["location"] = location_df.shape[0]
-	# stats["document"] = document_df.shape[0]
-	# stats["deleted"] = deleted_df.shape[0]
+	stats["location"] = location_df.shape[0]
+	stats["document"] = document_df.shape[0]
+	stats["media"] = sum(stats.values())
+	stats["missed"] = missed_df.shape[0]
+	stats["deleted"] = deleted_df.shape[0]
 
-	return messages_df, stats # return the cleaned dataframe and the stats dict
+	return s_clean, stats # return the cleaned dataframe and the stats dict
