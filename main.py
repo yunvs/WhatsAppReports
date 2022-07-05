@@ -1,5 +1,5 @@
 import pandas as pd
-from myFunctions import *
+from myfunctions import *
 from textStyle import *
 from timeit import default_timer as timer
 start = timer() 
