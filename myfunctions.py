@@ -93,7 +93,7 @@ def cleanse_df(sender_df: pd.DataFrame):
 		"xgif":"‎GIF omitted", "med":"", "xmiss":"‎Missed ", 
 		"xcont":"‎Contact card omitted", "xloc":"‎Location: ", 
 		"xdoc":"‎document omitted", 
-		"xdel":"(‎You deleted |‎This message was deleted.)"}
+		"xdel":"‎You deleted |‎This message was deleted."}
 
 	# Extract and remove non-message enties
 	for key, value in entities.items():
