@@ -3,7 +3,7 @@ import pandas as pd
 from collections import Counter
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-from textStyle import *
+from textstyle import *
 
 
 def get_content(path: str):
@@ -92,17 +92,17 @@ def cleanse_df(sender_df: pd.DataFrame):
 		"xstick":"‎sticker omitted", "xvid":"‎video omitted", 
 		"xgif":"‎GIF omitted", "med":"", "xmiss":"‎Missed ", 
 		"xcont":"‎Contact card omitted", "xloc":"‎Location: ", 
-		"xdoc":"‎document omitted", 
+		"xdoc":"‎document omitted", "link":"http://|https://",
 		"xdel":"‎You deleted |‎This message was deleted."}
 
 	# Extract and remove non-message enties
 	for key, value in entities.items():
 		if key != "med":
-			if key not in ("xmiss", "xloc", "xdoc", "xdel"):
+			if key not in ("xmiss", "xloc", "xdoc", "xdel", "link"):
 				key_df = s_clean[s_clean[sender] == value]
 			else:
 				key_df = s_clean[s_clean[sender].str.contains(value)]
-		if key.startswith("x"):
+		if key[:1] == "x":
 			s_clean = s_clean.drop(key_df.index)
 		globals()[f"{key}_df"] = key_df
 
@@ -110,12 +110,10 @@ def cleanse_df(sender_df: pd.DataFrame):
 	# remove all remaining non-message enties (Whatsapp system messages)
 	s_clean = s_clean.drop(s_clean[s_clean[sender].str.contains("‎")].index)
 
+
 	# Testing purposes only
-	sender_df.to_csv(f"data/testing/myfunctions/sender_df_{sender}.csv",index=True) # save the dataframe to a csv file
-	s_clean.to_csv(f"data/testing/myfunctions/s_clean_{sender}.csv",index=True) # save the dataframe to a csv file
-	
-	# Get stats about message enties
-	# link_df = s_clean[s_clean[sender].str.contains(("http://","https://"),case=False,regex=True)]
+	# sender_df.to_csv(f"data/testing/myfunctions/sender_df_{sender}.csv",index=True) # save the dataframe to a csv file
+	# s_clean.to_csv(f"data/testing/myfunctions/s_clean_{sender}.csv",index=True) # save the dataframe to a csv file
 
 	# enter the extracted counts into the stats
 	for key in entities.keys():

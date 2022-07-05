@@ -1,6 +1,6 @@
 import pandas as pd
 from myfunctions import *
-from textStyle import *
+from textstyle import *
 from timeit import default_timer as timer
 start = timer() 
 
@@ -48,10 +48,10 @@ for i, s in enumerate(senders):
 	The {BOLD('average length')} of {s} messages is {BOLD(f'{msg_avg} characters')}, 
 	The {BOLD('longest message')} they sent contained {BOLD(f'{msg_max} characters')}.
 	{s} sent {BOLD(f'{stats["xaud"]} audios, {stats["ximg"]} images, {stats["xvid"]} videos, {stats["xstick"]} stickers')} and {BOLD(f'{stats["xgif"]} GIFs')}.
-	They shared {BOLD(f'{stats["xcont"]} contacts, {stats["xloc"]} locations')} and {BOLD(f'{stats["xdoc"]} documents')}.
+	They shared {BOLD(f'{stats["xcont"]} contacts, {stats["xloc"]} locations, {stats["xdoc"]} documents')} and {BOLD(f'{stats["link"]} URLs')}.
 	{s} changed their mind {BOLD(f'{stats["xdel"]} times')} and {STRIKE(f'deleted a message')}.""")
 	if stats["xmiss"] > 0:
-		print(f"""	{BOLD(f'{stats["xmiss"]} (video)calls')} by {s} were missed.""")
+		print(f"""	You missed {BOLD(f'{stats["xmiss"]} (video)calls')} by {s}.""")
 
 
 
