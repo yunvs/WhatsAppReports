@@ -8,7 +8,6 @@ paths = ["data/chat_small.txt", "data/chat_mum.txt",
 		"data/chat_mum.zip", "tash.trash", "data/chat_AB.txt"]
 path_to_file = paths[1] # 0: small, 1: mum.txt, 2: mum.zip, 3: trash, 4: AB
 
-
 contents = get_content(path_to_file) # get the content of the filepath
 chat_df, sender_dict = convert_chat(contents) # convert the chat to a pd.dataframe
 # (colums:date,time,sender,message) and a dictionary with the messages per sender
@@ -16,7 +15,6 @@ chat_df, sender_dict = convert_chat(contents) # convert the chat to a pd.datafra
 senders = list(sender_dict.keys()) # get a list of all senders
 sender0, sender1 = str(), str() # initialize the senders
 sender0_df, sender1_df = pd.DataFrame(), pd.DataFrame() # initialize the dataframes
-
 
 
 for i, s in enumerate(senders):
