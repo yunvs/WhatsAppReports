@@ -1,5 +1,8 @@
 import re, os, sys, zipfile
 import pandas as pd
+from collections import Counter
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 from textStyle import *
 
 
@@ -16,9 +19,15 @@ def get_content(path: str):
 	elif extension == ".zip": # extract the content of zip file
 		with zipfile.ZipFile(path, "r") as zip_ref:
 			zip_ref.extractall("data")
-		path = "data/_chat.txt" 
-	with open(path, "r", encoding="utf-16") as f: # read the content of the file
-		contents = f.readlines()
+		path = "data/_chat.txt"
+	
+	# try opening path with uft-16 encoding if error try with uft-8 encoding
+	try:
+		with open(path, "r", encoding="utf-16") as f: # read the content of the file
+			contents = f.readlines()
+	except UnicodeError:
+		with open(path, "r", encoding="utf-8") as f:
+			contents = f.readlines()
 	return contents
 
 
@@ -74,12 +83,11 @@ def cleanse_df(sender_df: pd.DataFrame):
 	Cleans the dataframe of non-message enties and returns a new dataframe as 
 	well as an dict with keys: category and token: the amound of that category
 	"""
-	# DataFrame with stats about non-message enties in chat of sender
-	stats = dict()
+	stats = dict() # dict with stats about non-message enties in chat of sender
 	s_clean = sender_df.copy()
-	sender = s_clean.columns[0]
+	sender = s_clean.columns[0] # current sender
 
-	# Extract and drop non-message enties
+	# Extract and remove non-message enties
 	image_df = s_clean[s_clean[sender] == "‎image omitted"]
 	s_clean = s_clean.drop(image_df.index)
 	audio_df = s_clean[s_clean[sender] == "‎audio omitted"]
@@ -100,8 +108,9 @@ def cleanse_df(sender_df: pd.DataFrame):
 	s_clean = s_clean.drop(document_df.index)
 	deleted_df = s_clean[s_clean[sender].str.startswith(("‎You deleted this message.", "‎This message was deleted."))]
 	s_clean = s_clean.drop(deleted_df.index)
-	rest_df = s_clean[s_clean[sender].str.contains("‎")]
-	s_clean = s_clean.drop(rest_df.index)
+
+	# remove all remaining non-message enties (Whatsapp system messages)
+	s_clean = s_clean.drop(s_clean[s_clean[sender].str.contains("‎")].index)
 
 	# Testing purposes only
 	sender_df.to_csv(f"data/testing/sender_df_{sender}.csv", index=True) # save the dataframe to a csv file
@@ -114,10 +123,10 @@ def cleanse_df(sender_df: pd.DataFrame):
 	stats["sticker"] = sticker_df.shape[0]
 	stats["video"] = video_df.shape[0]
 	stats["gif"] = gif_df.shape[0]
-	stats["contact"] = contact_df.shape[0]
-	stats["location"] = location_df.shape[0]
 	stats["document"] = document_df.shape[0]
 	stats["media"] = sum(stats.values())
+	stats["contact"] = contact_df.shape[0]
+	stats["location"] = location_df.shape[0]
 	stats["missed"] = missed_df.shape[0]
 	stats["deleted"] = deleted_df.shape[0]
 
