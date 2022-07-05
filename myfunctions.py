@@ -123,8 +123,8 @@ def cleanse_df(sender_df: pd.DataFrame):
 	stats["sticker"] = sticker_df.shape[0]
 	stats["video"] = video_df.shape[0]
 	stats["gif"] = gif_df.shape[0]
-	stats["document"] = document_df.shape[0]
 	stats["media"] = sum(stats.values())
+	stats["document"] = document_df.shape[0]
 	stats["contact"] = contact_df.shape[0]
 	stats["location"] = location_df.shape[0]
 	stats["missed"] = missed_df.shape[0]
