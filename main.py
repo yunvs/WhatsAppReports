@@ -26,9 +26,9 @@ for i, s in enumerate(senders):
 
 
 # # # Exporting for testing purposes
-chat_df.to_csv("data/testing/main/chat_df.csv", index=False) # save the dataframe to a csv file
-sender0_df.to_csv("data/testing/main/sender0_df.csv", index=False) # save the dataframe to a csv file
-sender1_df.to_csv("data/testing/main/sender1_df.csv", index=False) # save the dataframe to a csv file
+# chat_df.to_csv("data/testing/main/chat_df.csv", index=False) # save the dataframe to a csv file
+# sender0_df.to_csv("data/testing/main/sender0_df.csv", index=False) # save the dataframe to a csv file
+# sender1_df.to_csv("data/testing/main/sender1_df.csv", index=False) # save the dataframe to a csv file
 
 
 # print()

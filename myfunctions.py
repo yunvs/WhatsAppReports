@@ -113,8 +113,8 @@ def cleanse_df(sender_df: pd.DataFrame):
 	s_clean = s_clean.drop(s_clean[s_clean[sender].str.contains("‎")].index)
 
 	# Testing purposes only
-	sender_df.to_csv(f"data/testing/myFunctions/sender_df_{sender}.csv", index=True) # save the dataframe to a csv file
-	s_clean.to_csv(f"data/testing/myFunctions/s_clean_{sender}.csv", index=True) # save the dataframe to a csv file
+	# sender_df.to_csv(f"data/testing/myFunctions/sender_df_{sender}.csv", index=True) # save the dataframe to a csv file
+	# s_clean.to_csv(f"data/testing/myFunctions/s_clean_{sender}.csv", index=True) # save the dataframe to a csv file
 
 	
 	# enter the extracted counts into the stats
