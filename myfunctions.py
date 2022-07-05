@@ -89,32 +89,32 @@ def cleanse_df(sender_df: pd.DataFrame):
 
 	# Extract and remove non-message enties
 	image_df = s_clean[s_clean[sender] == "‎image omitted"]
-	s_clean = s_clean.drop(image_df.index)
+	s_clean = s_clean.drop(image_df.index) # remove image messages
 	audio_df = s_clean[s_clean[sender] == "‎audio omitted"]
-	s_clean = s_clean.drop(audio_df.index)
+	s_clean = s_clean.drop(audio_df.index) # remove audio messages
 	sticker_df = s_clean[s_clean[sender] == "‎sticker omitted"]
-	s_clean = s_clean.drop(sticker_df.index)
+	s_clean = s_clean.drop(sticker_df.index) # remove sticker messages
 	video_df = s_clean[s_clean[sender] == "‎video omitted"]
-	s_clean = s_clean.drop(video_df.index)
+	s_clean = s_clean.drop(video_df.index) # remove video messages
 	gif_df = s_clean[s_clean[sender] == "‎GIF omitted"]
-	s_clean = s_clean.drop(gif_df.index)
+	s_clean = s_clean.drop(gif_df.index) # remove GIF messages
 	missed_df = s_clean[s_clean[sender].str.startswith("‎Missed ")]
-	s_clean = s_clean.drop(missed_df.index)
+	s_clean = s_clean.drop(missed_df.index) # remove missed messages
 	contact_df = s_clean[s_clean[sender] == "‎Contact card omitted"]
-	s_clean = s_clean.drop(contact_df.index)
+	s_clean = s_clean.drop(contact_df.index) # remove contact messages
 	location_df = s_clean[s_clean[sender].str.startswith("‎Location: https://maps.google.com/")]
-	s_clean = s_clean.drop(location_df.index)
+	s_clean = s_clean.drop(location_df.index) # remove location messages
 	document_df = s_clean[s_clean[sender].str.endswith("‎document omitted")]
-	s_clean = s_clean.drop(document_df.index)
+	s_clean = s_clean.drop(document_df.index) # remove document messages
 	deleted_df = s_clean[s_clean[sender].str.startswith(("‎You deleted this message.", "‎This message was deleted."))]
-	s_clean = s_clean.drop(deleted_df.index)
+	s_clean = s_clean.drop(deleted_df.index) # remove "deleted" messages
 
 	# remove all remaining non-message enties (Whatsapp system messages)
 	s_clean = s_clean.drop(s_clean[s_clean[sender].str.contains("‎")].index)
 
 	# Testing purposes only
-	sender_df.to_csv(f"data/testing/sender_df_{sender}.csv", index=True) # save the dataframe to a csv file
-	s_clean.to_csv(f"data/testing/s_clean_{sender}.csv", index=True) # save the dataframe to a csv file
+	sender_df.to_csv(f"data/testing/myFunctions/sender_df_{sender}.csv", index=True) # save the dataframe to a csv file
+	s_clean.to_csv(f"data/testing/myFunctions/s_clean_{sender}.csv", index=True) # save the dataframe to a csv file
 
 	
 	# enter the extracted counts into the stats
