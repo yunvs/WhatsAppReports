@@ -1,10 +1,11 @@
-# this file contains functions which change the style and colour of strings
+# this file contains functions which change the style and colour output of strings
 
 def NORM(text):
 	"""
 	Resets all the style and color settings
 	"""
 	return "\033[0m" + text
+
 
 def BOLD(text):
 	"""
@@ -32,13 +33,6 @@ def UNDL(text):
 	Returns text underlined
 	"""
 	return "\033[4m" + text + "\033[24m"
-
-
-def BLINK(text):
-	"""
-	Returns text blinking
-	"""
-	return "\033[5m" + text + "\033[25m"
 
 
 def STRIKE(text):
@@ -74,4 +68,3 @@ def BLUE(text):
 	Returns text in blue
 	"""
 	return "\033[34m" + text + "\033[39m"
-	
