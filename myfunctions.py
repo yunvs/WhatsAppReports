@@ -1,125 +1,130 @@
-import re, os, sys, zipfile
-import pandas as pd
-from collections import Counter
-import matplotlib.pyplot as plt
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-from textstyle import *
+import database as db # used to access general lists
+import pandas as pd # used for dataframe 
+import re
+from textstyle import *  # used for printing colored and bold text
+# import db # used to access the stats dataframe
+# from collections import Counter
+# import matplotlib.pyplot as plt
+# from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
 
-def get_content(path: str):
+def off(text: str()) -> None:
 	"""
-	Gets file from given path, checks for desired fileformat and extracts the
-	content of the file.
+	Prints error message and safely exits the program
 	"""
-	if not os.path.isfile(path):
-		sys.exit(BOLD(RED("ERROR: File not found")))
-	_name, extension = os.path.splitext(path)
-	if extension != ".zip" and extension != ".txt": # check for fileformat
-		sys.exit(BOLD(RED("ERROR: Only .txt or .zip files are supported")))
-	elif extension == ".zip": # extract the content of zip file
-		with zipfile.ZipFile(path, "r") as zip_ref:
+	exit(BOLD(RED("ERROR: " + text)))
+
+
+def fileformat(path: str) -> str:
+	"""
+	Checks if the fileformat is correct and returns correct path
+	"""
+	if path.endswith(".txt"):
+		return path
+	elif path.endswith(".zip"):
+		from zipfile import ZipFile
+		with ZipFile(path, "r") as zip_ref:
 			zip_ref.extractall("data")
-		path = "data/_chat.txt"
-	
-	# try opening path with uft-16 encoding if error try with uft-8 encoding
-	try:
-		with open(path, "r", encoding="utf-16") as f: # read the content of the file
-			contents = f.readlines()
-	except UnicodeError:
-		with open(path, "r", encoding="utf-8") as f:
-			contents = f.readlines()
-	return contents
+		return "data/_chat.txt"
+	else:
+		off("Only .txt or .zip files are supported")
 
 
-PATTERN = r"^\u200E? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$"
-def convert_chat(wa_listed: list):
+def new_message(line: str) -> bool:
 	"""
-	Convert the chat history to a pandas DataFrame (with columns: date, time, 
-	sender, message) and into a dictionary with the messages per sender.
+	Checks if the input is the beginning of a new message (date in front) or not
 	"""
-	chat = list() # list of all messages
-	sender_messages = dict() # dictionary with key: sender, value: list of messages
-	matched = False 
+	if re.match("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*)", line):
+		return True # the beginning of a new message
+	return False # continuation of the previous message
 
-	for line in wa_listed:
-		if re.match(PATTERN, line): # check if a new message starts in line
-			matched = True
-			res = re.search(PATTERN, line) # get groups of line
-			# groups are: 1:date, 2:time, 3:sender, 4:message
-			sender = res.group(3).split()[0].capitalize() # get sender
-			chat.append([res.group(1), res.group(2), sender, res.group(4)])
-			if sender not in sender_messages:
-				sender_messages[sender] = [res.group(4)]
-			else:
-				sender_messages[sender].append(res.group(4))
+
+def convert_line(line: str) -> list[str]:
+	"""
+	Converts a WA chat history line into a list with three entries:
+	datetime, sender, message
+	"""
+	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", line)
+	# match pattern and devide into groups: 1:date, 2:time, 3:sender, 4:message
+	return [" ".join([x.group(1),x.group(2)]), x.group(3).title(), x.group(4)]
+
+
+def convert_to_list(path: str) -> list[list]:
+	"""
+	Converts a .txt-file of messages into a list of lists
+	Each list element contains these elements: [date, time, sender, message]
+	"""
+	data, buffer, line = list(), list(), str()
+	try: # try to open the file
+		with open(path, "r", encoding='utf-8') as file:
+			for line in file: # read line by line
+				if new_message(line): # if the line is the beginning of a new message
+					if buffer: # if buffer is not empty
+						data.append(buffer) # add previous message to list
+					buffer = convert_line(line) # add new message to buffer
+				else: # if the line is a continuation of the previous message
+					buffer[-1] += line.rstrip() # add line to previous message
+			if data[-1] != buffer: # if the last message is not the last line in the file
+				data.append(buffer) # add last message to list
+	except FileNotFoundError: # if the file does not exist
+		off("File not found")
+	except (UnicodeDecodeError, UnicodeError): # if the file is not in UTF-8
+		off(f"File not in UTF-8 format\nTry uploading the {GREEN('original .zip file')}")
+	return data
+
+
+def convert_to_df(chat_list: list[list]) -> pd.DataFrame:
+	"""
+	Converts a list of lists into a dataframe with the following columns:
+	[datetime, sender, message] and returns it
+	"""
+	chat_df = pd.DataFrame(chat_list, columns=["datetime","sender","message"])
+	chat_df["datetime"] = pd.to_datetime(chat_df["datetime"])
+	return chat_df
+
+
+def cleanse_df(sender_df: pd.DataFrame) -> pd.DataFrame:
+	"""
+	Cleans the dataframe of non-message enties and replaces URLs and enters 
+	collected data into the stats dataframe
+	"""
+	clean_df = sender_df.copy(deep=True)
+	s = clean_df.name # current sender
+	count = 0 # counter for media messages cleaned
+	for key, value in db.stats_matches.items():
+		if key != "media_total":
+			if value[0] == "=": # non-message is exact match with value
+				df = clean_df[clean_df == value[2]]
+			else: # non-message contains value
+				df = clean_df[clean_df.str.contains(value[2])]
+			if value[1] == "x": # remove hole non-message entry
+				clean_df = clean_df.drop(df.index) # remove non-message from clean_df
+			elif value[1] == "rep": # remove replace non-message segment with value[3]
+				clean_df = clean_df.str.replace(value[2], value[3], regex=True)
+			if key in db.stats_df.columns: # add counted data to stats_df if it exists
+				db.stats_df.at[s,key] = df.shape[0]
+				count += df.shape[0]
+			if key == "rest" and df.shape[0] > 0:
+				df.to_csv(f"data/testing/myfunctions/rest_df_{s}.csv",index=True) # save the dataframe to a csv file
 		else:
-			if not matched:
-				sys.exit(BOLD(RED("ERROR: Sorry, the chat is not in the correct format")))
-			current_line = " " + line.strip("\n")
-			chat[-1][3] += current_line
-			sender_messages[chat[-1][2]][-1] += current_line
-	chat_df = pd.DataFrame (chat, columns = ["date", "time", "sender", "message"])
-	chat_df["date"] = pd.to_datetime(chat_df["date"],infer_datetime_format=True)
-	return chat_df, sender_messages
+			db.stats_df.at[s,key] = count # add counted media data to stats_df 
+
+	### Testing purposes only ###
+	sender_df.to_csv(f"data/testing/myfunctions/og_df_{s}.csv",index=True)
+	clean_df.to_csv(f"data/testing/myfunctions/clean_df_{s}.csv",index=True)
+
+	return clean_df # return the cleaned dataframe
 
 
-def get_stats(sender_df: pd.DataFrame):
+def get_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
 	"""
-	Gets different statistics about the chat and returns them as a tuple
-	Output: (msg_total, msg_avg_len, msg_max_len, msg_min_len)
+	Calculates different statistics about the chat and enters collected data 
+	into the stats dataframe
 	"""
-	sender = sender_df.columns[0]
-	msg_total = sender_df.shape[0]
-	msg_avg_len = round(sender_df[sender].str.len().mean(), 2)
-	msg_max_len = sender_df[sender].str.len().max()
-	msg_min_len = sender_df[sender].str.len().min()
-
-	return (msg_total, msg_avg_len, msg_max_len, msg_min_len)
-
-# number of messages, number of words, number of characters, number of unique words
-
-
-def cleanse_df(sender_df: pd.DataFrame):
-	"""
-	Cleans the dataframe of non-message enties and returns a new dataframe as 
-	well as an dict with keys: category and token: the amound of that category
-	"""
-	stats = dict() # dict with stats about non-message enties in chat of sender
-	s_clean = sender_df.copy()
-	sender = s_clean.columns[0] # current sender
-
-	entities = {"ximg":"‎image omitted", "xaud":"‎audio omitted", 
-		"xstick":"‎sticker omitted", "xvid":"‎video omitted", 
-		"xgif":"‎GIF omitted", "med":"", "xmiss":"‎Missed ", 
-		"xcont":"‎Contact card omitted", "xloc":"‎Location: ", 
-		"xdoc":"‎document omitted", "link":"http://|https://",
-		"xdel":"‎You deleted |‎This message was deleted."}
-
-	# Extract and remove non-message enties
-	for key, value in entities.items():
-		if key != "med":
-			if key not in ("xmiss", "xloc", "xdoc", "xdel", "link"):
-				key_df = s_clean[s_clean[sender] == value]
-			else:
-				key_df = s_clean[s_clean[sender].str.contains(value)]
-		if key[:1] == "x":
-			s_clean = s_clean.drop(key_df.index)
-		globals()[f"{key}_df"] = key_df
-
-
-	# remove all remaining non-message enties (Whatsapp system messages)
-	s_clean = s_clean.drop(s_clean[s_clean[sender].str.contains("‎")].index)
-
-
-	# Testing purposes only
-	# sender_df.to_csv(f"data/testing/myfunctions/sender_df_{sender}.csv",index=True) # save the dataframe to a csv file
-	# s_clean.to_csv(f"data/testing/myfunctions/s_clean_{sender}.csv",index=True) # save the dataframe to a csv file
-
-	# enter the extracted counts into the stats
-	for key in entities.keys():
-		if key != "med":
-			stats[key] = globals()[f"{key}_df"].shape[0] # get the amount of non-message enties
-		else:
-			stats[key] = sum(stats.values()) 
-	
-	return s_clean, stats # return the cleaned dataframe and the stats dict
+	s = sender_df.name # get column name (sender)
+	db.stats_df.at[s,"msg_total"] = sender_df.shape[0]
+	db.stats_df.at[s,"msg_chars_avg"] = round(sender_df.str.replace(" ", "").str.len().mean(), 1)
+	db.stats_df.at[s,"msg_words_avg"] = round(sender_df.str.split().str.len().mean(), 1)
+	db.stats_df.at[s,"msg_chars_max"] = sender_df.str.replace(" ", "").str.len().max()
+	db.stats_df.at[s,"msg_words_max"] = len(sender_df[sender_df.str.len().idxmax()].split())
+	return sender_df
