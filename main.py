@@ -41,10 +41,11 @@ for i, s in enumerate(senders):
 
 ### Exporting for testing purposes ### save the dataframe to a csv file
 chat.to_csv("data/testing/main/chat.csv", index=True)
-s0_df.to_csv("data/testing/main/s0_df.csv", index=True)
-s0_df_clean.to_csv("data/testing/main/s0_df_clean.csv", index=True)
-s1_df.to_csv("data/testing/main/s1_df.csv", index=True)
-s1_df_clean.to_csv("data/testing/main/s1_df_clean.csv", index=True)
+stats_df.to_csv("data/testing/main/stats_df.csv", index=True)
+# s0_df.to_csv("data/testing/main/s0_df.csv", index=True)
+# s0_df_clean.to_csv("data/testing/main/s0_df_clean.csv", index=True)
+# s1_df.to_csv("data/testing/main/s1_df.csv", index=True)
+# s1_df_clean.to_csv("data/testing/main/s1_df_clean.csv", index=True)
 
 
 
