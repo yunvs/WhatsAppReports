@@ -19,14 +19,14 @@ stats_matches = {
     "video":("=","x","‎video omitted"), 
     "sticker":("=","x","‎sticker omitted"), 
     "GIF":("=","x","‎GIF omitted"),
-    "media_total":("media"),
+    "media_total":"",
     "missed":("","x","‎Missed "), 
     "deleted":("","x","‎You deleted |‎This message was deleted."), 
-    "location":("","x","‎Location: "), 
+    "location":("","x","‎Location: xURL"), 
     "file":("","x","‎document omitted"), 
     "contact":("=","x","‎Contact card omitted"),
-    "rest":("","x","‎"),
-    "link":("","repl","https?:\/\/\S+", "xURL")}
+    "rest":("","x","‎")}
+
 
 senders = list()
 stats_df = []
