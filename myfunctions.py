@@ -1,8 +1,7 @@
-import database as db # used to access general lists
+from textstyle import *  # used for printing colored and bold text
+import database as db # used to access local database
 import pandas as pd # used for dataframe 
 import re
-from textstyle import *  # used for printing colored and bold text
-# import db # used to access the stats dataframe
 # from collections import Counter
 # import matplotlib.pyplot as plt
 # from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
@@ -49,14 +48,14 @@ def convert_line(line: str) -> list[str]:
 	return [" ".join([x.group(1),x.group(2)]), x.group(3).title(), x.group(4)]
 
 
-def convert_to_list(path: str) -> list[list]:
+def convert_to_list(path: str) -> list[list[str]]:
 	"""
 	Converts a .txt-file of messages into a list of lists
 	Each list element contains these elements: [date, time, sender, message]
 	"""
 	data, buffer, line = list(), list(), str()
 	try: # try to open the file
-		with open(path, "r", encoding='utf-8') as file:
+		with open(path, "r", encoding="utf-8") as file:
 			for line in file: # read line by line
 				if new_message(line): # if the line is the beginning of a new message
 					if buffer: # if buffer is not empty
@@ -73,7 +72,7 @@ def convert_to_list(path: str) -> list[list]:
 	return data
 
 
-def convert_to_df(chat_list: list[list]) -> pd.DataFrame:
+def convert_to_df(chat_list: list[list[str]]) -> pd.DataFrame:
 	"""
 	Converts a list of lists into a dataframe with the following columns:
 	[datetime, sender, message] and returns it
@@ -88,32 +87,29 @@ def cleanse_df(sender_df: pd.DataFrame) -> pd.DataFrame:
 	Cleans the dataframe of non-message enties and replaces URLs and enters 
 	collected data into the stats dataframe
 	"""
-	clean_df = sender_df.copy(deep=True)
-	s = clean_df.name # current sender
+	s = sender_df.name # current sender
 	count = 0 # counter for media messages cleaned
 	for key, value in db.stats_matches.items():
 		if key != "media_total":
 			if value[0] == "=": # non-message is exact match with value
-				df = clean_df[clean_df == value[2]]
+				df = sender_df[sender_df == value[2]]
 			else: # non-message contains value
-				df = clean_df[clean_df.str.contains(value[2])]
+				df = sender_df[sender_df.str.contains(value[2])]
 			if value[1] == "x": # remove hole non-message entry
-				clean_df = clean_df.drop(df.index) # remove non-message from clean_df
+				sender_df = sender_df.drop(df.index) # remove non-message from clean_df
 			elif value[1] == "rep": # remove replace non-message segment with value[3]
-				clean_df = clean_df.str.replace(value[2], value[3], regex=True)
+				sender_df = sender_df.str.replace(value[2], value[3], regex=True)
 			if key in db.stats_df.columns: # add counted data to stats_df if it exists
 				db.stats_df.at[s,key] = df.shape[0]
 				count += df.shape[0]
-			if key == "rest" and df.shape[0] > 0:
-				df.to_csv(f"data/testing/myfunctions/rest_df_{s}.csv",index=True) # save the dataframe to a csv file
 		else:
 			db.stats_df.at[s,key] = count # add counted media data to stats_df 
 
 	### Testing purposes only ###
-	sender_df.to_csv(f"data/testing/myfunctions/og_df_{s}.csv",index=True)
-	clean_df.to_csv(f"data/testing/myfunctions/clean_df_{s}.csv",index=True)
+	# sender_df.to_csv(f"data/testing/myfunctions/og_df_{s}.csv",index=True)
+	sender_df.to_csv(f"data/testing/myfunctions/clean_df_{s}.csv",index=True)
 
-	return clean_df # return the cleaned dataframe
+	return sender_df # return the cleaned dataframe
 
 
 def get_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
@@ -128,3 +124,49 @@ def get_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
 	db.stats_df.at[s,"msg_chars_max"] = sender_df.str.replace(" ", "").str.len().max()
 	db.stats_df.at[s,"msg_words_max"] = len(sender_df[sender_df.str.len().idxmax()].split())
 	return sender_df
+
+
+def pl(n: int, s) -> str:
+	"""
+	Returns the correct plural form of a word depending on the number
+	"""
+	if isinstance(s, int):
+		s = db.stats_df_columns[s]
+	if n > 1:
+		return str(n) + " " + s + "s"
+	else:
+		if n == 1:
+			return str(n) + " " + s
+		else:
+			return "no " + s
+
+
+def l(*args) -> str:
+	"""
+	Returns a string of strings/numbers which are divided with commas and spaces
+	"""
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) > i+1:
+			s += ", "
+	return s
+
+
+def print_report(i: int) -> None:
+	"""
+	Prints a report about the sender and the statistics collected
+	"""
+	def y(x): return db.stats_df.iat[i,x]
+	s = db.senders[i]
+	string = f"""
+	{GREEN("WA-Report for",BOLD(s))}:
+	{s} sent {BOLD(pl(y(0),"message"))} and {BOLD(y(5),"media")} in this chat.
+	A average message is {BOLD(pl(y(1),"character"))} long and contains {BOLD(pl(y(2),"word"))}.
+	The {BOLD("longest message")} they sent contained {BOLD(pl(y(3),"characters"))} and {BOLD(pl(y(4),"word"))}.
+	{s} sent {BOLD(l(pl(y(10),10),pl(y(6),6),pl(y(7),7),pl(y(9),9)))} and {BOLD(pl(y(8),8))}.
+	They shared {BOLD(l(pl(y(11),11),pl(y(12),12),pl(y(13),13)))} and {BOLD(pl(y(16),16))}.
+	{s} changed their mind {BOLD(pl(y(14),"time"))} and {STRIKE("deleted a message")}."""
+	if y(15) > 0:
+		string += f"""\n\tYou missed {BOLD(pl(y(15),"(video)call"))} by {s}."""
+	print(string)
