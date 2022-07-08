@@ -1,70 +1,120 @@
 # this file contains functions which change the style and colour output of strings
 
-def NORM(text):
+def NORM(*args) -> str:
 	"""
 	Resets all the style and color settings
 	"""
-	return "\033[0m" + text
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) > i+1:
+			s += " "
+	return "\033[0m" + s
 
 
-def BOLD(text):
+def BOLD(*args) -> str:
 	"""
-	Returns text bold
+	Returns given arguments bold and with spaces between them
 	"""
-	return "\033[1m" + text + "\033[22m"
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) != i+1:
+			s += " "
+	return "\033[1m" + s + "\033[22m"
 
 
-def DIM(text):
+def DIM(*args) -> str:
 	"""
-	Returns text dimmed
+	Returns given arguments dimmed and with spaces between them
 	"""
-	return "\033[2m" + text + "\033[22m"
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) > i+1:
+			s += " "
+	return "\033[2m" + s + "\033[22m"
 
 
-def ITAL(text):
+def ITAL(*args) -> str:
 	"""
-	Returns text italic
+	Returns given arguments italic and with spaces between them
 	"""
-	return "\033[3m" + text + "\033[23m"
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) > i+1:
+			s += " "
+	return "\033[3m" + s + "\033[23m"
 
 
-def UNDL(text):
+def UNDL(*args) -> str:
 	"""
-	Returns text underlined
+	Returns given arguments underlined and with spaces between them
 	"""
-	return "\033[4m" + text + "\033[24m"
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) > i+1:
+			s += " "
+	return "\033[4m" + s + "\033[24m"
 
 
-def STRIKE(text):
+def STRIKE(*args) -> str:
 	"""
-	Returns text striked
+	Returns given arguments striked and with spaces between them
 	"""
-	return "\033[9m" + text + "\033[29m"
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) > i+1:
+			s += " "
+	return "\033[9m" + s + "\033[29m"
 
 
-def RED(text):
+def RED(*args) -> str:
 	"""
-	Returns text in red
+	Returns given arguments in red and with spaces between them
 	"""
-	return "\033[31m" + text + "\033[39m"
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) > i+1:
+			s += " "
+	return "\033[31m" + s + "\033[39m"
 
 
-def GREEN(text):
+def GREEN(*args) -> str:
 	"""
-	Returns text in green
+	Returns given arguments in green and with spaces between them
 	"""
-	return "\033[32m" + text + "\033[39m"
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) > i+1:
+			s += " "
+	return "\033[32m" + s + "\033[39m"
 
 
-def YELLOW(text):
+def YELLOW(*args) -> str:
 	"""
-	Returns text in yellow
+	Returns given arguments in yellow and with spaces between them
 	"""
-	return "\033[33m" + text + "\033[39m"
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) > i+1:
+			s += " "
+	return "\033[33m" + s + "\033[39m"
 
 
-def BLUE(text):
+def BLUE(*args) -> str:
 	"""
-	Returns text in blue
+	Returns given arguments in blue and with spaces between them
 	"""
-	return "\033[34m" + text + "\033[39m"
+	s = str()
+	for i, arg in enumerate(args):
+		s += str(arg)
+		if len(args) > i+1:
+			s += " "
+	return "\033[34m" + s + "\033[39m"
