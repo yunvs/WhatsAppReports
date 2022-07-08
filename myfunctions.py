@@ -3,7 +3,7 @@ import pandas as pd
 from collections import Counter
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-from textStyle import *
+from textstyle import *
 
 
 def get_content(path: str):
