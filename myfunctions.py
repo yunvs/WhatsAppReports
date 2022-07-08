@@ -2,6 +2,7 @@ from textstyle import *  # used for printing colored and bold text
 import database as db # used to access local database
 import pandas as pd # used for dataframe 
 import re
+import emojis
 # from collections import Counter
 # import matplotlib.pyplot as plt
 # from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
@@ -40,31 +41,39 @@ def new_message(line: str) -> bool:
 
 def convert_line(line: str) -> list[str]:
 	"""
-	Converts a WA chat history line into a list with three entries:
-	datetime, sender, message
+	Converts a WA chat history line into a list with these entries:
+	datetime, sender, message, emojis, emoji_count, url_count
 	"""
-	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", line)
 	# match pattern and devide into groups: 1:date, 2:time, 3:sender, 4:message
-	return [" ".join([x.group(1),x.group(2)]), x.group(3).title(), x.group(4)]
+	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", line)
+	result = [" ".join([x.group(1),x.group(2)])] # combine date and time
+	result.append(x.group(3).title()) # capitalize first letters of sender
+	message = re.sub("https?://\S+", "xURL", x.group(4)) # replace URLs with "xURL"
+	result.append(emojis.decode(message)) # decode emojis
+	result.append(list(emojis.get(message))) # get list of unique emoji in message
+	result.append(emojis.count(message)) # count amount of emoji in message
+	result.append(len([*re.finditer("xURL", message)])) # count URLs
+	return result
 
 
 def convert_to_list(path: str) -> list[list[str]]:
 	"""
-	Converts a .txt-file of messages into a list of lists
-	Each list element contains these elements: [date, time, sender, message]
+	Converts a .txt-file of messages into a list of lists: Each list element contains 
+	these elements: [datetime, sender, message, emojis, emoji_count, url_count]
 	"""
-	data, buffer, line = list(), list(), str()
+	data, buffer, line = list(), str(), str()
 	try: # try to open the file
 		with open(path, "r", encoding="utf-8") as file:
 			for line in file: # read line by line
 				if new_message(line): # if the line is the beginning of a new message
-					if buffer: # if buffer is not empty
-						data.append(buffer) # add previous message to list
-					buffer = convert_line(line) # add new message to buffer
+					if buffer != "": # if buffer is not empty
+						data.append(convert_line(buffer)) # add previous message to list
+					buffer = line.strip().strip("\n").strip() # add new message to buffer
 				else: # if the line is a continuation of the previous message
-					buffer[-1] += line.rstrip() # add line to previous message
-			if data[-1] != buffer: # if the last message is not the last line in the file
-				data.append(buffer) # add last message to list
+					buffer += " " + line.strip().strip("\n").strip() # add line to previous message
+			last = convert_line(buffer) # add last message to list
+			if data[-1] != last: # if the last message is not the last line in the file
+				data.append(last) # add last message to list
 	except FileNotFoundError: # if the file does not exist
 		off("File not found")
 	except (UnicodeDecodeError, UnicodeError): # if the file is not in UTF-8
@@ -72,44 +81,44 @@ def convert_to_list(path: str) -> list[list[str]]:
 	return data
 
 
+
 def convert_to_df(chat_list: list[list[str]]) -> pd.DataFrame:
 	"""
 	Converts a list of lists into a dataframe with the following columns:
-	[datetime, sender, message] and returns it
+	[datetime, sender, message, emojis, emoji_count, url_count] and returns it
 	"""
-	chat_df = pd.DataFrame(chat_list, columns=["datetime","sender","message"])
-	chat_df["datetime"] = pd.to_datetime(chat_df["datetime"])
-	return chat_df
+	cols = ["datetime","sender","message","emojis","emoji_count","url_count"]
+	df = pd.DataFrame(chat_list, columns=cols)
+	df["datetime"] = pd.to_datetime(df["datetime"])
+	return df
 
 
-def cleanse_df(sender_df: pd.DataFrame) -> pd.DataFrame:
+def cleanse_df(df: pd.DataFrame) -> pd.DataFrame:
 	"""
 	Cleans the dataframe of non-message enties and replaces URLs and enters 
 	collected data into the stats dataframe
 	"""
-	s = sender_df.name # current sender
+	s = df.name # current sender
 	count = 0 # counter for media messages cleaned
 	for key, value in db.stats_matches.items():
 		if key != "media_total":
 			if value[0] == "=": # non-message is exact match with value
-				df = sender_df[sender_df == value[2]]
+				key_df = df[df == value[2]]
 			else: # non-message contains value
-				df = sender_df[sender_df.str.contains(value[2])]
+				key_df = df[df.str.contains(value[2])]
 			if value[1] == "x": # remove hole non-message entry
-				sender_df = sender_df.drop(df.index) # remove non-message from clean_df
-			elif value[1] == "rep": # remove replace non-message segment with value[3]
-				sender_df = sender_df.str.replace(value[2], value[3], regex=True)
+				df = df.drop(key_df.index) # remove non-message from clean_df
 			if key in db.stats_df.columns: # add counted data to stats_df if it exists
-				db.stats_df.at[s,key] = df.shape[0]
-				count += df.shape[0]
+				db.stats_df.at[s,key] = key_df.shape[0]
+				count += key_df.shape[0]
 		else:
 			db.stats_df.at[s,key] = count # add counted media data to stats_df 
 
 	### Testing purposes only ###
 	# sender_df.to_csv(f"data/testing/myfunctions/og_df_{s}.csv",index=True)
-	sender_df.to_csv(f"data/testing/myfunctions/clean_df_{s}.csv",index=True)
+	# df.to_csv(f"data/testing/myfunctions/clean_df_{s}.csv",index=True)
 
-	return sender_df # return the cleaned dataframe
+	return df # return the cleaned dataframe
 
 
 def get_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
@@ -136,9 +145,9 @@ def pl(n: int, s) -> str:
 		return str(n) + " " + s + "s"
 	else:
 		if n == 1:
-			return str(n) + " " + s
+			return "one " + s
 		else:
-			return "no " + s
+			return "not a single " + s
 
 
 def l(*args) -> str:
