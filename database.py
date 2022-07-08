@@ -2,30 +2,31 @@
 
 stats_df_columns = [
     "msg_total", "msg_chars_avg", "msg_words_avg", "msg_chars_max", "msg_words_max", 
-    "media_total", "images", "videos", "gifs", "stickers", "audios",
-    "contacts", "locations", "files", "deleted", "missed", 
-    "links", "emojis", "emoji_unique"]
+    "media_total", "image", "video", "GIF", "sticker", "audio",
+    "contact", "location", "file", "deleted", "missed", 
+    "link", "emoji", "emoji_unique"]
+
 """
 0: msg_total, 1: msg_chars_avg, 2: msg_words_avg, 3: msg_chars_max, 
-4: msg_words_max, 5: media_total, 6: images, 7: videos, 8: gifs, 
-9: stickers, 10: audios, 11: contacts, 12: locations, 13: files, 14: deleted, 
-15: missed, 16: links, 17: emojis, 18: emoji_unique, 
+4: msg_words_max, 5: media_total, 6: image, 7: video, 8: GIF, 
+9: sticker, 10: audio, 11: contact, 12: location, 13: file, 14: deleted, 
+15: missed, 16: link, 17: emoji, 18: emoji_unique
 """
 
 stats_matches = {
-    "audios":("=","x","‎audio omitted"), 
-    "images":("=","x","‎image omitted"), 
-    "videos":("=","x","‎video omitted"), 
-    "stickers":("=","x","‎sticker omitted"), 
-    "gifs":("=","x","‎GIF omitted"),
+    "audio":("=","x","‎audio omitted"), 
+    "image":("=","x","‎image omitted"), 
+    "video":("=","x","‎video omitted"), 
+    "sticker":("=","x","‎sticker omitted"), 
+    "GIF":("=","x","‎GIF omitted"),
     "media_total":("media"),
     "missed":("","x","‎Missed "), 
     "deleted":("","x","‎You deleted |‎This message was deleted."), 
-    "locations":("","x","‎Location: "), 
-    "files":("","x","‎document omitted"), 
-    "contacts":("=","x","‎Contact card omitted"),
+    "location":("","x","‎Location: "), 
+    "file":("","x","‎document omitted"), 
+    "contact":("=","x","‎Contact card omitted"),
     "rest":("","x","‎"),
-    "links":("","repl","https?:\/\/\S+", "xURL")}
+    "link":("","repl","https?:\/\/\S+", "xURL")}
 
 senders = list()
 stats_df = []
