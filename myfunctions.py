@@ -1,3 +1,4 @@
+from ctypes import Union
 from textstyle import *  # used for printing colored and bold text
 import database as db # used to access local database
 import pandas as pd # used for dataframe 
@@ -8,87 +9,85 @@ import emojis
 # from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
 
-def off(text: str()) -> None:
+def off(error_message: str) -> None:
 	"""
 	Prints error message and safely exits the program
 	"""
-	exit(BOLD(RED("ERROR: " + text)))
+	exit(BOLD(RED("ERROR: " + error_message)))
 
 
-def fileformat(path: str) -> str:
+def fileformat(path_to_file: str) -> str:
 	"""
 	Checks if the fileformat is correct and returns correct path
 	"""
-	if path.endswith(".txt"):
-		return path
-	elif path.endswith(".zip"):
+	if path_to_file.endswith(".txt"):
+		return path_to_file
+	elif path_to_file.endswith(".zip"):
 		from zipfile import ZipFile
-		with ZipFile(path, "r") as zip_ref:
+		with ZipFile(path_to_file, "r") as zip_ref:
 			zip_ref.extractall("data")
 		return "data/_chat.txt"
 	else:
 		off("Only .txt or .zip files are supported")
 
 
-def new_message(line: str) -> bool:
+def new_message(input_line: str) -> bool:
 	"""
 	Checks if the input is the beginning of a new message (date in front) or not
 	"""
-	if re.match("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*)", line):
+	if re.match("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*)", input_line):
 		return True # the beginning of a new message
 	return False # continuation of the previous message
 
 
-def convert_line(line: str) -> list[str]:
+def convert_line(input_line: str) -> list[str]:
 	"""
 	Converts a WA chat history line into a list with these entries:
-	datetime, sender, message, emojis, emoji_count, url_count
+	datetime, sender, message, emojis_unique, emoji_count, url_count
 	"""
 	# match pattern and devide into groups: 1:date, 2:time, 3:sender, 4:message
-	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", line)
+	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", input_line)
 	result = [" ".join([x.group(1),x.group(2)])] # combine date and time
 	result.append(x.group(3).title()) # capitalize first letters of sender
 	message = re.sub("https?://\S+", "xURL", x.group(4)) # replace URLs with "xURL"
-	result.append(emojis.decode(message)) # decode emojis
-	result.append(list(emojis.get(message))) # get list of unique emoji in message
+	result.append(message) # add message
+	result.append(emojis.get(message)) # get set of unique emoji in message
 	result.append(emojis.count(message)) # count amount of emoji in message
-	result.append(len([*re.finditer("xURL", message)])) # count URLs
+	result.append(len(re.findall("xURL", message))) # count URLs
 	return result
 
 
-def convert_to_list(path: str) -> list[list[str]]:
+def convert_to_list(path_to_file: str) -> list[list[str]]:
 	"""
 	Converts a .txt-file of messages into a list of lists: Each list element contains 
 	these elements: [datetime, sender, message, emojis, emoji_count, url_count]
 	"""
-	data, buffer, line = list(), str(), str()
+	chat_listed, last_message = list(), str()
 	try: # try to open the file
-		with open(path, "r", encoding="utf-8") as file:
+		with open(path_to_file, "r", encoding="utf-8") as file:
 			for line in file: # read line by line
-				if new_message(line): # if the line is the beginning of a new message
-					if buffer != "": # if buffer is not empty
-						data.append(convert_line(buffer)) # add previous message to list
-					buffer = line.strip().strip("\n").strip() # add new message to buffer
-				else: # if the line is a continuation of the previous message
-					buffer += " " + line.strip().strip("\n").strip() # add line to previous message
-			last = convert_line(buffer) # add last message to list
-			if data[-1] != last: # if the last message is not the last line in the file
-				data.append(last) # add last message to list
-	except FileNotFoundError: # if the file does not exist
+				if new_message(line): # the line is the beginning of a new message
+					if last_message != "": # buffer is not empty
+						chat_listed.append(convert_line(last_message)) # add previous message to list
+					last_message = line.strip().strip("\n").strip() # add new message to buffer
+				else: # the line is a continuation of the previous message
+					last_message += " " + line.strip().strip("\n").strip() # add line to previous message
+			if chat_listed[-1] != convert_line(last_message): # the last message is not added to the list
+				chat_listed.append(convert_line(last_message)) # add last message to list
+	except FileNotFoundError: # the file does not exist
 		off("File not found")
-	except (UnicodeDecodeError, UnicodeError): # if the file is not in UTF-8
-		off(f"File not in UTF-8 format\nTry uploading the {GREEN('original .zip file')}")
-	return data
+	except (UnicodeDecodeError, UnicodeError): # the file is not in UTF-8
+		off(f"File not in UTF-8 format\nTry again or upload the {GREEN('original .zip file')}")
+	return chat_listed
 
 
-
-def convert_to_df(chat_list: list[list[str]]) -> pd.DataFrame:
+def convert_to_df(chat_listed: list[list[str]]) -> pd.DataFrame:
 	"""
 	Converts a list of lists into a dataframe with the following columns:
 	[datetime, sender, message, emojis, emoji_count, url_count] and returns it
 	"""
-	cols = ["datetime","sender","message","emojis","emoji_count","url_count"]
-	df = pd.DataFrame(chat_list, columns=cols)
+	columns = ["datetime","sender","message","emojis","emoji_count","url_count"]
+	df = pd.DataFrame(chat_listed, columns=columns)
 	df["datetime"] = pd.to_datetime(df["datetime"])
 	return df
 
@@ -101,22 +100,24 @@ def cleanse_df(df: pd.DataFrame) -> pd.DataFrame:
 	s = df.name # current sender
 	count = 0 # counter for media messages cleaned
 	for key, value in db.stats_matches.items():
-		if key != "media_total":
-			if value[0] == "=": # non-message is exact match with value
-				key_df = df[df == value[2]]
-			else: # non-message contains value
-				key_df = df[df.str.contains(value[2])]
-			if value[1] == "x": # remove hole non-message entry
-				df = df.drop(key_df.index) # remove non-message from clean_df
-			if key in db.stats_df.columns: # add counted data to stats_df if it exists
-				db.stats_df.at[s,key] = key_df.shape[0]
-				count += key_df.shape[0]
-		else:
-			db.stats_df.at[s,key] = count # add counted media data to stats_df 
+		if key == "media_total":
+			db.stats_df.at[s,key] = count # add counted media data to stats_df
+			continue
+		if value[0] == "=": # non-message is exact match with value
+			key_df = df[df == value[2]]
+		else: # non-message contains value
+			key_df = df[df.str.contains(value[2])]
+		if value[1] == "x": # remove hole non-message entry
+			df = df.drop(key_df.index) # remove non-message from clean_df
+			db.chat = db.chat.drop(key_df.index) # remove non-message from chat_df
+		if key in db.stats_df.columns: # add counted data to stats_df if it exists
+			db.stats_df.at[s,key] = key_df.shape[0]
+			count += key_df.shape[0]
 
 	### Testing purposes only ###
-	# sender_df.to_csv(f"data/testing/myfunctions/og_df_{s}.csv",index=True)
-	# df.to_csv(f"data/testing/myfunctions/clean_df_{s}.csv",index=True)
+	df.to_csv(f"data/testing/myfunctions/og_df_{s}.csv",index=True)
+	df.to_csv(f"data/testing/myfunctions/clean_df_{s}.csv",index=True)
+
 
 	return df # return the cleaned dataframe
 
@@ -132,50 +133,91 @@ def get_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
 	db.stats_df.at[s,"msg_words_avg"] = round(sender_df.str.split().str.len().mean(), 1)
 	db.stats_df.at[s,"msg_chars_max"] = sender_df.str.replace(" ", "").str.len().max()
 	db.stats_df.at[s,"msg_words_max"] = len(sender_df[sender_df.str.len().idxmax()].split())
+	db.stats_df.at[s,"link"] = db.chat.loc[db.chat["sender"] == s, "url_count"].sum()
+	db.stats_df.at[s,"emoji"] = db.chat.loc[db.chat["sender"] == s, "emoji_count"].sum()
+	emoji_set = set().union(*list(db.chat.loc[db.chat["sender"] == s, "emojis"]))
+	db.stats_df.at[s,"emoji_unique"] = (len(emoji_set), emoji_set)
 	return sender_df
 
 
-def pl(n: int, s) -> str:
+def get_sum_stats() -> None:
 	"""
-	Returns the correct plural form of a word depending on the number
+	Calculates summary statistics about the chat and enters collected data
+	into the stats dataframe
 	"""
-	if isinstance(s, int):
-		s = db.stats_df_columns[s]
-	if n > 1:
-		return str(n) + " " + s + "s"
-	else:
-		if n == 1:
-			return "one " + s
+	for stat in db.stats_df_columns:
+		if "max" in stat or "unique" in stat or "missed" in stat:
+			continue
+		elif "avg" in stat:
+			db.stats_df.at["sum",stat] = round(db.stats_df[stat].mean(), 1)
 		else:
-			return "not a single " + s
+			db.stats_df.at["sum",stat] = db.stats_df[stat].sum()
+	return
 
 
-def l(*args) -> str:
+def pl(amount: int, indexmessage) -> str: 
+	"""
+	Returns the correct plural form of a word depending on the amount
+	"""
+	if isinstance(indexmessage, int):
+		indexmessage = db.stats_df_columns[indexmessage]
+	if amount > 1:
+		if indexmessage == "media":
+			return str(amount) + " " + indexmessage
+		return str(amount) + " " + indexmessage + "s"
+	elif amount == 1:
+		return "one " + indexmessage
+	else:
+		return "not a single " + indexmessage
+
+
+def say(*args) -> str:
 	"""
 	Returns a string of strings/numbers which are divided with commas and spaces
 	"""
-	s = str()
-	for i, arg in enumerate(args):
-		s += str(arg)
-		if len(args) > i+1:
-			s += ", "
-	return s
+	output = str(args[0])
+	if len(args) != 1:
+		for i, arg in enumerate(args):
+			if i == 0:
+				continue
+			elif i+1 < len(args):
+				output += ", " + str(arg)
+			else:
+				return BOLD(output) + " and " + BOLD(args[i])
+	else:
+		return BOLD(output)
 
 
-def print_report(i: int) -> None:
+def get_stat(sender: int, stat: int) -> int:
 	"""
-	Prints a report about the sender and the statistics collected
+	Returns the value of a specific statistic for a specific sender.
 	"""
-	def y(x): return db.stats_df.iat[i,x]
-	s = db.senders[i]
-	string = f"""
-	{GREEN("WA-Report for",BOLD(s))}:
-	{s} sent {BOLD(pl(y(0),"message"))} and {BOLD(y(5),"media")} in this chat.
-	A average message is {BOLD(pl(y(1),"character"))} long and contains {BOLD(pl(y(2),"word"))}.
-	The {BOLD("longest message")} they sent contained {BOLD(pl(y(3),"characters"))} and {BOLD(pl(y(4),"word"))}.
-	{s} sent {BOLD(l(pl(y(10),10),pl(y(6),6),pl(y(7),7),pl(y(9),9)))} and {BOLD(pl(y(8),8))}.
-	They shared {BOLD(l(pl(y(11),11),pl(y(12),12),pl(y(13),13)))} and {BOLD(pl(y(16),16))}.
-	{s} changed their mind {BOLD(pl(y(14),"time"))} and {STRIKE("deleted a message")}."""
-	if y(15) > 0:
-		string += f"""\n\tYou missed {BOLD(pl(y(15),"(video)call"))} by {s}."""
-	print(string)
+	return db.stats_df.iat[sender,stat]
+
+
+def get_sender_report(sender_index: int) -> str:
+	"""
+	Creates a report about the sender at the given index which includes the 
+	collected statistics about their messages and returns it.
+	"""
+	def f1(stat:int): return pl(get_stat(sender_index,stat), stat)
+	def f2(stat:int, message:str): return pl(get_stat(sender_index,stat), message)
+	s = db.senders[sender_index] # get sender
+	report = f"""
+	{GREEN("WA-Report for",say(s))}:
+	{s} sent {say(f2(0,"message"),f1(17),f2(5,"media"))} in this chat.
+	A average message is {say(f2(1,"character"))} long and contains {say(f2(2,"word"))}.
+	The {say("longest message")} they sent contained {say(f2(3,"character"),f2(4,"word"))}.
+	{s} sent {say(f1(10),f1(6),f1(7),f1(9),f1(8))}.
+	They shared {say(f1(11),f1(12),f1(13),f1(16))}.
+	{s} changed their mind {say(f2(14,"time"),STRIKE("deleted a message"))}."""
+	if get_stat(sender_index, 15) > 0:
+		report += f"""\n\tYou missed {say(f2(15,"(video)call"))} by {s}.
+"""
+	return report
+
+def get_sum_report() -> str:
+	"""
+	Creates a report about all messages sent int the chat which includes the  
+	collected statistics about the messages.
+	"""
