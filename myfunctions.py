@@ -1,5 +1,5 @@
 from ctypes import Union
-from textstyle import *  # used for printing colored and bold text
+from outputstyle import *  # used for printing colored and bold text
 import database as db  # used to access local database
 import pandas as pd  # used for dataframe
 import re
