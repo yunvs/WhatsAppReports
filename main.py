@@ -7,6 +7,10 @@ start = timer()
 paths = ["data/chat_small.txt", "data/chat_mum.txt",
 		"data/chat_mum.zip", "tash.trash", "data/chat_AB.txt"]
 path_to_file = paths[1] # 0: small, 1: mum.txt, 2: mum.zip, 3: trash, 4: AB
+<<<<<<< HEAD
+
+=======
+>>>>>>> master
 
 contents = get_content(path_to_file) # get the content of the filepath
 chat_df, sender_dict = convert_chat(contents) # convert the chat to a pd.dataframe
@@ -42,14 +46,14 @@ for i, s in enumerate(senders):
 
 	print(f"""
 	{GREEN(f'WA-Report for {BOLD(s)}')}:
-	{s} sent {BOLD(f'{msg_tot} messages')} and {BOLD(f'{stats["media"]} media')} in this chat.
+	{s} sent {BOLD(f'{msg_tot} messages')} and {BOLD(f'{stats["med"]} media')} in this chat.
 	The {BOLD('average length')} of {s} messages is {BOLD(f'{msg_avg} characters')}, 
 	The {BOLD('longest message')} they sent contained {BOLD(f'{msg_max} characters')}.
-	{s} sent {BOLD(f'{stats["audio"]} audios, {stats["image"]} images, {stats["video"]} videos, {stats["sticker"]} stickers')} and {BOLD(f'{stats["gif"]} GIFs')}.
-	They shared {BOLD(f'{stats["contact"]} contacts, {stats["location"]} locations')} and {BOLD(f'{stats["document"]} documents')}.
-	{s} changed their mind {BOLD(f'{stats["deleted"]} times')} and {STRIKE(f'deleted a message')}.""")
-	if stats["missed"] > 0:
-		print(f"""	{BOLD(f'{stats["missed"]} (video)calls')} by {s} were missed.""")
+	{s} sent {BOLD(f'{stats["xaud"]} audios, {stats["ximg"]} images, {stats["xvid"]} videos, {stats["xstick"]} stickers')} and {BOLD(f'{stats["xgif"]} GIFs')}.
+	They shared {BOLD(f'{stats["xcont"]} contacts, {stats["xloc"]} locations, {stats["xdoc"]} documents')} and {BOLD(f'{stats["link"]} URLs')}.
+	{s} changed their mind {BOLD(f'{stats["xdel"]} times')} and {STRIKE(f'deleted a message')}.""")
+	if stats["xmiss"] > 0:
+		print(f"""	You missed {BOLD(f'{stats["xmiss"]} (video)calls')} by {s}.""")
 
 
 
