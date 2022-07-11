@@ -1,10 +1,10 @@
 # This file contains the code for the database
 
 stats_df_columns = [
-	"msg_total", "msg_chars_avg", "msg_words_avg", "msg_chars_max", "msg_words_max", 
-	"media_total", "image", "video", "GIF", "sticker", "audio",
-	"contact", "location", "file", "deleted", "missed", 
-	"link", "emoji", "emoji_unique"]
+    "msg_total", "msg_chars_avg", "msg_words_avg", "msg_chars_max", "msg_words_max",
+    "media_total", "image", "video", "GIF", "sticker", "audio",
+    "contact", "location", "file", "deleted", "missed",
+    "link", "emoji", "emoji_unique"]
 """
 0: msg_total, 1: msg_chars_avg, 2: msg_words_avg, 3: msg_chars_max, 
 4: msg_words_max, 5: media_total, 6: image, 7: video, 8: GIF, 
@@ -13,18 +13,18 @@ stats_df_columns = [
 """
 
 stats_matches = {
-	"audio":("=","x","‎audio omitted"), 
-	"image":("=","x","‎image omitted"), 
-	"video":("=","x","‎video omitted"), 
-	"sticker":("=","x","‎sticker omitted"), 
-	"GIF":("=","x","‎GIF omitted"),
-	"media_total":"",
-	"missed":("","x","‎Missed "), 
-	"deleted":("","x","‎You deleted |‎This message was deleted."), 
-	"location":("","x","‎Location: xURL"), 
-	"file":("","x","‎document omitted"), 
-	"contact":("=","x","‎Contact card omitted"),
-	"rest":("","x","‎")}
+    "audio": ("=", "x", "‎audio omitted"),
+    "image": ("=", "x", "‎image omitted"),
+    "video": ("=", "x", "‎video omitted"),
+    "sticker": ("=", "x", "‎sticker omitted"),
+    "GIF": ("=", "x", "‎GIF omitted"),
+    "media_total": "",
+    "missed": ("", "x", "‎Missed "),
+    "deleted": ("", "x", "‎You deleted |‎This message was deleted."),
+    "location": ("", "x", "‎Location: xURL"),
+    "file": ("", "x", "‎document omitted"),
+    "contact": ("=", "x", "‎Contact card omitted"),
+    "rest": ("", "x", "‎")}
 
 
 senders = list()
@@ -39,11 +39,10 @@ chat = []
 """[datetime, sender, message, emojis, emoji_count, url_count]"""
 
 
-
 ouput_check = [
-"""
-	Test""", 
-"""
+    """
+	Test""",
+    """
 	WA-Report for Meral Renz:
 	Meral Renz sent 829 messages, 261 emojis and 323 media in this chat.
 	A average message is 33.4 characters long and contains 6.4 words.
@@ -60,5 +59,5 @@ ouput_check = [
 	Yunus sent 19 audios, 198 images, 30 videos, 12 stickers and not a single GIF.
 	They shared 2 contacts, 7 locations, 4 files and 26 links.
 	Yunus changed their mind 6 times and deleted a message.""",
-"""
+    """
 	Test"""]
