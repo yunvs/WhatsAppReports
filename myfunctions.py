@@ -81,11 +81,12 @@ def convert_to_list(path_to_file: str) -> list[list[str]]:
 	return chat_listed
 
 
-def convert_to_df(chat_listed: list[list[str]]) -> pd.DataFrame:
+def convert_to_df(path: str) -> pd.DataFrame:
 	"""
 	Converts a list of lists into a dataframe with the following columns:
 	[datetime, sender, message, emojis, emoji_count, url_count] and returns it
 	"""
+	chat_listed = convert_to_list(path)
 	columns = ["datetime","sender","message","emojis","emoji_count","url_count"]
 	df = pd.DataFrame(chat_listed, columns=columns)
 	df["datetime"] = pd.to_datetime(df["datetime"])

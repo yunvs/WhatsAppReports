@@ -2,28 +2,26 @@ from timeit import default_timer as timer
 from myfunctions import *
 start = timer() 
 
-#### Only Testing: Path ####
+#### Only Testing
+### Paths to test files ####
 y = 1
 test_data = ["data/chat_small.txt", "data/chat_mum.txt", "data/chat_mum.zip", 
 				"tash.trash", "data/chat_AB.txt", "data/_chat.txt"]
 path = test_data[y] # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.txt
+### Initializing Variables for autocomplete ###
+s0, s1 = str(), str()
+s0_df, s1_df = pd.DataFrame(), pd.DataFrame()
+s0_df_clean, s1_df_clean = pd.DataFrame(), pd.DataFrame()
 #### Only Testing ####
 
 
 # data extraction and preprocessing
 good_path = fileformat(path) # check if the file is in the correct format
-chat_list = convert_to_list(good_path) # convert the chat file to a list
-db.chat = convert_to_df(chat_list) # convert the list to a pandas dataframe
+db.chat = convert_to_df(good_path) # convert the chat to a pandas dataframe
 db.senders =  list(db.chat["sender"].unique()) # get the list of senders
 db.stats_df = pd.DataFrame(index=db.senders, columns=db.stats_df_columns)
 
 
-### Only Testing: Initializing Variables for autocomplete ###
-s0, s1 = str(), str()
-s0_df, s1_df = pd.DataFrame(), pd.DataFrame()
-s0_df_clean, s1_df_clean = pd.DataFrame(), pd.DataFrame()
-reports = list()
-#### Only Testing ####
 
 
 # data seperation and data analysis per sender
