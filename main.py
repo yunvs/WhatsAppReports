@@ -7,7 +7,10 @@ start = timer()
 paths = ["data/chat_small.txt", "data/chat_mum.txt",
 		"data/chat_mum.zip", "tash.trash", "data/chat_AB.txt"]
 path_to_file = paths[1] # 0: small, 1: mum.txt, 2: mum.zip, 3: trash, 4: AB
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 
 contents = get_content(path_to_file) # get the content of the filepath
 chat_df, sender_dict = convert_chat(contents) # convert the chat to a pd.dataframe
@@ -18,7 +21,6 @@ sender0, sender1 = str(), str() # initialize the senders
 sender0_df, sender1_df = pd.DataFrame(), pd.DataFrame() # initialize the dataframes
 
 
-
 for i, s in enumerate(senders):
 	globals()[f"sender{i}"] = senders[i] # sets variables the diffrent senders
 	globals()[f"sender{str(i)}_df"] = pd.DataFrame(sender_dict[s], columns = [s]) # create a dataframe for each sender
@@ -26,9 +28,9 @@ for i, s in enumerate(senders):
 
 
 # # # Exporting for testing purposes
-chat_df.to_csv("data/testing/main/chat_df.csv", index=False) # save the dataframe to a csv file
-sender0_df.to_csv("data/testing/main/sender0_df.csv", index=False) # save the dataframe to a csv file
-sender1_df.to_csv("data/testing/main/sender1_df.csv", index=False) # save the dataframe to a csv file
+# chat_df.to_csv("data/testing/main/chat_df.csv", index=False) # save the dataframe to a csv file
+# sender0_df.to_csv("data/testing/main/sender0_df.csv", index=False) # save the dataframe to a csv file
+# sender1_df.to_csv("data/testing/main/sender1_df.csv", index=False) # save the dataframe to a csv file
 
 
 # print()

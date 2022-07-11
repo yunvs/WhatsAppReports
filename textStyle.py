@@ -1,4 +1,4 @@
-# this file contains functions which change the style and colour of strings
+# this file contains functions which change the output style and colour of strings
 
 def NORM(text):
 	"""
