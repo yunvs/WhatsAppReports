@@ -106,40 +106,19 @@ def cleanse_df(sender_df: pd.DataFrame):
 			s_clean = s_clean.drop(key_df.index)
 		globals()[f"{key}_df"] = key_df
 
-
 	# remove all remaining non-message enties (Whatsapp system messages)
 	s_clean = s_clean.drop(s_clean[s_clean[sender].str.contains("‎")].index)
 
-
 	# Testing purposes only
-<<<<<<< HEAD
 	# sender_df.to_csv(f"data/testing/myfunctions/sender_df_{sender}.csv",index=True) # save the dataframe to a csv file
 	# s_clean.to_csv(f"data/testing/myfunctions/s_clean_{sender}.csv",index=True) # save the dataframe to a csv file
-=======
 	# sender_df.to_csv(f"data/testing/myFunctions/sender_df_{sender}.csv", index=True) # save the dataframe to a csv file
 	# s_clean.to_csv(f"data/testing/myFunctions/s_clean_{sender}.csv", index=True) # save the dataframe to a csv file
->>>>>>> master
 
-	# enter the extracted counts into the stats
-<<<<<<< HEAD
+	# enter the extracted counts into the stats dict
 	for key in entities.keys():
 		if key != "med":
 			stats[key] = globals()[f"{key}_df"].shape[0] # get the amount of non-message enties
 		else:
 			stats[key] = sum(stats.values()) 
-	
-=======
-	stats["image"] = image_df.shape[0]
-	stats["audio"] = audio_df.shape[0]
-	stats["sticker"] = sticker_df.shape[0]
-	stats["video"] = video_df.shape[0]
-	stats["gif"] = gif_df.shape[0]
-	stats["media"] = sum(stats.values())
-	stats["document"] = document_df.shape[0]
-	stats["contact"] = contact_df.shape[0]
-	stats["location"] = location_df.shape[0]
-	stats["missed"] = missed_df.shape[0]
-	stats["deleted"] = deleted_df.shape[0]
-
->>>>>>> master
 	return s_clean, stats # return the cleaned dataframe and the stats dict

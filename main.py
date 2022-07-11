@@ -7,10 +7,6 @@ start = timer()
 paths = ["data/chat_small.txt", "data/chat_mum.txt",
 		"data/chat_mum.zip", "tash.trash", "data/chat_AB.txt"]
 path_to_file = paths[1] # 0: small, 1: mum.txt, 2: mum.zip, 3: trash, 4: AB
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 
 contents = get_content(path_to_file) # get the content of the filepath
 chat_df, sender_dict = convert_chat(contents) # convert the chat to a pd.dataframe
