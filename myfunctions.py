@@ -92,16 +92,15 @@ def convert_to_df(chat_listed: list[list[str]]) -> pd.DataFrame:
 	return df
 
 
-def cleanse_df(df: pd.DataFrame) -> pd.DataFrame:
+def cleanse_df(df: pd.DataFrame, sender: str) -> pd.DataFrame:
 	"""
 	Cleans the dataframe of non-message enties and replaces URLs and enters 
 	collected data into the stats dataframe
 	"""
-	s = df.name # current sender
 	count = 0 # counter for media messages cleaned
 	for key, value in db.stats_matches.items():
 		if key == "media_total":
-			db.stats_df.at[s,key] = count # add counted media data to stats_df
+			db.stats_df.at[sender,key] = count # add counted media data to stats_df
 			continue
 		if value[0] == "=": # non-message is exact match with value
 			key_df = df[df == value[2]]
@@ -111,15 +110,9 @@ def cleanse_df(df: pd.DataFrame) -> pd.DataFrame:
 			df = df.drop(key_df.index) # remove non-message from clean_df
 			db.chat = db.chat.drop(key_df.index) # remove non-message from chat_df
 		if key in db.stats_df.columns: # add counted data to stats_df if it exists
-			db.stats_df.at[s,key] = key_df.shape[0]
+			db.stats_df.at[sender,key] = key_df.shape[0]
 			count += key_df.shape[0]
-
-	### Testing purposes only ###
-	df.to_csv(f"data/testing/myfunctions/og_df_{s}.csv",index=True)
-	df.to_csv(f"data/testing/myfunctions/clean_df_{s}.csv",index=True)
-
-
-	return df # return the cleaned dataframe
+	return df.rename(sender) # return the cleaned dataframe
 
 
 def get_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
