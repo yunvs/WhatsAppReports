@@ -173,7 +173,8 @@ def pl(amount: int, indexmessage) -> str:
 
 def say(*args) -> str:
 	"""
-	Returns a string of strings/numbers which are divided with commas and spaces
+	Returns a bold printed string of strings/numbers which are divided with 
+	spaces, commas and the word "and"
 	"""
 	output = str(args[0])
 	if len(args) != 1:
@@ -188,22 +189,31 @@ def say(*args) -> str:
 		return BOLD(output)
 
 
-def get_stat(sender: int, stat: int) -> int:
+def get_stat_value(sender_index: int, stat_index: int) -> int:
 	"""
 	Returns the value of a specific statistic for a specific sender.
 	"""
-	return db.stats_df.iat[sender,stat]
+	return db.stats_df.iat[sender_index,stat_index]
 
 
-def get_sender_report(sender_index: int) -> str:
+def get_reports() -> list[str]:
 	"""
 	Creates a report about the sender at the given index which includes the 
-	collected statistics about their messages and returns it.
+	statistics about their messages or a summary report and returns it.
 	"""
-	def f1(stat:int): return pl(get_stat(sender_index,stat), stat)
-	def f2(stat:int, message:str): return pl(get_stat(sender_index,stat), message)
-	s = db.senders[sender_index] # get sender
-	report = f"""
+	output, i = list(), len(db.senders)
+	def f1(stat_index): return pl(get_stat_value(i,stat_index), stat_index)
+	def f2(stat_index, description:str): return pl(get_stat_value(i,stat_index), description)
+	output.append(f"""
+	{GREEN("This WA Chat was between",say(*db.senders))}:
+	All in all {say(f2(0,"message"),f1(17),f2(5,"media"))} were sent in this chat.
+	A average message is {say(f2(1,"character"))} long and contains {say(f2(2,"word"))}.
+	The {say(f"{i} senders")} sent {say(f1(10),f1(6),f1(7),f1(9),f1(8))},
+	  they shared {say(f1(11),f1(12),f1(13),f1(16))}
+	  and deleted {say(f2(14,"message"))} in this chat.""")
+	for i in range(len(db.senders)):
+		s = db.senders[i] # get sender
+		report = f"""
 	{GREEN("WA-Report for",say(s))}:
 	{s} sent {say(f2(0,"message"),f1(17),f2(5,"media"))} in this chat.
 	A average message is {say(f2(1,"character"))} long and contains {say(f2(2,"word"))}.
@@ -211,13 +221,7 @@ def get_sender_report(sender_index: int) -> str:
 	{s} sent {say(f1(10),f1(6),f1(7),f1(9),f1(8))}.
 	They shared {say(f1(11),f1(12),f1(13),f1(16))}.
 	{s} changed their mind {say(f2(14,"time"),STRIKE("deleted a message"))}."""
-	if get_stat(sender_index, 15) > 0:
-		report += f"""\n\tYou missed {say(f2(15,"(video)call"))} by {s}.
-"""
-	return report
-
-def get_sum_report() -> str:
-	"""
-	Creates a report about all messages sent int the chat which includes the  
-	collected statistics about the messages.
-	"""
+		if get_stat_value(i, 15) > 0:	
+			report += f"""\n\tYou missed {say(f2(15,"(video)call"))} by {s}."""
+		output.append(report)
+	return output
