@@ -18,36 +18,35 @@ db.senders =  list(db.chat["sender"].unique()) # get the list of senders
 db.stats_df = pd.DataFrame(index=db.senders, columns=db.stats_df_columns)
 
 
-### Only Testing: Initializing Variables for senders and dataframes ###
+### Only Testing: Initializing Variables for autocomplete ###
 s0, s1 = str(), str()
 s0_df, s1_df = pd.DataFrame(), pd.DataFrame()
 s0_df_clean, s1_df_clean = pd.DataFrame(), pd.DataFrame()
-s0_df_report, s1_df_report = str(), str()
-
+reports = list()
 #### Only Testing ####
 
 
 # data seperation and data analysis per sender
 for i, s in enumerate(db.senders):
-	globals()[f"s{i}"] = s # sets a global variable for each sender
 	df = db.chat.loc[db.chat["sender"] == s, "message"] # dataframe with messages from sender s
-	clean_df = cleanse_df(df.rename(s)) # get the stats for each sender
+	clean_df = cleanse_df(df,s) # get the stats for each sender
 	get_stats(clean_df) # set the cleaned dataframe to the global variable
-	report = get_sender_report(i)
+	globals()[f"s{i}"] = s # sets a global variable for each sender
 	globals()[f"s{i}_df"] = df # sets a global variable for each dataframe
 	globals()[f"s{i}_df_clean"] = clean_df
-	globals()[f"s{i}_report"] = report
 
-get_sum_stats() # get the general stats for the chat
+get_sum_stats() # get the summary statistics for all senders
+reports = get_reports() # get general ander sender stats for the chat
+print("\n".join(reports))
 
 
 ### Exporting for testing purposes ### save the dataframe to a csv file
 db.chat.to_csv("data/testing/main/chat.csv", index=True)
 db.stats_df.to_csv("data/testing/main/stats_df.csv", index=True)
-# s0_df.to_csv("data/testing/main/s0_df.csv", index=True)
-# s0_df_clean.to_csv("data/testing/main/s0_df_clean.csv", index=True)
-# s1_df.to_csv("data/testing/main/s1_df.csv", index=True)
-# s1_df_clean.to_csv("data/testing/main/s1_df_clean.csv", index=True)
+s0_df.to_csv("data/testing/main/s0_df.csv", index=True)
+s0_df_clean.to_csv("data/testing/main/s0_df_clean.csv", index=True)
+s1_df.to_csv("data/testing/main/s1_df.csv", index=True)
+s1_df_clean.to_csv("data/testing/main/s1_df_clean.csv", index=True)
 
 
 print(f"\n\nAll Code took {timer() - start} seconds to run.")
