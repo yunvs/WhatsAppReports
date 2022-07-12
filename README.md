@@ -1,7 +1,5 @@
 # WhatsApp Reports <sub><sup><sub> README.md </sub></sup></sub> <div id="top"/>
 
-<br>
-
 > ### Summary  
 > 1. [**Information**](#information) *about me and this project*  
 >		1.1. [About me](#about-me)  
@@ -53,8 +51,8 @@ First you need to export the chat from WhatsApp. Then you can import and process
 ### **1. Export**:
 > #### Export the chat from WhatsApp to a .txt or .zip file
 
-To export a WhatsApp chat, go to the **information page** of that chat. You can export the chat, at the bottom of that page.  
-WhatsApp will ask you, if you want to export the file with or without media. **Export without media files!**  
+To export a WhatsApp chat, go to the **information page** of that chat. You can export the chat, at the bottom of that page. WhatsApp will ask you, if you want to export the file with or without media. **Export without media files!**  
+
 You will get a **.zip file**, which you have to save. After unziping that file, you will get the actual **.txt file**. It contains all messages of all users in that chat. You can use that file for analyzing, but if you want you can also directly upload the .zip file to the program.  
 
 **🚨 IMPORTANT NOTE 🚨:** The program currently only works, if the chat is **exported from iOS** AND **without media files**. Preferably upload the **original file** (.txt or .zip).
@@ -101,13 +99,15 @@ Text Text Text
 
 <br>
 
-**Python Version 3.9.7** used  
 **Python** is a general-purpose, high-level programming language. It is designed to make simple and easy to use, yet powerful and flexible. Python is used by a wide variety of programmers, and is especially popular for scientific computing. 
 ℹ️ [Python website](https://www.python.org/)  
 
-**Anaconda3 Navigator Version 2.2.0** used  
 **Anaconda** is a distribution of the Python and R languages for scientific computing. It includes a complete ecosystem of packages for data science, scientific computing, and software development. It is a free and open source software distribution. 
-ℹ️ [Anaconda website](http://www.anaconda.com)
+ℹ️ [Anaconda website](http://www.anaconda.com)  
+
+Verions I used:  
+**Python 3.9.7**  
+**Anaconda3 Navigator 2.2.0** 
 
 ##
 
