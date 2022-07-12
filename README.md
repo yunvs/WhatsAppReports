@@ -3,10 +3,10 @@
 <br>
 
 > ### Summary  
-> 1. [**Information**](#information) *about me and the project*  
+> 1. [**Information**](#information) *about me and this project*  
 >		1.1. [About me](#about-me)  
 >		1.2. [About the project](#about-the-project)
-> 2. [**HOW TO**](#how-to) *analyse a chat history with this program*  
+> 2. [**HOW TO**](#how-to) *analyse a chat history with the program*  
 >		2.1 [Export Chat](#export-chat)    
 >		2.2 [Import and Process](#import-and-process)  
 > 		2.3 [Get Results](#get-results)
@@ -29,13 +29,13 @@
 #### Hey 👋 Thank you for visiting my GitHub project!
 
 My name is Yunus, I am studying Computational Linguistics at the Heinrich Heine University in Düsseldorf, Germany 👨‍💻. This is a project for my *Advanced Natural Langugae Processing* Class.
+
 <div id="about-the-project"/>  
 
+## 
 
 You can use this program to analyse 🧐 your chats and get a report about the chat. It can derive statistics of both **private chats** 👤👤 (between two users) and **group chats** 👥👤👥 (with multiple users).  
-🛑 None of your data will be saved in any kind, your machine will derive the statistics and discard your data afterwards. No one other than yourself, will see any of your personal information ℹ️ nor any of your messages. You can check for your self. 😉  
-
-<br>
+🛑 None of your data will be saved in any kind, your machine will derive the statistics and discard your data afterwards. No one other than yourself, will see any of your personal information ℹ️ nor any of your messages. You can check for your self. 😉
 
 ---
 
