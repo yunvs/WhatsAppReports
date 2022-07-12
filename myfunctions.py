@@ -1,4 +1,3 @@
-from ctypes import Union
 from outputstyle import *  # used for printing colored and bold text
 import database as db  # used to access local database
 import pandas as pd  # used for dataframe
@@ -14,6 +13,12 @@ def off(error_message: str) -> None:
 	Prints error message and safely exits the program
 	"""
 	exit(BOLD(RED("ERROR: " + error_message)))
+
+
+def export(*args):
+	for file in args:
+		if file != args[0]:
+			file.to_csv(f"data/exports/{args[0]}/{file}.csv", index=True)
 
 
 def fileformat(path_to_file: str) -> str:
@@ -94,32 +99,35 @@ def convert_to_df(path: str) -> pd.DataFrame:
 	columns = ["datetime","sender","message","emojis","emoji_count", "url_count"]
 	df = pd.DataFrame(chat_listed, columns=columns)
 	df["datetime"] = pd.to_datetime(df["datetime"])
+	export("myfuncs/convert_to_df", df)
 	return df
 
 
-def cleanse_df(df: pd.DataFrame, sender: str) -> pd.DataFrame:
+def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 	"""
 	Cleans the dataframe of non-message enties and replaces URLs and enters 
 	collected data into the stats dataframe
 	"""
 	count = 0  # counter for media messages cleaned
+	df_clean = dataframe.copy()
 	for key, value in db.stats_matches.items():
 		if key == "media_total":
 			# add counted media data to stats_df
 			db.stats_df.at[sender, key] = count
 			continue
 		if value[0] == "=":  # non-message is exact match with value
-			key_df = df[df == value[2]]
+			key_df = df_clean[df_clean == value[2]]
 		else:  # non-message contains value
-			key_df = df[df.str.contains(value[2])]
+			key_df = df_clean[df_clean.str.contains(value[2])]
 		if value[1] == "x":  # remove hole non-message entry
-			df = df.drop(key_df.index)  # remove non-message from clean_df
+			df_clean = df_clean.drop(key_df.index)  # remove non-message from clean_df
 			# remove non-message from chat_df
 			db.chat = db.chat.drop(key_df.index)
 		if key in db.stats_df.columns:  # add counted data to stats_df if it exists
 			db.stats_df.at[sender, key] = key_df.shape[0]
 			count += key_df.shape[0]
-	return df.rename(sender)  # return the cleaned dataframe
+	export("myfuncs/cleanse_df", df_clean)
+	return df_clean.rename(sender)  # return the cleaned dataframe
 
 
 def get_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
@@ -202,8 +210,10 @@ def get_reports() -> list[str]:
 	statistics about their messages or a summary report and returns it.
 	"""
 	output, i = list(), len(db.senders)
-	def f1(stat_index): return pl(get_stat_value(i, stat_index), stat_index)
-	def f2(stat_index, descr): return pl(get_stat_value(i, stat_index), descr)
+	def f1(stat_index): 
+		return pl(get_stat_value(i, stat_index), stat_index)
+	def f2(stat_index, description): 
+		return pl(get_stat_value(i, stat_index), description)
 	output.append(f"""
 	{GREEN("This WA Chat was between",say(*db.senders))}:
 	All in all {say(f2(0,"message"),f1(17),f2(5,"media"))} were sent in this chat.

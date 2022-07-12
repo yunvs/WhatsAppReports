@@ -2,17 +2,15 @@ from timeit import default_timer as timer
 from myfunctions import *
 start = timer()
 
-# Only Testing
-### Paths to test files ####
-y = 1
-test_data = ["data/chat_small.txt", "data/chat_mum.txt", "data/chat_mum.zip",
-             "tash.trash", "data/chat_AB.txt", "data/_chat.txt"]
-path = test_data[y]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.txt
-### Initializing Variables for autocomplete ###
+# Only Testing # Initializing Variables for autocomplete ###
 s0, s1 = str(), str()
 s0_df, s1_df = pd.DataFrame(), pd.DataFrame()
 s0_df_clean, s1_df_clean = pd.DataFrame(), pd.DataFrame()
 #### Only Testing ####
+
+
+y = 1
+path = db.test_data[y]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.txt
 
 
 # data extraction and preprocessing
@@ -37,13 +35,8 @@ reports = get_reports()  # get general ander sender stats for the chat
 print("\n".join(reports))
 
 
-# Exporting for testing purposes ### save the dataframe to a csv file
-db.chat.to_csv("data/testing/main/chat.csv", index=True)
-db.stats_df.to_csv("data/testing/main/stats_df.csv", index=True)
-s0_df.to_csv("data/testing/main/s0_df.csv", index=True)
-s0_df_clean.to_csv("data/testing/main/s0_df_clean.csv", index=True)
-s1_df.to_csv("data/testing/main/s1_df.csv", index=True)
-s1_df_clean.to_csv("data/testing/main/s1_df_clean.csv", index=True)
+# Export dataframes to csv files
+export("main", db.chat, db.stats_df, s0_df, s1_df, s0_df_clean, s1_df_clean)
 
 
 print(f"\n\nAll Code took {timer() - start} seconds to run.")

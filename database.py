@@ -12,6 +12,11 @@ stats_df_columns = [
 15: missed, 16: link, 17: emoji, 18: emoji_unique
 """
 
+
+test_data = ["data/chat_small.txt", "data/chat_mum.txt", "data/chat_mum.zip",
+             "tash.trash", "data/chat_AB.txt", "data/_chat.txt"]
+
+
 stats_matches = {
     "audio": ("=", "x", "‎audio omitted"),
     "image": ("=", "x", "‎image omitted"),
@@ -35,6 +40,8 @@ stats_df = []
 9: sticker, 10: audio, 11: contact, 12: location, 13: file, 14: deleted, 
 15: missed, 16: link, 17: emoji, 18: emoji_unique
 """
+
+
 chat = []
 """[datetime, sender, message, emojis, emoji_count, url_count]"""
 
