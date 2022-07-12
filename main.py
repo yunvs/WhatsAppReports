@@ -1,58 +1,42 @@
-import pandas as pd
-from myfunctions import *
-from textstyle import *
 from timeit import default_timer as timer
-start = timer() 
+from myfunctions import *
+start = timer()
 
-paths = ["data/chat_small.txt", "data/chat_mum.txt",
-		"data/chat_mum.zip", "tash.trash", "data/chat_AB.txt"]
-path_to_file = paths[1] # 0: small, 1: mum.txt, 2: mum.zip, 3: trash, 4: AB
-
-contents = get_content(path_to_file) # get the content of the filepath
-chat_df, sender_dict = convert_chat(contents) # convert the chat to a pd.dataframe
-# (colums:date,time,sender,message) and a dictionary with the messages per sender
-
-senders = list(sender_dict.keys()) # get a list of all senders
-sender0, sender1 = str(), str() # initialize the senders
-sender0_df, sender1_df = pd.DataFrame(), pd.DataFrame() # initialize the dataframes
+# Only Testing # Initializing Variables for autocomplete ###
+s0, s1 = str(), str()
+s0_df, s1_df = pd.DataFrame(), pd.DataFrame()
+s0_df_clean, s1_df_clean = pd.DataFrame(), pd.DataFrame()
+#### Only Testing ####
 
 
-for i, s in enumerate(senders):
-	globals()[f"sender{i}"] = senders[i] # sets variables the diffrent senders
-	globals()[f"sender{str(i)}_df"] = pd.DataFrame(sender_dict[s], columns = [s]) # create a dataframe for each sender
+y = 1
+path = db.test_data[y]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.txt
 
 
-
-# # # Exporting for testing purposes
-# chat_df.to_csv("data/testing/main/chat_df.csv", index=False) # save the dataframe to a csv file
-# sender0_df.to_csv("data/testing/main/sender0_df.csv", index=False) # save the dataframe to a csv file
-# sender1_df.to_csv("data/testing/main/sender1_df.csv", index=False) # save the dataframe to a csv file
-
-
-# print()
-# print(f"This chat is between {sender0} and {sender1}.")
-# print(f"Overall there were {chat_df.shape[0]} messages send:")
-# print(f"{sender0} sent {sender0_df.shape[0]} and {sender1} sent {sender1_df.shape[0]} messages.")
-# print()
+# data extraction and preprocessing
+good_path = fileformat(path)  # check if the file is in the correct format
+db.chat = convert_to_df(good_path)  # convert the chat to a pandas dataframe
+db.senders = list(db.chat["sender"].unique())  # get the list of senders
+db.stats_df = pd.DataFrame(index=db.senders, columns=db.stats_df_columns)
 
 
-for i, s in enumerate(senders):
-	messages_df, stats = cleanse_df(globals()[f"sender{i}_df"]) # get the stats for each sender
-	msg_tot, msg_avg, msg_max, msg_min = get_stats(messages_df)
+# data seperation and data analysis per sender
+for i, s in enumerate(db.senders):
+    # dataframe with messages from sender s
+    df = db.chat.loc[db.chat["sender"] == s, "message"]
+    clean_df = cleanse_df(df, s)  # get the stats for each sender
+    get_stats(clean_df)  # set the cleaned dataframe to the global variable
+    globals()[f"s{i}"] = s  # sets a global variable for each sender
+    globals()[f"s{i}_df"] = df  # sets a global variable for each dataframe
+    globals()[f"s{i}_df_clean"] = clean_df
 
-	print(f"""
-	{GREEN(f'WA-Report for {BOLD(s)}')}:
-	{s} sent {BOLD(f'{msg_tot} messages')} and {BOLD(f'{stats["med"]} media')} in this chat.
-	The {BOLD('average length')} of {s} messages is {BOLD(f'{msg_avg} characters')}, 
-	The {BOLD('longest message')} they sent contained {BOLD(f'{msg_max} characters')}.
-	{s} sent {BOLD(f'{stats["xaud"]} audios, {stats["ximg"]} images, {stats["xvid"]} videos, {stats["xstick"]} stickers')} and {BOLD(f'{stats["xgif"]} GIFs')}.
-	They shared {BOLD(f'{stats["xcont"]} contacts, {stats["xloc"]} locations, {stats["xdoc"]} documents')} and {BOLD(f'{stats["link"]} URLs')}.
-	{s} changed their mind {BOLD(f'{stats["xdel"]} times')} and {STRIKE(f'deleted a message')}.""")
-	if stats["xmiss"] > 0:
-		print(f"""	You missed {BOLD(f'{stats["xmiss"]} (video)calls')} by {s}.""")
-
+get_sum_stats()  # get the summary statistics for all senders
+reports = get_reports()  # get general ander sender stats for the chat
+print("\n".join(reports))
 
 
+# Export dataframes to csv files
+export("main", db.chat, db.stats_df, s0_df, s1_df, s0_df_clean, s1_df_clean)
 
 
 print(f"\n\nAll Code took {timer() - start} seconds to run.")
