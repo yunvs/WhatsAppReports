@@ -99,7 +99,7 @@ def convert_to_df(path: str) -> pd.DataFrame:
 	columns = ["datetime","sender","message","emojis","emoji_count", "url_count"]
 	df = pd.DataFrame(chat_listed, columns=columns)
 	df["datetime"] = pd.to_datetime(df["datetime"])
-	export("myfuncs/convert_to_df", df)
+	# export("myfuncs/convert_to_df", df)
 	return df
 
 
@@ -126,7 +126,7 @@ def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 		if key in db.stats_df.columns:  # add counted data to stats_df if it exists
 			db.stats_df.at[sender, key] = key_df.shape[0]
 			count += key_df.shape[0]
-	export("myfuncs/cleanse_df", df_clean)
+	# export("myfuncs/cleanse_df", df_clean)
 	return df_clean.rename(sender)  # return the cleaned dataframe
 
 

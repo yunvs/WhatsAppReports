@@ -36,7 +36,7 @@ print("\n".join(reports))
 
 
 # Export dataframes to csv files
-export("main", db.chat, db.stats_df, s0_df, s1_df, s0_df_clean, s1_df_clean)
+# export("main", db.chat, db.stats_df, s0_df, s1_df, s0_df_clean, s1_df_clean)
 
 
 print(f"\n\nAll Code took {timer() - start} seconds to run.")
