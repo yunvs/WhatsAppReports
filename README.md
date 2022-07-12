@@ -1,11 +1,8 @@
+# WhatsApp Reports <sub><sup><sub> README.md </sub></sup></sub> <div id="top"/>
 
-<div id="top"/>
+<br>
 
-# <font size="7"> **WhatsApp Reports** </font> <font size="4"> README.md </font>
-
-<font size="2">
-
-> ## Summary  
+> ### Summary  
 > 1. [**Information**](#information) *about me and the project*  
 >		1.1. [About me](#about-me)  
 >		1.2. [About the project](#about-the-project)
@@ -22,31 +19,26 @@
 >		4.3. [Number of Groups](#number-of-groups)  
 >		4.4. [Number of Chats](#number-of-chats)  
 > 5. [**License**](#license) *of this project*  
->  <br>  
 
-</font>
 
-<div id="information"/>
-
+<div id="information"/> <div id="about-me"/>
 <br>
 
+## Information <sub><sup> about me and about this project </sub></sup>
 
-<font size="5"> **Information** </font>
-<font size="4"> *about me and about this project* </font>  
+#### Hey 👋 Thank you for visiting my GitHub project!
 
----
+My name is Yunus, I am studying Computational Linguistics at the Heinrich Heine University in Düsseldorf, Germany 👨‍💻. This is a project for my *Advanced Natural Langugae Processing* Class.
+<div id="about-the-project"/>  
 
-<br>
 
-<font size="3"> Hey 👋 Thank you visiting my GitHub project </font>  
-My name is Yunus, I am studying Computational Linguistics at the Heinrich Heine University in Düsseldorf, Germany 👨‍💻. This is a project for my *Advanced Natural Langugae Processing* Class.  
 You can use this program to analyse 🧐 your chats and get a report about the chat. It can derive statistics of both **private chats** 👤👤 (between two users) and **group chats** 👥👤👥 (with multiple users).  
-🛑 None of your data will be saved in any kind, your machine will derive statistics and discard your data after that. No one other than yourself, will see any of your personal information ℹ️ nor any of your messages. You can check for your self. 😉  
+🛑 None of your data will be saved in any kind, your machine will derive the statistics and discard your data afterwards. No one other than yourself, will see any of your personal information ℹ️ nor any of your messages. You can check for your self. 😉  
 
 <br>
 
 ---
----
+
 
 <div id="how-to"/>
 <div id="export-chat"/>
@@ -55,40 +47,32 @@ You can use this program to analyse 🧐 your chats and get a report about the c
     <b><a href="#top">⇧ back to top</a></b>
 </div>
 
-<font size="5"> **Instructions**: </font>
-<font size="4"> *How to analyse a WhatsApp chat* </font>  
-<font size="3"> First you need to export the chat from WhatsApp. Then you can import and process the chat. Finally, you will get the results. </font>
+## How to <sub><sup> analyse a WhatsApp chat </sub></sup>  
+First you need to export the chat from WhatsApp. Then you can import and process the chat. Finally, you will get the results.
 
----
+### **1. Export**:
+> #### Export the chat from WhatsApp to a .txt or .zip file
 
-<br>
+To export a WhatsApp chat, go to the **information page** of that chat. You can export the chat, at the bottom of that page.  
+WhatsApp will ask you, if you want to export the file with or without media. **Export without media files!**  
+You will get a **.zip file**, which you have to save. After unziping that file, you will get the actual **.txt file**. It contains all messages of all users in that chat. You can use that file for analyzing, but if you want you can also directly upload the .zip file to the program.  
 
-<font size="4"> **1. Export**: </font>  
-> <font size="3"> Export the chat from WhatsApp to a .txt or .zip file </font>  
+**🚨 IMPORTANT NOTE 🚨:** The program currently only works, if the chat is **exported from iOS** AND **without media files**. Preferably upload the **original file** (.txt or .zip).
 
+##
 
-To export a WhatsApp chat, go to the **information page** of that chat. You can export the chat, at the bottom of that page. WhatsApp will ask you, if you want to export the file with or without media. **Export without media files!**  
-You will get a **.zip file**, which you have to save. After unziping that file, you will get the actual **.txt file**. It contains all messages of all users in that chat. You can use that file for analyzing, but if you prefer you can directly upload the .zip file to the program.  
-
-<font color="red"> **IMPORTANT NOTE:**</font> The program currently only works, if the chat is **exported from iOS** AND **without media files**. Preferably upload the **original .txt** or **.zip file**. 
-
-<br>
-
----
 <div id="import-and-process"/>
 
 <div align="right">
     <b><a href="#top">⇧ back to top</a></b>
 </div>
 
-<font size="4"> **2. Import and Process**: </font>  
-> <font size="3"> Import the file and let the program do it's thing </font>  
+### 2. Import and Process:
+> #### Import the file and let the program do it's thing  
 
 Text Text Text
 
-<br>
-
----
+##
 
 <div id="get-results"/>
 
@@ -96,14 +80,11 @@ Text Text Text
     <b><a href="#top">⇧ back to top</a></b>
 </div>
 
-<font size="4"> **3. Results**: </font>  
-> <font size="3"> Review and understand the results </font>  
+### **3. Results**:
+> #### Review and understand the results  
 
 Text Text Text
 
-<br>
-
----
 ---
 
 <div id="technologies"/>
@@ -113,31 +94,22 @@ Text Text Text
     <b><a href="#top">⇧ back to top</a></b>
 </div>
 
-<font size="5"> **Technologies** </font> 
-<font size="4"> *used for this project* </font>
+## Technologies <sub><sup> *used for this project* </sub></sup>  
 
----
-<br>
-
-<font size="4"> **Programming Language**: </font>  
-> <font size="3"> This hole project is written in Python, but makes use of some Libraries you can find below.  
-I worked with Anaconda, which is a distribution of the Python language for scientific computing.</font>
+### Programming Language: 
+> #### This hole project is written in Python, but makes use of some Libraries you can find below. I worked with Anaconda, which is a distribution of the Python language for scientific computing.
 
 <br>
 
-**Python** is a general-purpose, high-level programming language. It is designed to make simple and easy to use, yet powerful and flexible. Python is used by a wide variety of programmers, and is especially popular for scientific computing.  
-Find out more  on the [Python website](https://www.python.org/).  
-<font size="3">**I used Python Version 3.9.7**</font>
+**Python Version 3.9.7** used  
+**Python** is a general-purpose, high-level programming language. It is designed to make simple and easy to use, yet powerful and flexible. Python is used by a wide variety of programmers, and is especially popular for scientific computing. 
+ℹ️ [Python website](https://www.python.org/)  
 
-<br>
+**Anaconda3 Navigator Version 2.2.0** used  
+**Anaconda** is a distribution of the Python and R languages for scientific computing. It includes a complete ecosystem of packages for data science, scientific computing, and software development. It is a free and open source software distribution. 
+ℹ️ [Anaconda website](http://www.anaconda.com)
 
-**Anaconda** is a distribution of the Python language for scientific computing. It includes a complete ecosystem of packages for data science, scientific computing, and software development. It is a free and open source software distribution.   
-Find out more on the [Anaconda website](http://www.anaconda.com)  
-<font size="3">**I used Anaconda3 Navigator Version 2.2.0**</font>
-
-<br>
-
----
+##
 
 <div id="libraries">
 
@@ -145,8 +117,8 @@ Find out more on the [Anaconda website](http://www.anaconda.com)
     <b><a href="#top">⇧ back to top</a></b>
 </div>
 
-<font size="4"> **Libraries 📚**: </font>  
-> <font size="3"> In this project I used various libraries for diffrent programming tasks. Here is a list of libraries that I used, with their websites and diffrent usages. </font>
+### 📚 Libraries:
+> #### In this project I used various libraries for diffrent programming tasks. Here is a list of libraries that I used, with their websites and diffrent usages.
 
 <br>
 
@@ -163,9 +135,8 @@ Libary | Website | Usage
 [Pytorch](https://pytorch.org/) | https://pytorch.org/ | for neural networks
 [WordCloud](https://wordcloud.readthedocs.io/) | https://wordcloud.readthedocs.io/ | for word cloud generation
 
-<br>
 
----
+
 ---
 
 <div id="statistics"/>
@@ -174,10 +145,9 @@ Libary | Website | Usage
     <b><a href="#top">⇧ back to top</a></b>
 </div>
 
-<font size="5"> **Statistics**: </font>
-<font size="4"> *What Statistics does the program derive?</font>* </font>
+## Statistics <sub><sup>  What Statistics does the program derive? </sub></sup> 
 
----
+
 
 <br>
 
