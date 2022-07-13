@@ -13,8 +13,9 @@ stats_df_columns = [
 """
 
 
-test_data = ["data/chat_small.txt", "data/chat_mum.txt", "data/chat_mum.zip",
-             "tash.trash", "data/chat_AB.txt", "data/_chat.txt"]
+test_data = ["data/imports/chat_small.txt", "data/imports/chat_mum.txt", 
+                "data/imports/chat_mum.zip", "data/imports/tash.trash", 
+                "data/imports/chat_AB.txt", "data/imports/_chat.txt"]
 
 
 stats_matches = {
