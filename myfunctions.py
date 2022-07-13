@@ -120,10 +120,10 @@ def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 	"""
 	count = 0  # counter for media messages cleaned
 	df_clean = dataframe.copy()
-	for key, value in db.stats_matches.items():
+	for key, value in db.cstats_match.items():
 		if key == "media_total":
-			# add counted media data to stats_df
-			db.stats_df.at[sender, key] = count
+			# add counted media data to cstats_df
+			db.cstats_df.at[sender, key] = count
 			continue
 		if value[0] == "=":  # non-message is exact match with value
 			key_df = df_clean[df_clean == value[2]]
@@ -133,8 +133,8 @@ def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 			df_clean = df_clean.drop(key_df.index)  # remove non-message from clean_df
 			# remove non-message from chat_df
 			db.chat = db.chat.drop(key_df.index)
-		if key in db.stats_df.columns:  # add counted data to stats_df if it exists
-			db.stats_df.at[sender, key] = key_df.shape[0]
+		if key in db.cstats_df.columns:  # add counted data to cstats_df.if it exists
+			db.cstats_df.at[sender, key] = key_df.shape[0]
 			count += key_df.shape[0]
 	# export("myfuncs/cleanse_df", df_clean)
 	return df_clean.rename(sender)  # return the cleaned dataframe
@@ -146,15 +146,15 @@ def get_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
 	into the stats dataframe
 	"""
 	s = sender_df.name # get column name (sender)
-	db.stats_df.at[s,"msg_total"] = sender_df.shape[0]
-	db.stats_df.at[s,"msg_chars_avg"] = round(sender_df.str.replace(" ", "").str.len().mean(), 1)
-	db.stats_df.at[s,"msg_words_avg"] = round(sender_df.str.split().str.len().mean(), 1)
-	db.stats_df.at[s,"msg_chars_max"] = sender_df.str.replace(" ", "").str.len().max()
-	db.stats_df.at[s,"msg_words_max"] = len(sender_df[sender_df.str.len().idxmax()].split())
-	db.stats_df.at[s,"link"] = db.chat.loc[db.chat["sender"] == s, "url_count"].sum()
-	db.stats_df.at[s,"emoji"] = db.chat.loc[db.chat["sender"] == s, "emoji_count"].sum()
+	db.cstats_df.at[s,"msg_total"] = sender_df.shape[0]
+	db.cstats_df.at[s,"msg_chars_avg"] = round(sender_df.str.replace(" ", "").str.len().mean(), 1)
+	db.cstats_df.at[s,"msg_words_avg"] = round(sender_df.str.split().str.len().mean(), 1)
+	db.cstats_df.at[s,"msg_chars_max"] = sender_df.str.replace(" ", "").str.len().max()
+	db.cstats_df.at[s,"msg_words_max"] = len(sender_df[sender_df.str.len().idxmax()].split())
+	db.cstats_df.at[s,"link"] = db.chat.loc[db.chat["sender"] == s, "url_count"].sum()
+	db.cstats_df.at[s,"emoji"] = db.chat.loc[db.chat["sender"] == s, "emoji_count"].sum()
 	emoji_set = set().union(*list(db.chat.loc[db.chat["sender"] == s, "emojis"]))
-	db.stats_df.at[s,"emoji_unique"] = (len(emoji_set), emoji_set)
+	db.cstats_df.at[s,"emoji_unique"] = (len(emoji_set), emoji_set)
 	return sender_df
 
 
@@ -163,14 +163,34 @@ def get_sum_stats() -> None:
 	Calculates summary statistics about the chat and enters collected data
 	into the stats dataframe
 	"""
-	for stat in db.stats_df_columns:
+	for stat in db.cstats_cols:
 		if "max" in stat or "unique" in stat or "missed" in stat:
 			continue
 		elif "avg" in stat:
-			db.stats_df.at["sum", stat] = round(db.stats_df[stat].mean(), 1)
+			db.cstats_df.at["sum", stat] = round(db.cstats_df[stat].mean(), 1)
 		else:
-			db.stats_df.at["sum", stat] = db.stats_df[stat].sum()
+			db.cstats_df.at["sum", stat] = db.cstats_df[stat].sum()
 	return
+
+
+def common_words(df: pd.DataFrame) -> pd.DataFrame:
+	"""
+	Calculates the most common words in the chat and enters collected data
+	into the stats dataframe
+	"""
+	# get most common words
+	common_words = df.str.split().str.join(" ").value_counts().head(10)
+	# add to cstats_df
+	# for word in common_words.index:
+	# 	db.cstats_df.at["sum", "common_words"] += common_words[word]
+	return common_words
+
+
+
+
+# --------------------------------------------
+# Functions used to print the ouptut in a specific format
+# --------------------------------------------
 
 
 def pl(amount: int, indexmessage) -> str:
@@ -178,7 +198,7 @@ def pl(amount: int, indexmessage) -> str:
 	Returns the correct plural form of a word depending on the amount
 	"""
 	if isinstance(indexmessage, int):
-		indexmessage = db.stats_df_columns[indexmessage]
+		indexmessage = db.cstats_cols[indexmessage]
 	if amount > 1:
 		if indexmessage == "media":
 			return str(amount) + " " + indexmessage
@@ -211,7 +231,7 @@ def get_stat_value(sender_index: int, stat_index: int) -> int:
 	"""
 	Returns the value of a specific statistic for a specific sender.
 	"""
-	return db.stats_df.iat[sender_index, stat_index]
+	return db.cstats_df.iat[sender_index, stat_index]
 
 
 def get_reports() -> list[str]:
