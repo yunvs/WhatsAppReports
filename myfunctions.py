@@ -14,11 +14,21 @@ def off(error_message: str) -> None:
 	"""
 	exit(BOLD(RED("ERROR: " + error_message)))
 
-
-def export(*args):
-	for file in args:
-		if file != args[0]:
-			file.to_csv(f"data/exports/{args[0]}/{file}.csv", index=True)
+"""
+def export(location: str, df: pd.DataFrame) -> None:
+	# "Exports a dataframe to a csv file"
+		from varname import nameof
+		imported_nameof = True
+	path = "data/exports/" + location + "/"
+	try:
+		df.to_csv(path + nameof(df)+ ".csv", index=True)
+	except FileNotFoundError:
+		if not imported_os:
+			import os
+			imported_os = True
+		os.makedirs(path, exist_ok=True)
+		df.to_csv(path + nameof(df)+ ".csv", index=True)
+"""
 
 
 def fileformat(path_to_file: str) -> str:
