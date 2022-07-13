@@ -92,7 +92,7 @@ Text Text Text
     <b><a href="#top">⇧ back to top</a></b>
 </div>
 
-## Technologies <sub><sup> *used for this project* </sub></sup>  
+## Technologies <sub><sup> used for this project </sub></sup>  
 
 ### Programming Language: 
 > #### This hole project is written in Python, but makes use of some Libraries you can find below. I worked with Anaconda, which is a distribution of the Python language for scientific computing.
@@ -145,7 +145,7 @@ Libary | Website | Usage
     <b><a href="#top">⇧ back to top</a></b>
 </div>
 
-## Statistics <sub><sup>  What Statistics does the program derive? </sub></sup> 
+## <sub><sup>What</sub></sup> Statistics <sub><sup>does the program derive?</sub></sup> 
 
 
 
