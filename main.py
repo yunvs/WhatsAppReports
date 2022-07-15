@@ -24,10 +24,11 @@ db.cstats_df = pd.DataFrame(index=db.senders, columns=db.cstats_cols)
 for i, s in enumerate(db.senders):
     globals()[f"s{i}"] = s  # sets a global variable for each sender
     df = db.chat.loc[db.chat["sender"] == s, "message", ]  # dataframe with messages from sender
-    globals()[f"s{i}_df"] = df  # sets a global variable for each dataframe
+    # globals()[f"s{i}_df"] = df  # sets a global variable for each dataframe
     clean_df = cleanse_df(df, s)  # get the stats for each sender
-    get_stats(clean_df)  # set the cleaned dataframe to the global variable
+    calc_stats(clean_df)  # set the cleaned dataframe to the global variable
     globals()[f"s{i}_df_clean"] = clean_df
+    calc_word_stats(clean_df)
 
 
 get_sum_stats()  # get the summary statistics for all senders
