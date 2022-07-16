@@ -28,7 +28,7 @@ def export(location: str, *args) -> None:
 			except FileNotFoundError:
 				import os
 				os.makedirs(path, exist_ok=True)
-				export(location, arg, name)
+				export(location, arg, args[i+1])
 
 
 def fileformat(path_to_file: str) -> str:
@@ -108,7 +108,7 @@ def convert_to_df(path: str) -> pd.DataFrame:
 	"""
 	chat_listed = convert_to_list(path)
 	df = pd.DataFrame(chat_listed, columns=db.df_cols)
-	df["datetime"] = pd.to_datetime(df["datetime"])
+	df["datetime"] = pd.to_datetime(df["datetime"])  # 
 	export("myfuncs/convert_to_df", df, "df_converted.csv")
 	return df
 
