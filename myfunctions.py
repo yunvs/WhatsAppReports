@@ -1,34 +1,34 @@
 from outputstyle import *  # used for printing colored and bold text
 import database as db  # used to access local database
-import pandas as pd  # used for dataframe
 import re
 import emojis
-# from collections import Counter
-# import matplotlib.pyplot as plt
-# from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+import pandas as pd  # used for dataframe
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud, STOPWORDS
+from textblob_de import TextBlobDE as TextBlob
 
 
-def off(error_message: str) -> None:
+def off(*args) -> None:
 	"""
 	Prints error message and safely exits the program
 	"""
-	exit(BOLD(RED("ERROR: " + error_message)))
+	exit(BOLD(RED("Error: ") + " ".join(args)))
 
-"""
-def export(location: str, df: pd.DataFrame) -> None:
-	# "Exports a dataframe to a csv file"
-		from varname import nameof
-		imported_nameof = True
-	path = "data/exports/" + location + "/"
-	try:
-		df.to_csv(path + nameof(df)+ ".csv", index=True)
-	except FileNotFoundError:
-		if not imported_os:
-			import os
-			imported_os = True
-		os.makedirs(path, exist_ok=True)
-		df.to_csv(path + nameof(df)+ ".csv", index=True)
-"""
+
+def export(location: str, *args) -> None:
+	path = f"data/testing/exports/{location}/"
+	for i, arg in enumerate(args):
+		if i % 2 == 0:
+			try:
+				if args[i+1].endswith(".csv"):
+					arg.to_csv(path + args[i+1], index=True)
+				elif args[i+1].endswith(".txt"):
+					with open(path + args[i+1], "w") as file:
+						file.write(str(arg))
+			except FileNotFoundError:
+				import os
+				os.makedirs(path, exist_ok=True)
+				export(location, arg, name)
 
 
 def fileformat(path_to_file: str) -> str:
@@ -58,7 +58,7 @@ def new_message(input_line: str) -> bool:
 def convert_line(input: str) -> list[str]:
 	"""
 	Converts a WA chat history line into a list with these entries:
-	datetime, sender, message, emojis_unique, emoji_count, url_count
+	datetime, sender, message, polarity, emojis_unique, emoji_count, url_count
 	"""
 	# match pattern and devide into groups: 1:date, 2:time, 3:sender, 4:message
 	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", input)
@@ -66,6 +66,7 @@ def convert_line(input: str) -> list[str]:
 	result.append(x.group(3).title())  # capitalize first letters of sender
 	message = re.sub("https?://\S+", "xURL", x.group(4))  # replace URLs
 	result.append(message)  # add message
+	result.append(TextBlob(message).polarity)  # add emojis
 	result.append(emojis.get(message))  # get set of unique emoji in message
 	result.append(emojis.count(message))  # count amount of emoji in message
 	result.append(len(re.findall("xURL", message)))  # count URLs
@@ -75,7 +76,7 @@ def convert_line(input: str) -> list[str]:
 def convert_to_list(path_to_file: str) -> list[list[str]]:
 	"""
 	Converts a .txt-file of messages into a list of lists: Each list element contains 
-	these elements: [datetime, sender, message, emojis, emoji_count, url_count]
+	these elements: [datetime, sender, message, polarity, emojis, emoji_count, url_count]
 	"""
 	chat_listed, last_message = list(), str()
 	try:  # try to open the file
@@ -96,20 +97,19 @@ def convert_to_list(path_to_file: str) -> list[list[str]]:
 	except FileNotFoundError:  # the file does not exist
 		off("File not found")
 	except (UnicodeDecodeError, UnicodeError):  # the file is not in UTF-8
-		off(f"File not in UTF-8 format\nTry again or upload the {GREEN('original .zip file')}")
+		off("File not in UTF-8 format\nTry again or upload the",GREEN("original .zip file"))
 	return chat_listed
 
 
 def convert_to_df(path: str) -> pd.DataFrame:
 	"""
 	Converts a list of lists into a dataframe with the following columns:
-	[datetime, sender, message, emojis, emoji_count, url_count] and returns it
+	[datetime, sender, message, polarity, emojis, emoji_count, url_count] and returns it
 	"""
 	chat_listed = convert_to_list(path)
-	columns = ["datetime","sender","message","emojis","emoji_count", "url_count"]
-	df = pd.DataFrame(chat_listed, columns=columns)
+	df = pd.DataFrame(chat_listed, columns=db.df_cols)
 	df["datetime"] = pd.to_datetime(df["datetime"])
-	# export("myfuncs/convert_to_df", df)
+	export("myfuncs/convert_to_df", df, "df_converted.csv")
 	return df
 
 
@@ -119,42 +119,37 @@ def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 	collected data into the stats dataframe
 	"""
 	count = 0  # counter for media messages cleaned
-	df_clean = dataframe.copy()
-	for key, value in db.cstats_match.items():
-		if key == "media_total":
-			# add counted media data to cstats_df
+	df = dataframe.copy()
+	for key, val in db.cstats_match.items():
+		if key != "media_count":
+			key_df = df[df == val[1]] if val[0] == "exact" else df[df.str.contains(val[1])]
+			df = df.drop(key_df.index)  # remove non-messages from clean_df
+			db.chat = db.chat.drop(key_df.index) # remove non-messages from chat_df
+			if key in db.cstats_df.columns:  # add counted data to cstats_df.if it exists
+				db.cstats_df.at[sender, key] = key_df.shape[0]
+				count += key_df.shape[0]
+		else:  # media messages are counted separately
 			db.cstats_df.at[sender, key] = count
-			continue
-		if value[0] == "=":  # non-message is exact match with value
-			key_df = df_clean[df_clean == value[2]]
-		else:  # non-message contains value
-			key_df = df_clean[df_clean.str.contains(value[2])]
-		if value[1] == "x":  # remove hole non-message entry
-			df_clean = df_clean.drop(key_df.index)  # remove non-message from clean_df
-			# remove non-message from chat_df
-			db.chat = db.chat.drop(key_df.index)
-		if key in db.cstats_df.columns:  # add counted data to cstats_df.if it exists
-			db.cstats_df.at[sender, key] = key_df.shape[0]
-			count += key_df.shape[0]
-	# export("myfuncs/cleanse_df", df_clean)
-	return df_clean.rename(sender)  # return the cleaned dataframe
+	export("myfuncs/cleanse_df", df, f"df_clean_{sender}.csv")
+	return df.rename(sender)  # return the cleaned dataframe
 
 
-def get_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
+def calc_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
 	"""
 	Calculates different statistics about the chat and enters collected data 
 	into the stats dataframe
 	"""
 	s = sender_df.name # get column name (sender)
-	db.cstats_df.at[s,"msg_total"] = sender_df.shape[0]
-	db.cstats_df.at[s,"msg_chars_avg"] = round(sender_df.str.replace(" ", "").str.len().mean(), 1)
-	db.cstats_df.at[s,"msg_words_avg"] = round(sender_df.str.split().str.len().mean(), 1)
-	db.cstats_df.at[s,"msg_chars_max"] = sender_df.str.replace(" ", "").str.len().max()
-	db.cstats_df.at[s,"msg_words_max"] = len(sender_df[sender_df.str.len().idxmax()].split())
+	db.cstats_df.at[s,"msg_count"] = sender_df.shape[0]
+	db.cstats_df.at[s,"chars_avg"] = round(sender_df.str.replace(" ", "").str.len().mean(), 1)
+	db.cstats_df.at[s,"words_avg"] = round(sender_df.str.split().str.len().mean(), 1)
+	db.cstats_df.at[s,"chars_max"] = sender_df.str.replace(" ", "").str.len().max()
+	db.cstats_df.at[s,"words_max"] = len(sender_df[sender_df.str.len().idxmax()].split())
 	db.cstats_df.at[s,"link"] = db.chat.loc[db.chat["sender"] == s, "url_count"].sum()
 	db.cstats_df.at[s,"emoji"] = db.chat.loc[db.chat["sender"] == s, "emoji_count"].sum()
 	emoji_set = set().union(*list(db.chat.loc[db.chat["sender"] == s, "emojis"]))
 	db.cstats_df.at[s,"emoji_unique"] = (len(emoji_set), emoji_set)
+	db.cstats_df.at[s,"polarity_avg"] = round(db.chat.loc[db.chat["sender"] == s, "polarity"].mean(), 1)
 	return sender_df
 
 
@@ -164,28 +159,51 @@ def get_sum_stats() -> None:
 	into the stats dataframe
 	"""
 	for stat in db.cstats_cols:
+		if type(stat) == tuple:
+			stat = stat[0]
 		if "max" in stat or "unique" in stat or "missed" in stat:
 			continue
 		elif "avg" in stat:
 			db.cstats_df.at["sum", stat] = round(db.cstats_df[stat].mean(), 1)
 		else:
 			db.cstats_df.at["sum", stat] = db.cstats_df[stat].sum()
+	export("myfuncs/get_sum_stats", db.cstats_df, "cstats_df.csv")
 	return
 
 
-def common_words(df: pd.DataFrame) -> pd.DataFrame:
+# ----------------------------------------------------------------
+#                          word statistics
+# ----------------------------------------------------------------
+
+def word_cloud(words: str, name: str) -> None:
 	"""
-	Calculates the most common words in the chat and enters collected data
-	into the stats dataframe
+	Creates a word cloud of the given words and saves it to the word_clouds
+	folder
 	"""
-	# get most common words
-	common_words = df.str.split().str.join(" ").value_counts().head(10)
-	# add to cstats_df
-	# for word in common_words.index:
-	# 	db.cstats_df.at["sum", "common_words"] += common_words[word]
-	return common_words
+	STOPWORDS.update(db.stop_words)
+	wc = WordCloud(background_color="white", width=1920, height=1080).generate(words)
+	plt.imshow(wc, interpolation="bilinear")
+	plt.title(f"{name} message word cloud:", fontsize=17)
+	plt.axis("off")
+	n = name.lower().replace(" ", "")
+	plt.savefig(f"data/output/plots/{n}", dpi=300, bbox_inches="tight", pad_inches=0)
+	plt.close()
+	return
 
 
+def calc_word_stats(df: pd.DataFrame) -> pd.DataFrame:
+	"""
+	Calculates different statistics about the chat and enters collected data
+	"""
+	# get all words in the chat
+	words_str = " ".join(df.str.replace("\W", " ").str.replace("xURL", " "))
+	word_cloud(words_str, df.name)
+	word_freq = pd.Series(words_str.lower().split()).value_counts().rename(df.name)
+	print(f"{df.name}'s most common words:")
+	print(word_freq.head(20))
+
+	export("myfuncs/calc_word_stats", word_freq, f"common_words{df.name}.csv")
+	return word_freq
 
 
 # --------------------------------------------
@@ -193,45 +211,37 @@ def common_words(df: pd.DataFrame) -> pd.DataFrame:
 # --------------------------------------------
 
 
-def pl(amount: int, indexmessage) -> str:
-	"""
-	Returns the correct plural form of a word depending on the amount
-	"""
-	if isinstance(indexmessage, int):
-		indexmessage = db.cstats_cols[indexmessage]
-	if amount > 1:
-		if indexmessage == "media":
-			return str(amount) + " " + indexmessage
-		return str(amount) + " " + indexmessage + "s"
-	elif amount == 1:
-		return "one " + indexmessage
-	else:
-		return "not a single " + indexmessage
-
-
 def say(*args) -> str:
 	"""
 	Returns a bold printed string of strings/numbers which are divided with 
 	spaces, commas and the word "and"
 	"""
-	output = str(args[0])
-	if len(args) != 1:
-		for i, arg in enumerate(args):
-			if i == 0:
-				continue
-			elif i+1 < len(args):
-				output += ", " + str(arg)
-			else:
-				return BOLD(output) + " and " + BOLD(args[i])
-	else:
-		return BOLD(output)
+	listing = str()
+	for i, arg in enumerate(args):
+		if i != 0:
+			listing += ", " if i+1 < len(args) else " and "
+	listing += BOLD(str(arg))
+	return listing
 
 
-def get_stat_value(sender_index: int, stat_index: int) -> int:
+def calc_numerus(amount: int, term: str) -> str:
 	"""
-	Returns the value of a specific statistic for a specific sender.
+	Returns the correct plural form of a word depending on the amount passed
 	"""
-	return db.cstats_df.iat[sender_index, stat_index]
+	if term == "media": # media is a special case
+		return str(amount) + " " + term
+	if amount > 1: # if more than one, add an "s"
+		return str(amount) + " " + term + "s"
+	return "one " if amount == 1 else "not a single " + term
+
+
+def get_stat_pair(stat_index: int, sender_index: int) -> str:
+	"""
+	Returns the value and term of a specific statistic.
+	"""
+	term = db.cstats_cols[stat_index]
+	term = term if type(term) != tuple else term[1]
+	return db.cstats_df.iat[sender_index, stat_index], term
 
 
 def get_reports() -> list[str]:
@@ -239,29 +249,30 @@ def get_reports() -> list[str]:
 	Creates a report about the sender at the given index which includes the 
 	statistics about their messages or a summary report and returns it.
 	"""
-	output, i = list(), len(db.senders)
-	def f1(stat_index): 
-		return pl(get_stat_value(i, stat_index), stat_index)
-	def f2(stat_index, description): 
-		return pl(get_stat_value(i, stat_index), description)
-	output.append(f"""
-	{GREEN("This WA Chat was between",say(*db.senders))}:
-	All in all {say(f2(0,"message"),f1(17),f2(5,"media"))} were sent in this chat.
-	A average message is {say(f2(1,"character"))} long and contains {say(f2(2,"word"))}.
-	The {say(f"{i} senders")} sent {say(f1(10),f1(6),f1(7),f1(9),f1(8))},
-	  they shared {say(f1(11),f1(12),f1(13),f1(16))}
-	  and deleted {say(f2(14,"message"))} in this chat.""")
-	for i in range(len(db.senders)):
-		s = db.senders[i]  # get sender
-		report = f"""
-	{GREEN("WA-Report for",say(s))}:
-	{s} sent {say(f2(0,"message"),f1(17),f2(5,"media"))} in this chat.
-	A average message is {say(f2(1,"character"))} long and contains {say(f2(2,"word"))}.
-	The {say("longest message")} they sent contained {say(f2(3,"character"),f2(4,"word"))}.
-	{s} sent {say(f1(10),f1(6),f1(7),f1(9),f1(8))}.
-	They shared {say(f1(11),f1(12),f1(13),f1(16))}.
-	{s} changed their mind {say(f2(14,"time"),STRIKE("deleted a message"))}."""
-		if get_stat_value(i, 15) > 0:
-			report += f"""\n\tYou missed {say(f2(15,"(video)call"))} by {s}."""
-		output.append(report)
-	return output
+	reports_list, i = list(), len(db.senders)
+	def y(*indices): return say(*[calc_numerus(get_stat_pair(x, i)) for x in indices])
+
+	# General report about the chat
+	sl = [GREEN(f"\tThis WA Chat was between {say(*db.senders)}:"),
+		f"Their chat contained {y(0,6,18)}.",
+		f"The average legth of a message is {y(1,2)}.",
+		f"The {say(f'{i} senders')} sent {y(11,7,8,10,9)},",
+		f"they shared {y(12,13,14,17)}",
+		f"and deleted {y(15)} in this chat."]
+	reports_list.append("\n\t".join(sl)) # add report to the list
+
+	for i in range(i): # for each sender create a sender report
+		s = db.senders[i]  # get sender name
+		sl = [GREEN(f"\t{say(s)}'s report:"),
+			f"{s} sent {y(0,6,18)} in this chat.",
+			f"The average length of a message is {y(1,2)}.",
+			f"The longest message {s} sent contained {y(3,4)}."
+			f"{s} sent {y(11,7,8,10,9)}", 
+			f"and shared {y(12,13,14,17)}",
+			f"{y(15)} were deleted by {s} in this chat."]
+		if db.cstats_df.iat[i, 16] > 0:
+			sl.append(f"You missed {y(16)} by them.")
+		reports_list.append("\n\t".join(sl)) # add report to list
+	
+	export("get_reports", "\n\n".join(reports_list), "reports")
+	return reports_list
