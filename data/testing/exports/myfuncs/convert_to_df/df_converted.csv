@@ -63,8 +63,8 @@
 61,2017-11-05 03:18:36,Meral Renz,‎Missed voice call,0.0,set(),0,0
 62,2017-11-05 03:18:43,Meral Renz,‎Missed voice call,0.0,set(),0,0
 63,2017-11-06 10:53:08,Yunus,Ich hab 11 Punkte in deutsch,0.0,set(),0,0
-64,2017-11-06 10:53:25,Yunus,😭😍😍😍😍😍😍,0.0,"{'😭', '😍'}",7,0
-65,2017-11-06 10:53:41,Yunus,🎎🎉🎉🎉🎉🎉🎉,0.0,"{'🎎', '🎉'}",7,0
+64,2017-11-06 10:53:25,Yunus,😭😍😍😍😍😍😍,0.0,"{'😍', '😭'}",7,0
+65,2017-11-06 10:53:41,Yunus,🎎🎉🎉🎉🎉🎉🎉,0.0,"{'🎉', '🎎'}",7,0
 66,2017-11-06 11:03:36,Meral Renz,Toll freuw mich,1.0,set(),0,0
 67,2017-11-06 16:18:02,Meral Renz,Hey ruf mich an,0.0,set(),0,0
 68,2017-11-10 09:27:26,Yunus,Ich hab ne 2 und,0.0,set(),0,0
@@ -164,7 +164,7 @@
 162,2018-03-06 19:08:30,Yunus,Hab den bei Peek & Kloppenburg gekauft,-0.7,set(),0,0
 163,2018-03-06 19:08:51,Meral Renz,Super 👍 Emel’e de Resmigül yolla,0.0,{'👍'},1,0
 164,2018-03-06 19:08:58,Yunus,Mach ich,0.0,set(),0,0
-165,2018-03-06 19:09:05,Meral Renz,😘💕,0.0,"{'😘', '💕'}",2,0
+165,2018-03-06 19:09:05,Meral Renz,😘💕,0.0,"{'💕', '😘'}",2,0
 166,2018-03-08 01:03:32,Yunus,Und ich bin bisschen krank 😅,-1.0,{'😅'},1,0
 167,2018-03-08 03:54:33,Meral Renz,😘canım benim çok teşekkür ederim seni öpüp kucaklıyorum 🤗,0.0,"{'🤗', '😘'}",2,0
 168,2018-03-08 06:37:13,Meral Renz,‎image omitted,0.0,set(),0,0
@@ -208,7 +208,7 @@
 206,2018-03-23 18:09:41,Yunus,"Milch, Eis, Möhren, Gurken, Tiefkühl Pizza, Fertig Reis Produkte, Haribo, Saft",-1.0,set(),0,0
 207,2018-03-23 18:09:48,Yunus,Salami,0.0,set(),0,0
 208,2018-03-26 21:26:29,Meral Renz,Yunusum nerdesin?,0.0,set(),0,0
-209,2018-03-31 21:50:20,Meral Renz,Harika 😀 iyi eğlenceli ve öğrenmeler 😘😘😘,0.0,"{'😘', '😀'}",4,0
+209,2018-03-31 21:50:20,Meral Renz,Harika 😀 iyi eğlenceli ve öğrenmeler 😘😘😘,0.0,"{'😀', '😘'}",4,0
 210,2018-04-01 01:42:04,Yunus,Danke,0.0,set(),0,0
 211,2018-04-01 18:48:55,Meral Renz,Gute Zeit 😘,1.0,{'😘'},1,0
 212,2018-04-02 14:43:42,Yunus,Anne beni ara lütfen,0.0,set(),0,0
@@ -243,7 +243,7 @@
 241,2018-04-12 12:13:47,Meral Renz,Und?,0.0,set(),0,0
 242,2018-04-12 12:13:53,Yunus,War voll gut,1.0,set(),0,0
 243,2018-04-12 12:14:06,Meral Renz,Super ich freue mich,1.0,set(),0,0
-244,2018-04-12 12:14:10,Meral Renz,😘💕,0.0,"{'😘', '💕'}",2,0
+244,2018-04-12 12:14:10,Meral Renz,😘💕,0.0,"{'💕', '😘'}",2,0
 245,2018-04-12 12:14:22,Meral Renz,Thema?,0.0,set(),0,0
 246,2018-04-12 12:14:32,Yunus,Immigration,0.0,set(),0,0
 247,2018-04-12 12:37:32,Meral Renz,Bild?,0.0,set(),0,0
@@ -473,7 +473,7 @@
 471,2018-09-05 18:25:57,Yunus,‎image omitted,0.0,set(),0,0
 472,2018-09-05 18:26:14,Yunus,4x,0.0,set(),0,0
 473,2018-09-09 13:53:24,Yunus,Kannst du einmal die Wäsche machen? Da müsste ein großer weißer Reebok Pulli von mir sein kannst du den bitte waschen? 😘,0.2833333333333333,{'😘'},1,0
-474,2018-09-09 13:53:53,Yunus,Brauche den morgen in der Schule damit ich meinen Knutschfleck verstecken kann 😂🤯,0.0,"{'🤯', '😂'}",2,0
+474,2018-09-09 13:53:53,Yunus,Brauche den morgen in der Schule damit ich meinen Knutschfleck verstecken kann 😂🤯,0.0,"{'😂', '🤯'}",2,0
 475,2018-09-09 15:12:51,Meral Renz,Tamam canım 😘,0.0,{'😘'},1,0
 476,2018-09-19 12:51:52,Meral Renz,Canım oğlum eve ne zaman geleceksin sana omlet yapıyorum 😘,0.0,{'😘'},1,0
 477,2018-09-21 15:53:07,Yunus,‎image omitted,0.0,set(),0,0
@@ -490,9 +490,9 @@
 488,2018-10-21 10:16:22,Yunus,Yeni kalktim,0.0,set(),0,0
 489,2018-10-21 10:24:18,Meral Renz,😘😘,0.0,{'😘'},2,0
 490,2018-10-21 23:33:26,Meral Renz,‎image omitted,0.0,set(),0,0
-491,2018-10-21 23:33:58,Meral Renz,İyi geceler 😘💤,0.0,"{'😘', '💤'}",2,0
+491,2018-10-21 23:33:58,Meral Renz,İyi geceler 😘💤,0.0,"{'💤', '😘'}",2,0
 492,2018-10-21 23:33:59,Yunus,Çok güsel,0.0,set(),0,0
-493,2018-10-21 23:34:42,Meral Renz,Sevindim Arya’yı benim için öp 😍😘,0.0,"{'😘', '😍'}",2,0
+493,2018-10-21 23:34:42,Meral Renz,Sevindim Arya’yı benim için öp 😍😘,0.0,"{'😍', '😘'}",2,0
 494,2018-10-24 11:10:01,Meral Renz,Günaydın toplantıdayım kahvaltı yaptırmı?,0.0,set(),0,0
 495,2018-10-24 12:05:24,Yunus,‎You deleted this message.,0.0,set(),0,0
 496,2018-10-24 12:05:59,Yunus,Günaydın daha değil,0.0,set(),0,0
@@ -567,9 +567,9 @@
 565,2018-12-17 14:15:54,Yunus,Ja war ganz ok hab alle Aufgaben gemacht,0.0,set(),0,0
 566,2018-12-20 08:13:48,Yunus,Ich hab eine 2+ in Deutsch geschrieben,0.0,set(),0,0
 567,2018-12-20 08:13:59,Yunus,83/100 Punkte,0.0,set(),0,0
-568,2018-12-20 08:56:50,Meral Renz,👏👏👏👏bin stolz auf dich 😘💕,0.7,"{'😘', '👏', '💕'}",6,0
+568,2018-12-20 08:56:50,Meral Renz,👏👏👏👏bin stolz auf dich 😘💕,0.7,"{'💕', '👏', '😘'}",6,0
 569,2018-12-20 09:28:51,Yunus,Danke,0.0,set(),0,0
-570,2018-12-30 23:16:20,Meral Renz,İyi geceler 💤😘 canım Yunusum 😘💕🙅🏻‍♀,0.0,"{'🙅', '💕', '😘', '💤'}",5,0
+570,2018-12-30 23:16:20,Meral Renz,İyi geceler 💤😘 canım Yunusum 😘💕🙅🏻‍♀,0.0,"{'😘', '💕', '🙅', '💤'}",5,0
 571,2018-12-31 14:19:35,Yunus,Ruf mich einfach an wenn du zuhause bist,0.7,set(),0,0
 572,2019-01-04 19:22:00,Meral Renz,‎Missed voice call,0.0,set(),0,0
 573,2019-01-04 19:22:48,Yunus,Ich bin unterirdisch,0.0,set(),0,0
@@ -911,7 +911,7 @@
 909,2019-07-08 14:46:31,Yunus,Martin ist besser,0.0,set(),0,0
 910,2019-07-08 14:46:52,Meral Renz,Ok soll ich Edis anrufen?,0.0,set(),0,0
 911,2019-07-08 15:00:41,Meral Renz,Edis kommt auch zur martinstr,0.0,set(),0,0
-912,2019-07-08 23:09:51,Meral Renz,Yunusum ich gehe heute ns bett 🛌 kannst du dich um die wāsche kümmern😘,0.0,"{'😘', '🛌'}",2,0
+912,2019-07-08 23:09:51,Meral Renz,Yunusum ich gehe heute ns bett 🛌 kannst du dich um die wāsche kümmern😘,0.0,"{'🛌', '😘'}",2,0
 913,2019-07-08 23:54:48,Yunus,Ok danke iye geciler,0.0,set(),0,0
 914,2019-07-10 22:38:46,Meral Renz,‎Missed voice call,0.0,set(),0,0
 915,2019-07-10 22:39:03,Meral Renz,Yunus eve gel,0.0,set(),0,0
@@ -2132,12 +2132,12 @@
 2130,2021-02-26 14:27:17,Meral Renz,‎image omitted,0.0,set(),0,0
 2131,2021-02-26 14:27:46,Meral Renz,‎image omitted,0.0,set(),0,0
 2132,2021-03-01 10:35:44,Meral Renz,‎image omitted,0.0,set(),0,0
-2133,2021-03-01 11:04:59,Meral Renz,"Sağlıklı  ,huzurlu , başarılı  nice  seneler  diliyorum  doğum  gününü kutluyoruz Lara çok öpüyor abisini🥰🎂🙋🏻‍♀️",0.0,"{'♀️', '🎂', '🥰', '🙋'}",4,0
-2134,2021-03-01 11:06:44,Meral Renz,Herzlichen Glückwunsch zum Geburtstag 🎁🎂 wünsche ich Yunus 🙏,1.0,"{'🙏', '🎁', '🎂'}",3,0
+2133,2021-03-01 11:04:59,Meral Renz,"Sağlıklı  ,huzurlu , başarılı  nice  seneler  diliyorum  doğum  gününü kutluyoruz Lara çok öpüyor abisini🥰🎂🙋🏻‍♀️",0.0,"{'🎂', '♀️', '🥰', '🙋'}",4,0
+2134,2021-03-01 11:06:44,Meral Renz,Herzlichen Glückwunsch zum Geburtstag 🎁🎂 wünsche ich Yunus 🙏,1.0,"{'🎂', '🙏', '🎁'}",3,0
 2135,2021-03-01 11:07:08,Meral Renz,Alles bestens wünsche ich Yunus zum einundzwanzigsten Geburtstag 🎂,0.0,{'🎂'},1,0
 2136,2021-03-01 11:07:42,Yunus,Danke danke,0.0,set(),0,0
 2137,2021-03-01 11:09:39,Yunus,🥰🥰,0.0,{'🥰'},2,0
-2138,2021-03-01 12:26:29,Meral Renz,"Tebrikler 🎈🍾 Yunus’un doğum günü kutlu olsun. Hasan’a ve Yunus’a çok selamlar. En yakın zamanda görüşmek ümidiyle, sevgiler Hanife 😘",0.0,"{'🍾', '🎈', '😘'}",3,0
+2138,2021-03-01 12:26:29,Meral Renz,"Tebrikler 🎈🍾 Yunus’un doğum günü kutlu olsun. Hasan’a ve Yunus’a çok selamlar. En yakın zamanda görüşmek ümidiyle, sevgiler Hanife 😘",0.0,"{'🎈', '🍾', '😘'}",3,0
 2139,2021-03-02 08:19:34,Meral Renz,xURL,0.0,set(),0,1
 2140,2021-03-12 22:13:56,Yunus,‎image omitted,0.0,set(),0,0
 2141,2021-03-12 22:14:10,Yunus,Gerade Kartoffel gratin gemacht,0.0,set(),0,0
