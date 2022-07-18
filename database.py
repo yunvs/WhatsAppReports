@@ -7,7 +7,19 @@ test_data = ["data/input/chat_small.txt", "data/input/chat_mum.txt", "data/input
 
 df_cols = ["datetime", "sender", "message", "polarity", "emojis",  "emoji_count", "url_count"]
 
-cstats_cols = [("msg_count", "message"), ("chars_avg", "character"), ("words_avg", "word"),  ("chars_max", "character"), ("words_max", "word"), ("polarity_avg", "polarity"),  ("media_count", "media"), "image", "video", "GIF", "sticker", "audio", "contact", "location", "file", ("deleted", "message"), ("missed", "(video)call"), "link", "emoji", "emoji_unique"]
+stats_dict = {
+	"msg_count": "message", 	"chars_avg": "character", 
+	"words_avg": "word", 		"chars_max": "character", 
+	"words_max": "word", 		"polarity_avg": "polarity", 
+	"media_count": "media", 	"image": "image", 
+	"video": "video", 			"GIF": "GIF", 
+	"sticker": "sticker", 		"audio": "audio", 
+	"contact": "contact", 		"location": "location", 
+	"file": "file", 			"deleted": "message", 
+	"missed": "(video)call", 	"link": "link", 
+	"emoji": "emoji", 			"emoji_unique": "emoji"}
+""" .keys() = [msg_count, chars_avg, words_avg, chars_max, words_max, polarity_avg, media_count, image, video, GIF, sticker, audio, contact, location, file, deleted, missed, link, emoji, emoji_unique]"""
+
 
 cstats_match = {
 	"audio": ("exact", "‎audio omitted"),
@@ -18,7 +30,7 @@ cstats_match = {
 	"location": ("", "‎Location: xURL"),
 	"file": ("", "‎document omitted"),
 	"contact": ("exact", "‎Contact card omitted"),
-	"media_count": "",
+	"media_count": (),
 	"missed": ("", "‎Missed "),
 	"deleted": ("", "‎You deleted |‎This message was deleted."),
 	"rest": ("", "‎")}
@@ -28,19 +40,10 @@ stop_words = ["ich", "du", "und", "der", "die", "das", "ist", "nicht", "sich", "
 
 # the actual data will be stored in the following variables
 
-senders = list()
+senders = list[str]
 cwords_df = list()
-
 cstats_df = list()
 """ 0: msg_count, 1: chars_avg, 2: words_avg, 3: chars_max, 4: words_max, 5: polarity_avg, 6: media_count, 7: image, 8: video, 9: GIF, 10: sticker, 11: audio, 12: contact, 13: location, 14: file, 15: deleted, 16: missed, 17: link, 18: emoji, 19: emoji_unique"""
 
 chat = list()
-"""[datetime, sender, message, polarity, emojis, emoji_count, url_count]"""
-
-def export() -> None:
-	"""
-	Export the main database dataframes to csv files
-	"""
-	chat.to_csv("data/testing/exports/database/chat_df.csv", index=True)
-	cstats_df.to_csv("data/testing/exports/database/cstats_df.csv", index=True)
-	# cwords_df.to_csv("data/testing/exports/database/cwords_df.csv", index=True)
+""" [datetime, sender, message, polarity, emojis, emoji_count, url_count] """
