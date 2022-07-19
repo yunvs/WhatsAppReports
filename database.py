@@ -1,3 +1,7 @@
+from nltk.corpus import stopwords
+stopset = stopwords.words("german")
+
+
 # ----------------------------------------------------------------
 # This file contains dictionaries, list and placeholders for the statistics
 # which will be derived from the chat
@@ -16,9 +20,9 @@ stats_dict = {
 	"sticker": "sticker", 		"audio": "audio", 
 	"contact": "contact", 		"location": "location", 
 	"file": "file", 			"deleted": "message", 
-	"missed": "(video)call", 	"link": "link", 
+	"miss": "video/audio call", "link": "link", 
 	"emoji": "emoji", 			"emoji_unique": "emoji"}
-""" .keys() = [msg_count, chars_avg, words_avg, chars_max, words_max, polarity_avg, media_count, image, video, GIF, sticker, audio, contact, location, file, deleted, missed, link, emoji, emoji_unique]"""
+""" .keys() = [msg_count, chars_avg, words_avg, chars_max, words_max, polarity_avg, media_count, image, video, GIF, sticker, audio, contact, location, file, deleted, miss, link, emoji, emoji_unique]"""
 
 
 cstats_match = {
@@ -31,7 +35,7 @@ cstats_match = {
 	"file": ("", "‎document omitted"),
 	"contact": ("exact", "‎Contact card omitted"),
 	"media_count": (),
-	"missed": ("", "‎Missed "),
+	"miss": ("", "‎Missed "),
 	"deleted": ("", "‎You deleted |‎This message was deleted."),
 	"rest": ("", "‎")}
 
@@ -43,7 +47,7 @@ stop_words = ["ich", "du", "und", "der", "die", "das", "ist", "nicht", "sich", "
 senders = list[str]
 cwords_df = list()
 cstats_df = list()
-""" 0: msg_count, 1: chars_avg, 2: words_avg, 3: chars_max, 4: words_max, 5: polarity_avg, 6: media_count, 7: image, 8: video, 9: GIF, 10: sticker, 11: audio, 12: contact, 13: location, 14: file, 15: deleted, 16: missed, 17: link, 18: emoji, 19: emoji_unique"""
+""" 0: msg_count, 1: chars_avg, 2: words_avg, 3: chars_max, 4: words_max, 5: polarity_avg, 6: media_count, 7: image, 8: video, 9: GIF, 10: sticker, 11: audio, 12: contact, 13: location, 14: file, 15: deleted, 16: miss, 17: link, 18: emoji, 19: emoji_unique"""
 
 chat = list()
 """ [datetime, sender, message, polarity, emojis, emoji_count, url_count] """
