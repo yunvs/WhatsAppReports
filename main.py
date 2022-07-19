@@ -1,6 +1,6 @@
 from timeit import default_timer as timer
 from myfuncs import *
-start = timer()
+t = [timer()]
 
 # Only Testing # Initializing Variables for autocomplete ###
 s0, s1 = str(), str()
@@ -18,9 +18,10 @@ db.chat = convert_to_df(good_path)  # convert the chat to a pandas dataframe
 db.senders = list(db.chat["sender"].unique())  # get the list of senders
 db.cstats_df = pd.DataFrame(index=db.senders, columns=db.stats_dict.keys())
 
-# cleaned_df = cleanse_df(db.chat) # cleanse the dataframe
+t.append(timer())
+print(GREEN(f"\n extraction and preprocessing took {t[-1] - t[-2]} seconds"))
 
-# data seperation and data analysis per sender
+# data seperation, cleansing and data analysis per sender
 for i, s in enumerate(db.senders):
     # globals()[f"s{i}"] = s  # sets a global variable for each sender
     df = db.chat.loc[db.chat["sender"] == s, "message", ]  # dataframe with messages from sender
@@ -31,13 +32,20 @@ for i, s in enumerate(db.senders):
     word_freq = calc_word_stats(clean_df)
     # globals()[f"s{i}_word_freq"] = word_freq
 
-
 get_sum_stats()  # get the summary statistics for all senders
+
+t.append(timer())
+print(GREEN(f"\n data seperation, cleansing and data analysis took {t[-1] - t[-2]} seconds"))
 
 
 create_pdf_report()  # create the pdf report
+t.append(timer())
+print(GREEN(f"\n PDF creation took {t[-1] - t[-2]} seconds"))
+
 
 db_export()
+t.append(timer())
+print(GREEN(f"\n final exporting took {t[-1] - t[-2]} seconds"))
 
 
-print(f"\n\nAll Code took {timer() - start} seconds to run.")
+print(f"\n\nAll Code took {timer() - t[0]} seconds to run.")
