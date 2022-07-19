@@ -1,23 +1,21 @@
-[32m	[1mMeral Renz[22m report:[39m
-	Meral Renz sent ,  and [1m261 emojis[22m in this chat.
-	The average length of a message is  and [1m6.4 words_avgs[22m.
-	The longest message Meral Renz sent contained  and [1m329 words_maxs[22m.
-	Meral Renz sent , , ,  and [1m3 GIFs[22m
-	and shared , ,  and [1m121 links[22m
-	[1mone [22m were deleted by Meral Renz in this chat.
-	You missed [1m125 misseds[22m by Meral Renz.
+Meral Renz...
+- sent 829 messages, 357 media and 261 emojis in this chat.
+- average length of a message: 33.4 characters and 6.4 words.
+- longest message: 2154 characters and 329 words.
+- sent 2 audios, 273 images, 35 videos, 10 stickers and 3 GIFs- shared 21 contacts, 7 locations, 6 files and 121 links
+- deleted one message in this chat
 
-[32m	[1mYunus[22m report:[39m
-	Yunus sent ,  and [1m261 emojis[22m in this chat.
-	The average length of a message is  and [1m6.4 words_avgs[22m.
-	The longest message Yunus sent contained  and [1m329 words_maxs[22m.
-	Yunus sent , , ,  and [1m3 GIFs[22m
-	and shared , ,  and [1m121 links[22m
-	[1mone [22m were deleted by Yunus in this chat.
+You missed 125 video or audio calls by Meral Renz.
 
-[32m	This WA Chat was between  and [1mYunus[22m:[39m
-	Their chat contained ,  and [1m346 emojis[22m.
-	The average legth of a message is  and [1m5.8 words_avgs[22m.
-	The [1m2 senders[22m sent , , ,  and [1m3 GIFs[22m,
-	they shared , ,  and [1m147 links[22m
-	and deleted [1m7 deleteds[22m in this chat.
+Yunus...
+- sent 731 messages, 272 media and 85 emojis in this chat.
+- average length of a message: 24.5 characters and 5.2 words.
+- longest message: 975 characters and 191 words.
+- sent 19 audios, 198 images, 30 videos, 12 stickers and no GIFs- shared 2 contacts, 7 locations, 4 files and 26 links
+- deleted 6 messages in this chat
+
+
+This Chat was between Meral Renz and Yunus.
+The chat contained 1560 messages, 629 media and 346 emojis.
+The average legth of a message is 29.0 characters and 5.8 words.
+The 2 senders sent 21 audios, 471 images, 65 videos, 22 stickers and 3 GIFs they shared 23 contacts, 14 locations, 10 files and 147 links and deleted 7 messages in this chat.
