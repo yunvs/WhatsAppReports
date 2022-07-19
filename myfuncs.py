@@ -3,25 +3,24 @@ import database as db  # used to access local database
 import re
 import emojis
 import pandas as pd  # used for dataframe
-from PIL import Image
-import numpy as np
 from textblob_de import TextBlobDE
-from wordcloud import WordCloud
-from nltk.corpus import stopwords
-stopset = stopwords.words("german")
-from fpdf import FPDF
-import matplotlib.pyplot as plt
 
+# from PIL import Image
+# import numpy as np
+# import matplotlib.pyplot as plt
 
 
 def off(*args) -> None:
 	"""
-	Prints error message and safely exits the program
+	Prints error message and safely exits the program.
 	"""
 	exit(BOLD(RED("Error: ")) + " ".join(args))
 
 
 def export(location: str, data, name:str) -> None:
+	"""
+	Exports dataframes and text to the data/testing/exports folder.
+	"""
 	path = f"data/testing/exports/{location}/"
 	try:
 		if name.endswith(".csv"):
@@ -34,18 +33,20 @@ def export(location: str, data, name:str) -> None:
 		os.makedirs(path, exist_ok=True)
 		export(location, data, name)
 
+
 def db_export() -> None:
 	"""
-	Exports the database to a .csv file
+	Exports the dataframes saved in the database to .csv files.
 	"""
 	export("database", db.chat, "chat_df.csv")
 	export("database", db.cstats_df, "cstats_df.csv")
 	export("database", pd.DataFrame(db.senders), "senders_df.csv")
 	# cwords_df.to_csv("data/testing/exports/database/cwords_df.csv", index=True)
 
+
 def fileformat(path_to_file: str) -> str:
 	"""
-	Checks if the fileformat is correct and returns correct path
+	Checks if the fileformat is correct and returns correct path.
 	"""
 	if path_to_file.endswith(".txt"):
 		return path_to_file
@@ -60,7 +61,7 @@ def fileformat(path_to_file: str) -> str:
 
 def new_message(input_line: str) -> bool:
 	"""
-	Checks if the input is the beginning of a new message (date in front) or not
+	Checks if the input is the beginning of a new message (date in front) or not.
 	"""
 	if re.match("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*)", input_line):
 		return True  # the beginning of a new message
@@ -70,7 +71,7 @@ def new_message(input_line: str) -> bool:
 def convert_line(input: str) -> list[str]:
 	"""
 	Converts a WA chat history line into a list with these entries:
-	datetime, sender, message, polarity, emojis_unique, emoji_count, url_count
+	datetime, sender, message, polarity, emojis_unique, emoji_count, url_count.
 	"""
 	# match pattern and devide into groups: 1:date, 2:time, 3:sender, 4:message
 	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", input)
@@ -88,7 +89,7 @@ def convert_line(input: str) -> list[str]:
 def convert_to_list(path_to_file: str) -> list[list[str]]:
 	"""
 	Converts a .txt-file of messages into a list of lists: Each list element contains 
-	these elements: [datetime, sender, message, polarity, emojis, emoji_count, url_count]
+	these elements: [datetime, sender, message, polarity, emojis, emoji_count, url_count].
 	"""
 	chat_listed, last_message = list(), str()
 	try:  # try to open the file
@@ -116,7 +117,7 @@ def convert_to_list(path_to_file: str) -> list[list[str]]:
 def convert_to_df(path: str) -> pd.DataFrame:
 	"""
 	Converts a list of lists into a dataframe with the following columns:
-	[datetime, sender, message, polarity, emojis, emoji_count, url_count] and returns it
+	[datetime, sender, message, polarity, emojis, emoji_count, url_count] and returns it.
 	"""
 	chat_listed = convert_to_list(path)
 	df = pd.DataFrame(chat_listed, columns=db.df_cols)
@@ -129,7 +130,7 @@ def convert_to_df(path: str) -> pd.DataFrame:
 def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 	"""
 	Cleans the dataframe of non-message enties and replaces URLs and enters 
-	collected data into the stats dataframe
+	collected data into the stats dataframe.
 	"""
 	count = 0  # counter for media messages cleaned
 	df = dataframe.copy()
@@ -151,7 +152,7 @@ def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 def calc_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
 	"""
 	Calculates different statistics about the chat and enters collected data 
-	into the stats dataframe
+	into the stats dataframe.
 	"""
 	s = sender_df.name # get column name (sender)
 	db.cstats_df.at[s,"msg_count"] = sender_df.shape[0]
@@ -172,10 +173,10 @@ def calc_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
 def get_sum_stats() -> None:
 	"""
 	Calculates summary statistics about the chat and enters collected data
-	into the stats dataframe
+	into the stats dataframe.
 	"""
 	for stat in db.stats_dict.keys():
-		if "max" in stat or "unique" in stat or "missed" in stat:
+		if "max" in stat or "unique" in stat or "calls" in stat:
 			continue
 		elif "avg" in stat:
 			db.cstats_df.at["sum", stat] = round(db.cstats_df[stat].mean(), 1)
@@ -190,23 +191,24 @@ def get_sum_stats() -> None:
 #                          word statistics
 # ----------------------------------------------------------------
 
+from wordcloud import WordCloud
+
+
 def word_cloud(words: str, name: str) -> None:
 	"""
-	Creates a word cloud of the given words and saves it to the plots folder
+	Creates a word cloud of the given words and saves it to the plots folder.
 	"""
-	wc = WordCloud(background_color="white", colormap="summer",  scale=2, stopwords=stopset)
-	plt.imshow(wc.generate(words), interpolation="bilinear")
-	plt.title(f"{name} message word cloud:", fontsize=17)
-	plt.axis("off")
+	wc = WordCloud(width=500, height=250, background_color="white", colormap="winter", stopwords=db.stopset)
+	wc.generate(words.upper())
 	n = name.lower().replace(" ", "")
-	plt.savefig(f"data/output/plots/{n}", dpi=300, bbox_inches="tight", pad_inches=0)
-	plt.close()
+
+	wc.to_file(f"data/output/images/{n}_wc.png")
 	return
 
 
 def calc_word_stats(df: pd.DataFrame) -> pd.DataFrame:
 	"""
-	Calculates different statistics about the chat and enters collected data
+	Calculates different statistics about the chat and enters collected data.
 	"""
 	# get all words in the chat
 	words_str = " ".join(df.str.replace("\W", " ", regex=True).str.replace("xURL", " "))
@@ -222,10 +224,10 @@ def calc_word_stats(df: pd.DataFrame) -> pd.DataFrame:
 # --------------------------------------------
 
 
-def say(*args) -> str:
+def say_old(*args) -> str:
 	"""
 	Returns a bold printed string of strings/numbers which are divided with 
-	spaces, commas and the word "and"
+	spaces, commas and the word "and".
 	"""
 	listing = str()
 	for i, arg in enumerate(args):
@@ -235,22 +237,32 @@ def say(*args) -> str:
 	return listing
 
 
+def say(*args) -> str:
+	"""
+	Returns a string of strings/numbers which are divided with spaces, commas 
+	and the word "and".
+	"""
+	listing = str()
+	for i, arg in enumerate(args):
+		if i != 0:
+			listing += ", " if i+1 < len(args) else " and "
+		listing += str(arg)
+	return listing
+
+
 def calc_numerus(amount: int, term: str) -> str:
 	"""
-	Returns the correct plural form of a word depending on the amount passed
+	Returns the correct plural form of a word depending on the amount passed.
 	"""
-	if term not in ("media", "polarity"): # special cases
-		if amount > 1: # if more than one, add an "s"
-			return str(amount) + " " + term + "s"
-		return "one " if amount == 1 else "not a single " + term
-	return str(amount) + " " + term
+	s = (str(amount) if amount > 1 else ("one" if amount == 1 else "no")) + " " + term
+	return s + ("s" if amount != 1 and term not in ("media", "polarity") else "")
 
 
 def get_stat_pair(stat_idx: int, sender_idx: int) -> tuple[int, str]:
 	"""
 	Returns the value and term of a specific statistic.
 	"""
-	return db.cstats_df.iat[sender_idx, stat_idx], list(db.stats_dict.keys())[stat_idx]
+	return db.cstats_df.iat[sender_idx, stat_idx], list(db.stats_dict.values())[stat_idx]
 
 
 def get_reports() -> list[str]:
@@ -259,39 +271,42 @@ def get_reports() -> list[str]:
 	statistics about their messages or a summary report and returns it.
 	"""
 	reports_list, i = list(), int()
+
 	def y(*indices): return say(*[calc_numerus(*get_stat_pair(x, i)) for x in indices])
 
 	for s in db.senders: # for each sender create a sender report
-		sl = [GREEN(f"\t{say(s)} report:"),
-			f"{s} sent {y(0,6,18)} in this chat.",
-			f"The average length of a message is {y(1,2)}.",
-			f"The longest message {s} sent contained {y(3,4)}.",
-			f"{s} sent {y(11,7,8,10,9)}",
-			f"and shared {y(12,13,14,17)}",
-			f"{y(15)} were deleted by {s} in this chat."]
+		sl = [f"{say(s)}...",
+			f"- sent {y(0,6,18)} in this chat.",
+			f"- average length of a message: {y(1,2)}.",
+			f"- longest message: {y(3,4)}.",
+			f"- sent {y(11,7,8,10,9)}"
+			F"- shared {y(12,13,14,17)}",
+			f"- deleted {y(15)} in this chat",""]
 		if db.cstats_df.at[s, list(db.stats_dict.keys())[16]] > 0:
 			sl.append(f"You missed {y(16)} by {s}.")
-		reports_list.append("\n\t".join(sl)) # add report to list
+		reports_list.append("\n".join(sl)) # add report to list
+		i += 1
 	
 	# General report about the chat
 	i = len(db.senders)
-	sl = [GREEN(f"\tThis WA Chat was between {say(*db.senders)}:"),
-		f"Their chat contained {y(0,6,18)}.",
-		f"The average legth of a message is {y(1,2)}.",
-		f"The {say(f'{i} senders')} sent {y(11,7,8,10,9)},",
-		f"they shared {y(12,13,14,17)}",
-		f"and deleted {y(15)} in this chat."]
-	reports_list.append("\n\t".join(sl)) # add report to the list
+	sl = [f"This Chat was between {say(*db.senders)}.",
+		f"The chat contained {y(0,6,18)}",
+		f"- average legth of a message: {y(1,2)}",
+		f"{say(*db.senders)}:",
+		f"- sent {y(11,7,8,10,9)}",
+		f"- shared {y(12,13,14,17)}",
+		f"- deleted {y(15)} in this chat"]
+	reports_list.append("\n".join(sl)) # add report to the list
 	
 	export("myfuncs/get_reports", "\n\n".join(reports_list), "reports.txt")
 	return reports_list
 
 
-
-
 # --------------------------------------------
 #		Functions used to create pdf ouptut
 # --------------------------------------------
+
+from fpdf import FPDF
 
 
 def print_df_to_pdf(pdf: FPDF, df: pd.DataFrame, cell_width: int = 25, cell_height: int = 6) -> None:
@@ -311,38 +326,62 @@ def print_df_to_pdf(pdf: FPDF, df: pd.DataFrame, cell_width: int = 25, cell_heig
 		pdf.ln(cell_height) # next row of table
 
 
-def new_page(pdf: FPDF) -> None:
+def new_page(pdf: FPDF, new_page: bool=True) -> None:
 	"""
 	Adds a new page to the pdf file
 	"""
-	pdf.set_y(-15)
+	pdf.set_y(-20)
 	pdf.set_font("Arial", "I", 8)
-	pdf.cell(0, 10, f"Page {pdf.page_no()}", 0, 0, "R")
-	pdf.add_page()
+	pdf.cell(0, 10, f"Page {pdf.page_no()}", align="C")
+	if new_page:
+		pdf.add_page()
+
+
+def get_coord(pdf: FPDF, x_offset: int=0, y_offset: int=0) -> tuple[int, int]:
+	"""
+	Returns the cordinates on the current page
+	"""
+	return ((pdf.get_x()) + x_offset), ((pdf.get_y()) + y_offset)
+
+
+def save_pdf(pdf: FPDF, filename: str) -> None:
+	"""
+	Saves the pdf file
+	"""
+	new_page(pdf, new_page=False)
+	pdf.output(f"data/output/pdfs/{filename}.pdf", "F") # create pdf file
 
 
 def create_pdf_report() -> None:
 	"""
 	Creates a pdf file with a summary of the chat and the statistics of each sender
 	"""
-	pdf = FPDF()
-	title, subtitle, text = pdf.set_font("Arial", "B", 16), pdf.set_font("Arial", "B", 12), pdf.set_font("Arial", "", 8)
-
 	reports = get_reports()  # get general sender stats for the chat
-	pdf.set_auto_page_break(auto=True, margin = 4)
+
+	two_col = lambda x: 20 + (x * 90)
+
+	pdf = FPDF()
+	pdf.set_margins(15, 20, 15)
 	pdf.add_page()
-	title; pdf.cell(40, 10, "WhatsApp Chat Statistics", align="C")
-	pdf.ln(10)
-	text; pdf.multi_cell(0, 0, reports[len(db.senders)], align="L")
+	pdf.set_font("Arial", "B", 16)
+	pdf.cell(0, 10, "WhatsApp Chat Statistics", align="C")
+	pdf.ln(20)
+	pdf.set_font("Arial", "", 10)
+	pdf.multi_cell(90, 4, reports[len(db.senders)], align="L")
 
 	for i, s in enumerate(db.senders):
 		new_page(pdf)
-		title; pdf.cell(40, 10, f"{s} WhatsApp Chat Statistics", align="C")
-		pdf.ln(10)
+		pdf.set_font("Arial", "B", 16)
+		ys = [pdf.get_y()]
+		pdf.cell(0, 10, f"{s} WhatsApp Chat Statistics", align="C")
+		pdf.ln(20)
+		pdf.set_font("Arial", "", 8)
+		ys.append(pdf.get_y())
+		pdf.multi_cell(90, 4, reports[i], align="L")
 		n = s.lower().replace(" ", "")
-		pdf.image(f"data/output/plots/{n}.png")
-		pdf.ln(10)
-		text, pdf.multi_cell(0, 0, reports[i], align="L")
+		pdf.set_font("Arial", "B", 10)
+		pdf.set_xy(105, ys[1]-5)
+		pdf.cell(90, 4, f"{s} WordCloud", align="C")
+		pdf.image(f"data/output/images/{n}_wc.png", x=105, y=ys[1], w=90)
 
-
-	pdf.output("data/output/pdfs/pdf_report.pdf", "F") # create pdf file
+	save_pdf(pdf, "WA-Report")
