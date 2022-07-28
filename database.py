@@ -9,7 +9,7 @@ stopset = stopwords.words("german")
 
 test_data = ["data/input/chat_small.txt", "data/input/chat_mum.txt", "data/input/chat_mum.zip", "data/input/tash.trash", "data/input/chat_AB.txt", "data/input/_chat.txt"]
 
-df_cols = ["datetime", "sender", "message", "polarity", "emojis",  "emoji_count", "url_count"]
+df_cols = ["date", "time", "sender", "message", "polarity", "emojis",  "emoji_count", "url_count"]
 
 stats_dict = {
 	"msg_count": "message", 		"chars_avg": "character", 
@@ -25,7 +25,7 @@ stats_dict = {
 """ .keys() = [msg_count, chars_avg, words_avg, chars_max, words_max, polarity_avg, media_count, image, video, GIF, sticker, audio, contact, location, file, deleted, calls, link, emoji, emoji_unique]"""
 
 
-cstats_match = {
+cstats_match: dict[str, tuple[str, str]] = {
 	"audio": ("exact", "‎audio omitted"),
 	"image": ("exact", "‎image omitted"),
 	"video": ("exact", "‎video omitted"),
@@ -34,7 +34,7 @@ cstats_match = {
 	"location": ("", "‎Location: xURL"),
 	"file": ("", "‎document omitted"),
 	"contact": ("exact", "‎Contact card omitted"),
-	"media_count": (),
+	"media_count": ("", ""),
 	"calls": ("", "‎Missed "),
 	"deleted": ("", "‎You deleted |‎This message was deleted."),
 	"rest": ("", "‎")}
@@ -44,10 +44,24 @@ stop_words = ["ich", "du", "und", "der", "die", "das", "ist", "nicht", "sich", "
 
 # the actual data will be stored in the following variables
 
-senders = list[str]
-cwords_df = list()
-cstats_df = list()
-""" 0: msg_count, 1: chars_avg, 2: words_avg, 3: chars_max, 4: words_max, 5: polarity_avg, 6: media_count, 7: image, 8: video, 9: GIF, 10: sticker, 11: audio, 12: contact, 13: location, 14: file, 15: deleted, 16: calls, 17: link, 18: emoji, 19: emoji_unique"""
+chat_og = list()
+""" tobefilled: [date, time, sender, message, polarity, emojis, emoji_count, url_count] """
 
 chat = list()
-""" [datetime, sender, message, polarity, emojis, emoji_count, url_count] """
+""" tobefilled: [date, time, sender, message, polarity, emojis, emoji_count, url_count] """
+
+senders: list[str] = list()
+""" tobefilled: list of all senders """
+
+stats_df = list()
+""" tobefilled: 0: msg_count, 1: chars_avg, 2: words_avg, 3: chars_max, 4: words_max, 5: polarity_avg, 6: media_count, 7: image, 8: video, 9: GIF, 10: sticker, 11: audio, 12: contact, 13: location, 14: file, 15: deleted, 16: calls, 17: link, 18: emoji, 19: emoji_unique """
+
+reports: list[str] = list()
+""" tobefilled: list contains text reports (general and per sender) """
+
+cwords_df = list()
+
+
+
+tt = list()
+""" tobefilled: [task, time] """
