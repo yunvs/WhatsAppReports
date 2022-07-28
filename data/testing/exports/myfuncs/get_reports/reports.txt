@@ -1,4 +1,4 @@
-Meral Renz...
+Meral Renz:
 - sent 829 messages, 357 media and 261 emojis in this chat.
 - average length of a message: 33.4 characters and 6.4 words.
 - longest message: 2154 characters and 329 words.
@@ -7,7 +7,7 @@ Meral Renz...
 
 You missed 125 video or audio calls by Meral Renz.
 
-Yunus...
+Yunus:
 - sent 731 messages, 272 media and 85 emojis in this chat.
 - average length of a message: 24.5 characters and 5.2 words.
 - longest message: 975 characters and 191 words.
@@ -15,7 +15,9 @@ Yunus...
 - deleted 6 messages in this chat
 
 
-This Chat was between Meral Renz and Yunus.
-The chat contained 1560 messages, 629 media and 346 emojis.
-The average legth of a message is 29.0 characters and 5.8 words.
-The 2 senders sent 21 audios, 471 images, 65 videos, 22 stickers and 3 GIFs they shared 23 contacts, 14 locations, 10 files and 147 links and deleted 7 messages in this chat.
+This Chat was between Meral Renz and Yunus and contained 1560 messages, 629 media and 346 emojis
+- average legth of a message: 29.0 characters and 5.8 words
+Meral Renz and Yunus:
+- sent 21 audios, 471 images, 65 videos, 22 stickers and 3 GIFs
+- shared 23 contacts, 14 locations, 10 files and 147 links
+- deleted 7 messages in this chat
