@@ -1,8 +1,8 @@
 from timeit import default_timer as timer
 ts = [timer()]
 
-import database as db  # used to access local database
 from outputstyle import *
+import database as db  # used to access local database
 import numpy as np, pandas as pd
 import re
 import emojis
@@ -11,8 +11,8 @@ from matplotlib import pyplot as plt, cm
 from plotly import express as px
 from fpdf import FPDF
 
-from germansentiment import SentimentModel
-model = SentimentModel()
+# from germansentiment import SentimentModel
+# model = SentimentModel()
 
 def time(task: str="untitled") -> None:
 	"""
@@ -20,18 +20,21 @@ def time(task: str="untitled") -> None:
 	"""
 	ts.append(timer())
 	if task == "end":
-		return print(BLUE(pd.concat([db.tt, pd.DataFrame([["- -", "- -"], ["## main.py ##", ts[-1] - ts[0]], ["- imports", ts[-1] - ts[1]]])])))
+		print(BOLD(BLUE("main.py"), "took", ts[-1] - ts[0], f"seconds to complete (minus imports {ts[-1] - ts[1]} seconds)"))
+		print(BLUE(pd.concat([db.tt, pd.DataFrame([["- -", "- -"], ["## main.py ##", ts[-1] - ts[0]], ["- imports", ts[-1] - ts[1]]])])))
+		return
 	db.tt.loc[len(db.tt)] = [task, ts[-1] - ts[-2]]
+	print(BLUE(task) + " compleded in " + BOLD(ts[-1] - ts[-2], "sec."))
+
 
 db.tt = pd.DataFrame(columns=[0, 1])
 time("imports")
-print(BLUE("imports complete"))
 
-def off(*args) -> None:
+def off(*args, file_end: bool=False) -> None:
 	"""
 	Prints error message and safely exits the program.
 	"""
-	return exit(BOLD(RED("⛔️ Error: ")) + " ".join(args) + " ⛔️")
+	return exit(BOLD(RED("⛔️ Error: ")) + " ".join(args) + " ⛔️" if len(args) > 0 else "") if not file_end else time("end")
 
 
 def export(location: str=None, data=None, name: str=None, database: bool=False) -> None:
@@ -87,7 +90,7 @@ def convert_ln(input: str) -> list[str]:
 	"""
 	# match pattern and devide into groups: 1:date, 2:time, 3:sender, 4:message
 	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", input)
-	result = [x.group(1), x.group(2)]  # add date and time
+	result = [x.group(1), " ".join([x.group(1), x.group(2)])]  # add date and time
 	result.append(x.group(3).title())  # capitalize first letters of sender
 	message = re.sub("https?://\S+", "xURL", x.group(4))  # replace URLs
 	result.append(message)  # add message
@@ -120,8 +123,24 @@ def convert_to_list(path_to_file: str) -> list[list[str]]:
 	except (UnicodeDecodeError, UnicodeError):  # the file is not in UTF-8
 		return off("File not in UTF-8 format\nTry again or upload the",GREEN("original .zip file"))
 	
-	time("converting .txt file to list")
+	time(".txt file -> list")
 	return chat_ls
+
+
+# def calc_polarity(df: pd.DataFrame, s: int) -> float:
+# 	pol = 0
+
+# 	for i in range(len(df)):
+# 		sentence_sentiment = model.model.predict_sentiment(df.iloc[i, 4])
+# 		if sentence_sentiment == "positive":
+# 			pol += 1
+# 		elif sentence_sentiment == "negative":
+# 			pol -= 1
+# 		else:
+# 			pol = pol
+		
+# 	time(f"calc polarity for sender {s}")
+# 	return pol / len(df)
 
 
 def convert_to_df(path: str) -> pd.DataFrame:
@@ -132,15 +151,13 @@ def convert_to_df(path: str) -> pd.DataFrame:
 	chat_listed = convert_to_list(path)
 	df = pd.DataFrame(chat_listed, columns=db.df_cols)
 	df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True)
-	df["time"] = pd.to_datetime(df["time"], format="%X")
-	df["polarity"] = model.predict_sentiment(df["polarity"])
-	df["polarity"] = df["polarity"].replace({"positive": 1, "negative": -1, "neutral": 0})
 	db.chat = df
-	db.chat_og = df.copy() # Creates copy for later using
+	db.chat_og = db.chat.copy() # Creates copy for later using
 	db.senders = list(db.chat["sender"].unique())
 
 	export("myfuncs/convert_to_df", df, "df_converted.csv")
-	return time("converting list to dataframe")
+	time("list -> df")
+	return
 
 
 def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
@@ -151,18 +168,20 @@ def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 	count = 0  # counter for media messages cleaned
 	df = dataframe.copy().rename(sender)
 	for key, val in db.cstats_match.items():
-		if key != "media_count":
+		if key == "media_count": # media messages are counted separately
+			db.stats_df.at[sender, key] = count
+		else:
 			key_df = df[df == val[1]] if val[0] == "exact" else df[df.str.contains(val[1])]
 			df = df.drop(key_df.index)  # remove non-messages from clean_df
 			db.chat = db.chat.drop(key_df.index) # remove non-messages from chat_df
 			if key in db.stats_df.columns:  # add counted data to stats_df.if it exists
 				db.stats_df.at[sender, key] = key_df.shape[0]
 				count += key_df.shape[0]
-		else:  # media messages are counted separately
-			db.stats_df.at[sender, key] = count
 	
 	# export("myfuncs/cleanse_df", df, f"df_clean_{sender}.csv")
-	time(f"cleaning dataframe for {sender}")
+	time(f"cleaning df for {db.senders.index(sender)+1}")
+
+	# db.stats_df.at[sender, "polarity_avg"] = calc_polarity(df, db.senders.index(sender)+1)
 	return df  # return the cleaned dataframe
 
 
@@ -181,10 +200,10 @@ def calc_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
 	db.stats_df.at[s,"emoji"] = db.chat.loc[db.chat["sender"] == s, "emoji_count"].sum()
 	emoji_set = set().union(*list(db.chat.loc[db.chat["sender"] == s, "emojis"]))
 	db.stats_df.at[s,"emoji_unique"] = (len(emoji_set), emoji_set)
-	db.stats_df.at[s,"polarity_avg"] = round(db.chat.loc[db.chat["sender"] == s, "polarity"].mean(), 1)
+	# db.stats_df.at[s,"polarity_avg"] = round(db.chat.loc[db.chat["sender"] == s, "polarity"].mean(), 1)
 	
 	# export("myfuncs/calc_stats", db.stats_df, f"stats_df_{s}.csv")
-	time(f"calculation statisitcs for {s}")
+	time(f"calc stats for sender {db.senders.index(s)+1}")
 	return sender_df
 
 
@@ -202,7 +221,7 @@ def calc_sum_stats() -> None:
 			db.stats_df.at["sum", stat] = db.stats_df[stat].sum()
 	
 	# export("myfuncs/get_sum_stats", db.stats_df, "stats_df.csv")
-	return time("summary satistics calculation")
+	return time("calc summary stats")
 
 
 # ----------------------------------------------------------------
@@ -214,7 +233,7 @@ def word_cloud(words: str, name: str) -> None:
 	"""
 	Creates a word cloud of the given words and saves it to the plots folder.
 	"""
-	wc = WordCloud(width=500, height=250, background_color="white", colormap="winter", stopwords=db.stopset)
+	wc = WordCloud(width=500, height=250, background_color="white", colormap="Greens", stopwords=db.stopset)
 	wc.generate(words.upper())
 	n = name.lower().replace(" ", "")
 
@@ -239,7 +258,7 @@ def calc_word_stats(df: pd.DataFrame) -> pd.DataFrame:
 # --------------------------------------------
 
 
-def say(*args) -> str:
+def say(*args, spaces: bool=False) -> str:
 	"""
 	Returns a string of strings/numbers which are divided with spaces, commas 
 	and the word "and".
@@ -247,7 +266,7 @@ def say(*args) -> str:
 	listing = str()
 	for i, arg in enumerate(args):
 		if i != 0:
-			listing += ", " if i+1 < len(args) else " and "
+			listing += " " if spaces else ", " if i+1 < len(args) else " and "
 		listing += str(arg)
 	return listing
 
@@ -288,12 +307,12 @@ def get_txt_reports() -> list[str]:
 	
 	# General report about the chat
 	i = len(db.senders)
-	reports_list.append("\n".join([f"{y(0,6,18)} were sent in this chat.",
-		f"the average legth of a message is {y(1,2)}.",
+	reports_list.append([f"{y(0,6,18)}",
+		f"The average message length is {y(1)}.",
 		f"The {len(db.senders)} senders ...",
 		f"... sent {y(11,7,8,10,9)}",
 		f"... shared {y(12,13,14,17)}",
-		f"... deleted {y(15)} in this chat"])) # add report to the list
+		f"... deleted {y(15)} in this chat"]) # add report to the list
 	
 	# export("myfuncs/get_reports", "\n\n".join(reports_list), "reports.txt")
 	time("txt report creation")
@@ -346,7 +365,6 @@ def plot_barh(df: pd.DataFrame, title: str, x_label: str, y_label: str, color: s
 
 
 pdf = FPDF()
-
 
 xys: list[tuple[int, int]] = list() # last x, y coordinates
 sizes: list[int] = list() # last text sizes
@@ -407,7 +425,14 @@ def make_pdf_report() -> None:
 	pdf.cell(0, 12, f"between {say(*db.senders)}", align="C")
 	
 	new_section(10, space=20)
-	pdf.multi_cell(90, 4, db.reports[len(db.senders)], align="L")
+	pdf.cell(90, 1, "This chat contained:" )
+	new_section(14, "B", space=4)
+	pdf.cell(120, 1, "1563330 messages, 6229 media and 34226 emojis")
+	# pdf.cell(120, 1, db.reports[len(db.senders)][0])
+
+
+	new_section(10, space=5)
+	pdf.multi_cell(90, 4, "\n".join(db.reports[len(db.senders)][1:]))
 	pdf.image("data/output/images/firstpage/plot0.png", x=80, y=20, w=150)
 
 	for i, s in enumerate(db.senders):
@@ -418,7 +443,7 @@ def make_pdf_report() -> None:
 		pdf.cell(0, 10, "for " + s , align="C")
 
 		new_section(8, space=20)
-		pdf.multi_cell(90, 4, db.reports[i], align="L")
+		pdf.multi_cell(90, 4, db.reports[i])
 
 		new_section(10, "B")
 		pdf.set_xy(105, xys[-1]["y"] - 5)
@@ -427,5 +452,5 @@ def make_pdf_report() -> None:
 		pdf.image(f"data/output/images/senderpages/{n}_wc.png", x=105, y=xys[-2]["y"], w=90)
 
 	new_section(np=-1)
-	pdf.output(f"data/output/pdfs/WA-Report.pdf", "F")
+	pdf.output("data/output/pdfs/WA-Report.pdf", "F")
 	return time("PDF creation")
