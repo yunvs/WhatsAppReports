@@ -1,6 +1,10 @@
-from myfuncs import *
+# from alive_progress import alive_bar
 
-print(BLUE("starting code"))
+# with alive_bar(monitor=False, stats=False) as bar:
+# bar.text = "Importing modules"
+
+print("main.py started")
+from myfuncs import *
 
 # Only Testing # Initializing Variables for autocomplete ###
 s0, s1 = str(), str()
@@ -11,32 +15,36 @@ s0_df_clean, s1_df_clean = pd.DataFrame(), pd.DataFrame()
 
 path = db.test_data[1]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.txt
 
-
+# bar.text = "Importing and converting data"
 # data extraction and preprocessing
 convert_to_df(fileformat(path))  # convert the chat to a pandas dataframe
 db.stats_df = pd.DataFrame(index=db.senders, columns=db.stats_dict.keys())
 
 
+
 # data seperation, cleansing and data analysis per sender
 for i, s in enumerate(db.senders):
-    # globals()[f"s{i}"] = s
-    df = db.chat.loc[db.chat["sender"] == s, "message", ]  # dataframe with messages from sender
-    # globals()[f"s{i}_df"] = df
-    clean_df = cleanse_df(df, s)  # get the stats for each sender
-    calc_stats(clean_df)  # set the cleaned dataframe to the global variable
-    # globals()[f"s{i}_df_clean"] = clean_df
-    word_freq = calc_word_stats(clean_df)
-    # globals()[f"s{i}_word_freq"] = word_freq
+	# bar.text = f"Cleaning and analyzing messages from {s}"
+	# globals()[f"s{i}"] = s
+	df = db.chat.loc[db.chat["sender"] == s, "message", ]  # dataframe with messages from sender
+	# globals()[f"s{i}_df"] = df
+	clean_df = cleanse_df(df, s)  # get the stats for each sender
+	calc_stats(clean_df)  # set the cleaned dataframe to the global variable
+	# globals()[f"s{i}_df_clean"] = clean_df
+	word_freq = calc_word_stats(clean_df)
+	# globals()[f"s{i}_word_freq"] = word_freq
 
-
+# bar.text = "Calculating statistics"
 calc_sum_stats()  # get the summary statistics for all senders
 
+# bar.text = "Creating plots and tables"
 make_plots()
 
 db.reports = get_txt_reports()  # get general sender stats for the chat
 
+# bar.text = "Creating and saving report @ data/output/pdfs/"
 make_pdf_report()  # create the pdf report
 
 export(database=True)
 
-time("end")
+off(file_end=True)
