@@ -36,7 +36,7 @@
 53,2017-11-01,11/1/17 03:14:26,Yunus,Bin noch bei Lili,polarity,set(),0,0
 54,2017-11-05,11/5/17 01:39:11,Meral Renz,Yunus eve ne zaman geleceksin?,polarity,set(),0,0
 63,2017-11-06,11/6/17 10:53:08,Yunus,Ich hab 11 Punkte in deutsch,polarity,set(),0,0
-64,2017-11-06,11/6/17 10:53:25,Yunus,😭😍😍😍😍😍😍,polarity,"{'😍', '😭'}",7,0
+64,2017-11-06,11/6/17 10:53:25,Yunus,😭😍😍😍😍😍😍,polarity,"{'😭', '😍'}",7,0
 65,2017-11-06,11/6/17 10:53:41,Yunus,🎎🎉🎉🎉🎉🎉🎉,polarity,"{'🎉', '🎎'}",7,0
 66,2017-11-06,11/6/17 11:03:36,Meral Renz,Toll freuw mich,polarity,set(),0,0
 67,2017-11-06,11/6/17 16:18:02,Meral Renz,Hey ruf mich an,polarity,set(),0,0
@@ -124,9 +124,9 @@
 162,2018-03-06,3/6/18 19:08:30,Yunus,Hab den bei Peek & Kloppenburg gekauft,polarity,set(),0,0
 163,2018-03-06,3/6/18 19:08:51,Meral Renz,Super 👍 Emel’e de Resmigül yolla,polarity,{'👍'},1,0
 164,2018-03-06,3/6/18 19:08:58,Yunus,Mach ich,polarity,set(),0,0
-165,2018-03-06,3/6/18 19:09:05,Meral Renz,😘💕,polarity,"{'😘', '💕'}",2,0
+165,2018-03-06,3/6/18 19:09:05,Meral Renz,😘💕,polarity,"{'💕', '😘'}",2,0
 166,2018-03-08,3/8/18 01:03:32,Yunus,Und ich bin bisschen krank 😅,polarity,{'😅'},1,0
-167,2018-03-08,3/8/18 03:54:33,Meral Renz,😘canım benim çok teşekkür ederim seni öpüp kucaklıyorum 🤗,polarity,"{'😘', '🤗'}",2,0
+167,2018-03-08,3/8/18 03:54:33,Meral Renz,😘canım benim çok teşekkür ederim seni öpüp kucaklıyorum 🤗,polarity,"{'🤗', '😘'}",2,0
 169,2018-03-08,3/8/18 08:32:55,Yunus,Wo bist du?,polarity,set(),0,0
 170,2018-03-08,3/8/18 08:33:25,Meral Renz,İn Zürih,polarity,set(),0,0
 172,2018-03-08,3/8/18 08:33:47,Yunus,Wow,polarity,set(),0,0
@@ -151,7 +151,7 @@
 194,2018-03-17,3/17/18 16:13:30,Yunus,Ja danke war sehr cool,polarity,set(),0,0
 195,2018-03-17,3/17/18 18:39:33,Meral Renz,Toll 👏,polarity,{'👏'},1,0
 196,2018-03-17,3/17/18 18:39:43,Meral Renz,Und finanziell,polarity,set(),0,0
-197,2018-03-17,3/17/18 18:45:58,Meral Renz,Super 👍 du hast recht gehabt😘😘,polarity,"{'👍', '😘'}",3,0
+197,2018-03-17,3/17/18 18:45:58,Meral Renz,Super 👍 du hast recht gehabt😘😘,polarity,"{'😘', '👍'}",3,0
 199,2018-03-18,3/18/18 23:33:06,Yunus,Ja ich hab schon Dilara geschrieben hat sie dir nichts gesagt?,polarity,set(),0,0
 200,2018-03-18,3/18/18 23:33:17,Yunus,Ich hab euch auch vermisst,polarity,set(),0,0
 201,2018-03-18,3/18/18 23:33:25,Yunus,Bis morgen ❤️,polarity,{'❤️'},1,0
@@ -192,7 +192,7 @@
 241,2018-04-12,4/12/18 12:13:47,Meral Renz,Und?,polarity,set(),0,0
 242,2018-04-12,4/12/18 12:13:53,Yunus,War voll gut,polarity,set(),0,0
 243,2018-04-12,4/12/18 12:14:06,Meral Renz,Super ich freue mich,polarity,set(),0,0
-244,2018-04-12,4/12/18 12:14:10,Meral Renz,😘💕,polarity,"{'😘', '💕'}",2,0
+244,2018-04-12,4/12/18 12:14:10,Meral Renz,😘💕,polarity,"{'💕', '😘'}",2,0
 245,2018-04-12,4/12/18 12:14:22,Meral Renz,Thema?,polarity,set(),0,0
 246,2018-04-12,4/12/18 12:14:32,Yunus,Immigration,polarity,set(),0,0
 247,2018-04-12,4/12/18 12:37:32,Meral Renz,Bild?,polarity,set(),0,0
@@ -378,7 +378,7 @@
 466,2018-08-31,8/31/18 15:37:23,Yunus,Ich habe gerade 2.5 k auf dein Konto eingezahlt 😘,polarity,{'😘'},1,0
 472,2018-09-05,9/5/18 18:26:14,Yunus,4x,polarity,set(),0,0
 473,2018-09-09,9/9/18 13:53:24,Yunus,Kannst du einmal die Wäsche machen? Da müsste ein großer weißer Reebok Pulli von mir sein kannst du den bitte waschen? 😘,polarity,{'😘'},1,0
-474,2018-09-09,9/9/18 13:53:53,Yunus,Brauche den morgen in der Schule damit ich meinen Knutschfleck verstecken kann 😂🤯,polarity,"{'🤯', '😂'}",2,0
+474,2018-09-09,9/9/18 13:53:53,Yunus,Brauche den morgen in der Schule damit ich meinen Knutschfleck verstecken kann 😂🤯,polarity,"{'😂', '🤯'}",2,0
 475,2018-09-09,9/9/18 15:12:51,Meral Renz,Tamam canım 😘,polarity,{'😘'},1,0
 476,2018-09-19,9/19/18 12:51:52,Meral Renz,Canım oğlum eve ne zaman geleceksin sana omlet yapıyorum 😘,polarity,{'😘'},1,0
 479,2018-10-01,10/1/18 16:05:34,Meral Renz,xURL,polarity,set(),0,1
@@ -391,7 +391,7 @@
 489,2018-10-21,10/21/18 10:24:18,Meral Renz,😘😘,polarity,{'😘'},2,0
 491,2018-10-21,10/21/18 23:33:58,Meral Renz,İyi geceler 😘💤,polarity,"{'😘', '💤'}",2,0
 492,2018-10-21,10/21/18 23:33:59,Yunus,Çok güsel,polarity,set(),0,0
-493,2018-10-21,10/21/18 23:34:42,Meral Renz,Sevindim Arya’yı benim için öp 😍😘,polarity,"{'😍', '😘'}",2,0
+493,2018-10-21,10/21/18 23:34:42,Meral Renz,Sevindim Arya’yı benim için öp 😍😘,polarity,"{'😘', '😍'}",2,0
 494,2018-10-24,10/24/18 11:10:01,Meral Renz,Günaydın toplantıdayım kahvaltı yaptırmı?,polarity,set(),0,0
 496,2018-10-24,10/24/18 12:05:59,Yunus,Günaydın daha değil,polarity,set(),0,0
 497,2018-10-24,10/24/18 12:30:06,Meral Renz,😘😘,polarity,{'😘'},2,0
@@ -454,9 +454,9 @@
 565,2018-12-17,12/17/18 14:15:54,Yunus,Ja war ganz ok hab alle Aufgaben gemacht,polarity,set(),0,0
 566,2018-12-20,12/20/18 08:13:48,Yunus,Ich hab eine 2+ in Deutsch geschrieben,polarity,set(),0,0
 567,2018-12-20,12/20/18 08:13:59,Yunus,83/100 Punkte,polarity,set(),0,0
-568,2018-12-20,12/20/18 08:56:50,Meral Renz,👏👏👏👏bin stolz auf dich 😘💕,polarity,"{'😘', '👏', '💕'}",6,0
+568,2018-12-20,12/20/18 08:56:50,Meral Renz,👏👏👏👏bin stolz auf dich 😘💕,polarity,"{'👏', '💕', '😘'}",6,0
 569,2018-12-20,12/20/18 09:28:51,Yunus,Danke,polarity,set(),0,0
-570,2018-12-30,12/30/18 23:16:20,Meral Renz,İyi geceler 💤😘 canım Yunusum 😘💕🙅🏻‍♀,polarity,"{'😘', '🙅', '💤', '💕'}",5,0
+570,2018-12-30,12/30/18 23:16:20,Meral Renz,İyi geceler 💤😘 canım Yunusum 😘💕🙅🏻‍♀,polarity,"{'🙅', '💕', '😘', '💤'}",5,0
 571,2018-12-31,12/31/18 14:19:35,Yunus,Ruf mich einfach an wenn du zuhause bist,polarity,set(),0,0
 573,2019-01-04,1/4/19 19:22:48,Yunus,Ich bin unterirdisch,polarity,set(),0,0
 576,2019-01-05,1/5/19 17:53:05,Meral Renz,"Ok ruf mich at, wann du kannst 😘",polarity,{'😘'},1,0
@@ -740,7 +740,7 @@
 958,2019-08-08,8/8/19 14:47:32,Yunus,Schreib mir über diese Nummer,polarity,set(),0,0
 959,2019-08-08,8/8/19 14:49:28,Meral Renz,00 90 (539) 649 39 36,polarity,set(),0,0
 961,2019-08-13,8/13/19 07:07:07,Meral Renz,Yeni numaranı güle güle kullan 😘,polarity,{'😘'},1,0
-962,2019-08-13,8/13/19 13:58:25,Yunus,Haha Sagol 😂😘,polarity,"{'😘', '😂'}",2,0
+962,2019-08-13,8/13/19 13:58:25,Yunus,Haha Sagol 😂😘,polarity,"{'😂', '😘'}",2,0
 964,2019-08-13,8/13/19 17:51:37,Yunus,Heeey ne güzel,polarity,set(),0,0
 965,2019-08-13,8/13/19 18:53:19,Meral Renz,Canım benim fotoğraf yolla😘😘,polarity,{'😘'},2,0
 967,2019-08-13,8/13/19 23:59:05,Yunus,Theodora hat Geburtstag 🎁,polarity,{'🎁'},1,0
@@ -1009,7 +1009,7 @@
 1387,2020-01-06,1/6/20 20:02:13,Meral Renz,Ja was meinst du?,polarity,set(),0,0
 1388,2020-01-06,1/6/20 20:02:33,Meral Renz,Ich vermisse dich 😞,polarity,{'😞'},1,0
 1389,2020-01-06,1/6/20 20:02:52,Yunus,Bende seni,polarity,set(),0,0
-1390,2020-01-06,1/6/20 20:03:01,Meral Renz,Schlaf gut 😴😘😘,polarity,"{'😘', '😴'}",3,0
+1390,2020-01-06,1/6/20 20:03:01,Meral Renz,Schlaf gut 😴😘😘,polarity,"{'😴', '😘'}",3,0
 1392,2020-01-07,1/7/20 17:28:39,Meral Renz,Wie schlimm oder?,polarity,set(),0,0
 1393,2020-01-07,1/7/20 17:36:58,Yunus,Echt,polarity,set(),0,0
 1394,2020-01-07,1/7/20 17:37:12,Yunus,Warum geht man aber mit irgendjemandem nach Hause,polarity,set(),0,0
@@ -1105,7 +1105,7 @@
 1492,2020-01-15,1/15/20 19:07:38,Meral Renz,Harika nerde?,polarity,set(),0,0
 1493,2020-01-15,1/15/20 19:19:39,Yunus,hier in san felipe,polarity,set(),0,0
 1495,2020-01-15,1/15/20 23:21:41,Meral Renz,Günün resmî Yunusum’a iyi geceler 💤,polarity,{'💤'},1,0
-1496,2020-01-15,1/15/20 23:25:02,Yunus,gute nacht schlaf gut 😘😴,polarity,"{'😘', '😴'}",2,0
+1496,2020-01-15,1/15/20 23:25:02,Yunus,gute nacht schlaf gut 😘😴,polarity,"{'😴', '😘'}",2,0
 1499,2020-01-16,1/16/20 14:34:31,Yunus,35.9,polarity,set(),0,0
 1502,2020-01-19,1/19/20 14:59:48,Yunus,wow,polarity,set(),0,0
 1503,2020-01-19,1/19/20 16:24:40,Meral Renz,Cajón del maipo Çok güzelmiş,polarity,set(),0,0
@@ -1200,7 +1200,7 @@
 1632,2020-03-04,3/4/20 07:54:25,Meral Renz,Şimdi uyandım,polarity,set(),0,0
 1633,2020-03-06,3/6/20 11:54:46,Yunus,hey annecim kannst du mir sagen wie man die schafskäse füllung für börek macht?,polarity,set(),0,0
 1634,2020-03-06,3/6/20 13:16:02,Meral Renz,"Käse, Petersilie, Paprika mischen",polarity,set(),0,0
-1635,2020-03-06,3/6/20 13:16:36,Meral Renz,Aus dir wird noch ein Koch 👩‍🍳🥰,polarity,"{'👩\u200d🍳', '🥰'}",2,0
+1635,2020-03-06,3/6/20 13:16:36,Meral Renz,Aus dir wird noch ein Koch 👩‍🍳🥰,polarity,"{'🥰', '👩\u200d🍳'}",2,0
 1636,2020-03-06,3/6/20 21:32:41,Yunus,haha werden wir sehen... 😍😍,polarity,{'😍'},2,0
 1637,2020-03-07,3/7/20 14:03:23,Yunus,tombik tombik 🥰🥰,polarity,{'🥰'},2,0
 1638,2020-03-07,3/7/20 14:47:56,Meral Renz,😍,polarity,{'😍'},1,0
@@ -1433,13 +1433,13 @@
 2121,2021-02-07,2/7/21 10:29:49,Meral Renz,"*_ARŞİVLEYİN LÜTFEN  MÜKEMMMEL  BİLGİLER_*  1- Harvard Üniversitesi'nden sertifika alabileceğiniz 55 alanda ücretsiz online kurslar  xURL  2- Türkiye'de yayınlanan ve yayınlanmış olan gazetelerin geçmişten günümüze tüm sayılarına ulaşabileceğiniz bir platform  xURL  3- Tübitak'ın tüm yayın ve dergilerinin arşivi:  xURL  4- Milli kütüphane arşivindeki tüm taş plaklara ses dosyası olarak ulaşabileceğiniz bir platform  xURL  5- Nasa'nın uzay ile ilgili keşiflerini ve fotoğraflarını bulabileceğiniz online arşivi  xURL  6- Abd Meclis Kütüphanesi, 1800-2020 yılları arasında dünya üzerinde çekilmiş milyonlarca fotoğrafa ulaşabilirsiniz  xURL  7- yüz binlerce resim, çizim, karikatür ve görseli konularına göre arayabileceğiniz büyük bir arşiv  xURL  8- 1920-23 arası TBMM 1. Dönem gizli celse kayıtları:  xURL  9- Servet-i Fünun dergisinin yayınlanmış tüm sayıları:  xURL  10- İbb'ye ait Taksim kütüphanesindeki binlerce esere ücretsiz olarak ulaşıp, okuyabilirsiniz  xURL  11- Sultan 2. Abdulhamit'in fotoğraf arşivi  xURL  12- Geçmişten bugüne çizilmiş tüm haritalara ulaşabileceğiniz bir arşiv  xURL  13- Birleşmiş Milletler bünyesinde yayınlanan tüm eserlere ulaşabileceğiniz bir arşiv  xURL  14- Balkanlar'daki Osmanlı eserlerinin olduğu fotoğraf arşivi:  xURL  15- Türkiye'deki tüm yer isimlerinin tarihi, eski adları ve değişimlerini inceleyebileceğiniz bir platform  xURL  16- Çekilmiş tüm filmlerin çarpıcı sahnelerinin olduğu bir arşiv  xURL  17- New York Metropolitan Operası, her gün eski bir performansı ücretsiz olarak erişime açıyor  xURL  18- Berlin Filarmoni Orkestrasının tüm konser kayıtları:  xURL  19- Telifsiz film, kitap, makale, fotoğraf arşivi  xURL  20- Antik Yunan, Mısır, Çin ve Asya üzerine yazılmış binlerce esere ulaşabileceğiniz bir platform  xURL  21- Marmara Üniversitesi'ndeki nadide eserlere online olarak ulaşabileceğiniz platform  xURL  22-  Dünyanın her yerinden yüzlerce üniversitenin ortak çevrimiçi kütüphanesi:  xURL  23- Cambridge Üniversitesi'ne ait bine yakın ders kitabınına ulaşabileceğiniz bir platform:  xURL  24- Her dilden birçok konuda makalelere, eserlere ulaşabileceğiniz dünyanın en büyük online kütüphanelerinden biri  xURL  25- Telif süresi dolmuş tüm eserlere e- kitap olarak ulaşabileceğiniz bir site  xURL  26- Türkiye'de 1950 öncesi çıkan sinema dergileri arşivi:  xURL  27- Ücretsiz sesli kitap arşivi  xURL  28- ABD ulusal kütüphanesi  xURL  29- hem sesli hem yazılı olarak abd de gör2ülen tüm dava kayıtlarına erişilebiliyor... inanılmaz bir site  xURL  30-Tiyatro oyunları  xURL",polarity,set(),0,30
 2122,2021-02-23,2/23/21 19:15:42,Meral Renz,Von Melisa xURL,polarity,set(),0,1
 2124,2021-02-24,2/24/21 16:40:21,Meral Renz,Schöner Platz zum Picknick,polarity,set(),0,0
-2128,2021-02-24,2/24/21 16:40:46,Meral Renz,👍🏽♥️,polarity,"{'👍', '♥️'}",2,0
-2133,2021-03-01,3/1/21 11:04:59,Meral Renz,"Sağlıklı  ,huzurlu , başarılı  nice  seneler  diliyorum  doğum  gününü kutluyoruz Lara çok öpüyor abisini🥰🎂🙋🏻‍♀️",polarity,"{'🙋', '🎂', '🥰', '♀️'}",4,0
-2134,2021-03-01,3/1/21 11:06:44,Meral Renz,Herzlichen Glückwunsch zum Geburtstag 🎁🎂 wünsche ich Yunus 🙏,polarity,"{'🙏', '🎁', '🎂'}",3,0
+2128,2021-02-24,2/24/21 16:40:46,Meral Renz,👍🏽♥️,polarity,"{'♥️', '👍'}",2,0
+2133,2021-03-01,3/1/21 11:04:59,Meral Renz,"Sağlıklı  ,huzurlu , başarılı  nice  seneler  diliyorum  doğum  gününü kutluyoruz Lara çok öpüyor abisini🥰🎂🙋🏻‍♀️",polarity,"{'🙋', '♀️', '🎂', '🥰'}",4,0
+2134,2021-03-01,3/1/21 11:06:44,Meral Renz,Herzlichen Glückwunsch zum Geburtstag 🎁🎂 wünsche ich Yunus 🙏,polarity,"{'🙏', '🎂', '🎁'}",3,0
 2135,2021-03-01,3/1/21 11:07:08,Meral Renz,Alles bestens wünsche ich Yunus zum einundzwanzigsten Geburtstag 🎂,polarity,{'🎂'},1,0
 2136,2021-03-01,3/1/21 11:07:42,Yunus,Danke danke,polarity,set(),0,0
 2137,2021-03-01,3/1/21 11:09:39,Yunus,🥰🥰,polarity,{'🥰'},2,0
-2138,2021-03-01,3/1/21 12:26:29,Meral Renz,"Tebrikler 🎈🍾 Yunus’un doğum günü kutlu olsun. Hasan’a ve Yunus’a çok selamlar. En yakın zamanda görüşmek ümidiyle, sevgiler Hanife 😘",polarity,"{'😘', '🎈', '🍾'}",3,0
+2138,2021-03-01,3/1/21 12:26:29,Meral Renz,"Tebrikler 🎈🍾 Yunus’un doğum günü kutlu olsun. Hasan’a ve Yunus’a çok selamlar. En yakın zamanda görüşmek ümidiyle, sevgiler Hanife 😘",polarity,"{'🍾', '😘', '🎈'}",3,0
 2139,2021-03-02,3/2/21 08:19:34,Meral Renz,xURL,polarity,set(),0,1
 2141,2021-03-12,3/12/21 22:14:10,Yunus,Gerade Kartoffel gratin gemacht,polarity,set(),0,0
 2142,2021-03-12,3/12/21 22:34:40,Meral Renz,Oh güzel gözüküyor afiyet olsun,polarity,set(),0,0
@@ -1476,17 +1476,17 @@
 2181,2021-05-22,5/22/21 00:10:32,Meral Renz,Klima😘,polarity,{'😘'},1,0
 2182,2021-06-04,6/4/21 15:37:40,Yunus,😍,polarity,{'😍'},1,0
 2183,2021-06-04,6/4/21 15:37:54,Yunus,😍,polarity,{'😍'},1,0
-2184,2021-06-04,6/4/21 17:33:36,Meral Renz,😘♥️♥️,polarity,"{'😘', '♥️'}",3,0
+2184,2021-06-04,6/4/21 17:33:36,Meral Renz,😘♥️♥️,polarity,"{'♥️', '😘'}",3,0
 2185,2021-07-10,7/10/21 19:23:54,Yunus,xURL,polarity,set(),0,1
 2187,2021-07-30,7/30/21 19:57:20,Meral Renz,Yunusum biz eve vardık canım 😘,polarity,{'😘'},1,0
 2193,2021-08-03,8/3/21 17:07:51,Meral Renz,"Yunusum hier ist die Rechnung von den Tickets. Könnt ihr den Betrag insg 550,90€  für dich und Dennis an die Konto vom Reisebüro überweisen? 🥰",polarity,{'🥰'},1,0
 2194,2021-08-03,8/3/21 19:58:55,Yunus,"550,90€?",polarity,set(),0,0
 2195,2021-08-04,8/4/21 06:55:47,Meral Renz,"275,45 pro Person",polarity,set(),0,0
 2208,2021-08-27,8/27/21 10:18:45,Yunus,Wow sehr achön geworden!!,polarity,set(),0,0
-2209,2021-08-27,8/27/21 10:33:53,Meral Renz,Evet çok güzel oldu😘♥️,polarity,"{'😘', '♥️'}",2,0
+2209,2021-08-27,8/27/21 10:33:53,Meral Renz,Evet çok güzel oldu😘♥️,polarity,"{'♥️', '😘'}",2,0
 2211,2021-08-30,8/30/21 12:36:52,Meral Renz,Buldum teşekkürler,polarity,set(),0,0
 2212,2021-09-01,9/1/21 12:09:06,Meral Renz,xURL,polarity,set(),0,1
-2213,2021-09-03,9/3/21 12:03:40,Meral Renz,Tatlım saat 12 de işi bırakıyor musun? Ben Rüttenscheid ta seni bekliyorum 😘♥️,polarity,"{'😘', '♥️'}",2,0
+2213,2021-09-03,9/3/21 12:03:40,Meral Renz,Tatlım saat 12 de işi bırakıyor musun? Ben Rüttenscheid ta seni bekliyorum 😘♥️,polarity,"{'♥️', '😘'}",2,0
 2215,2021-09-22,9/22/21 20:46:57,Meral Renz,Hallo Meral. Meinst du den Einkommensteuer- bescheid? Den habe ich noch nicht erhalten. Die Erklärung ist am 05.03.2021 raus.,polarity,set(),0,0
 2216,2021-09-22,9/22/21 20:47:32,Meral Renz,Hat mir mein Steuerberater geschrieben,polarity,set(),0,0
 2217,2021-09-22,9/22/21 20:49:07,Yunus,Ja Einkommenssteuerbescheid den brauche ich,polarity,set(),0,0
@@ -1495,18 +1495,18 @@
 2220,2021-09-22,9/22/21 20:50:23,Meral Renz,Ja Ist noch nicht da. Vom Finanzamt Wir müssen ihn nachreiche,polarity,set(),0,0
 2224,2021-11-14,11/14/21 19:42:12,Meral Renz,xURL,polarity,set(),0,1
 2227,2021-12-16,12/16/21 20:29:32,Yunus,Bundan bana alabilir misin,polarity,set(),0,0
-2228,2021-12-16,12/16/21 22:00:53,Meral Renz,Tamam canım 😘♥️,polarity,"{'😘', '♥️'}",2,0
+2228,2021-12-16,12/16/21 22:00:53,Meral Renz,Tamam canım 😘♥️,polarity,"{'♥️', '😘'}",2,0
 2229,2021-12-17,12/17/21 08:28:53,Yunus,Çok sağol 🙏🏼,polarity,{'🙏'},1,0
 2230,2021-12-20,12/20/21 09:08:16,Meral Renz,xURL,polarity,set(),0,1
 2232,2022-01-19,1/19/22 10:42:24,Yunus,"Hi, ich habe gerade eine Petition zum Schutz unserer Ozeane unterzeichnet, denn die Meeresbewohner sind in Gefahr.  Wissenschaftler*innen warnen: Wenn wir den schlimmsten Auswirkungen des Klimawandels entrinnen und die Vielfalt der Arten erhalten wollen, müssen bis 2030 mindestens 30 Prozent unserer Ozeane strikt unter Schutz stehen (30x30 Schutzgebiets-Initiative).  Jetzt ist der entscheidende Zeitpunkt gekommen, um von den Regierungen ein starkes Hochseeschutzabkommen und ein weltweites Netz an Meeresschutzgebieten zu fordern.  Hilf mit und unterzeichne die Petition xURL",polarity,set(),0,1
-2233,2022-01-21,1/21/22 12:06:28,Meral Renz,Yunusum kannst du mir die Seite mit den Gebrauchhandys senden😘♥️♥️özledim seni canım kuzum,polarity,"{'😘', '♥️'}",3,0
+2233,2022-01-21,1/21/22 12:06:28,Meral Renz,Yunusum kannst du mir die Seite mit den Gebrauchhandys senden😘♥️♥️özledim seni canım kuzum,polarity,"{'♥️', '😘'}",3,0
 2235,2022-01-21,1/21/22 13:28:17,Yunus,Süper,polarity,set(),0,0
 2236,2022-01-21,1/21/22 13:28:23,Yunus,Backmarket.de,polarity,set(),0,0
 2238,2022-01-25,1/25/22 08:24:40,Yunus,Ne tatlı,polarity,set(),0,0
-2239,2022-02-22,2/22/22 11:27:12,Meral Renz,Kolay gelsin canım oğlum güzel bir gün dilerim 😘♥️♥️,polarity,"{'😘', '♥️'}",3,0
+2239,2022-02-22,2/22/22 11:27:12,Meral Renz,Kolay gelsin canım oğlum güzel bir gün dilerim 😘♥️♥️,polarity,"{'♥️', '😘'}",3,0
 2240,2022-02-22,2/22/22 11:29:19,Yunus,Sağol 🙏🏼,polarity,{'🙏'},1,0
 2242,2022-02-26,2/26/22 09:53:38,Meral Renz,xURL,polarity,set(),0,1
-2243,2022-02-26,2/26/22 19:11:01,Meral Renz,Yunusum pazar günü kaçta buluşalım 😘♥️,polarity,"{'😘', '♥️'}",2,0
+2243,2022-02-26,2/26/22 19:11:01,Meral Renz,Yunusum pazar günü kaçta buluşalım 😘♥️,polarity,"{'♥️', '😘'}",2,0
 2244,2022-02-26,2/26/22 19:31:57,Yunus,Ich rufe dich morgen an ok?,polarity,set(),0,0
 2245,2022-02-26,2/26/22 20:26:53,Meral Renz,Tamam canım iyi akşamlar öpüyorum,polarity,set(),0,0
 2246,2022-02-27,2/27/22 14:53:39,Meral Renz,Yunusum karar verdin mi?,polarity,set(),0,0
@@ -1517,7 +1517,7 @@
 2251,2022-02-27,2/27/22 21:10:31,Meral Renz,Pizza güzel olur dimi?,polarity,set(),0,0
 2252,2022-03-01,3/1/22 07:53:58,Meral Renz,xURL,polarity,set(),0,1
 2253,2022-03-01,3/1/22 07:54:53,Meral Renz,Oğlum canım kuzum benim doğum günün kutlu olsun iyiki doğdun iyiki varsın,polarity,set(),0,0
-2254,2022-03-01,3/1/22 07:54:59,Meral Renz,😘♥️♥️♥️♥️♥️,polarity,"{'😘', '♥️'}",6,0
+2254,2022-03-01,3/1/22 07:54:59,Meral Renz,😘♥️♥️♥️♥️♥️,polarity,"{'♥️', '😘'}",6,0
 2255,2022-03-01,3/1/22 11:21:32,Yunus,🤣🤣,polarity,{'🤣'},2,0
 2256,2022-03-01,3/1/22 11:21:39,Yunus,Dankeeeee,polarity,set(),0,0
 2257,2022-04-19,4/19/22 11:42:43,Meral Renz,Yunusum sen bizim eve gitmeden bir konuşalım. Örnek etiket belki etiketci de varmış,polarity,set(),0,0
@@ -1525,7 +1525,7 @@
 2260,2022-04-20,4/20/22 08:47:35,Yunus,Ever,polarity,set(),0,0
 2261,2022-04-20,4/20/22 08:47:48,Yunus,Evet Aferin sana,polarity,set(),0,0
 2262,2022-04-20,4/20/22 08:47:51,Yunus,❤️,polarity,{'❤️'},1,0
-2263,2022-04-20,4/20/22 08:47:57,Meral Renz,😘♥️♥️♥️,polarity,"{'😘', '♥️'}",4,0
+2263,2022-04-20,4/20/22 08:47:57,Meral Renz,😘♥️♥️♥️,polarity,"{'♥️', '😘'}",4,0
 2265,2022-04-25,4/25/22 23:36:54,Yunus,süper,polarity,set(),0,0
 2269,2022-04-28,4/28/22 16:43:03,Yunus,😍😍,polarity,{'😍'},2,0
 2271,2022-04-28,4/28/22 16:43:24,Yunus,🔵🔵,polarity,{'🔵'},2,0

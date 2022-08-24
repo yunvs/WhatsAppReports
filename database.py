@@ -41,27 +41,44 @@ cstats_match: dict[str, tuple[str, str]] = {
 
 stop_words = ["ich", "du", "und", "der", "die", "das", "ist", "nicht", "sich", "mit", "wie", "an", "auf", "aus", "bei", "bis", "bist", "da", "dann", "das", "dass", "dein", "deine", "dem", "den", "der", "des", "dessen", "dich", "dir", "doch", "dort", "durch", "ein", "eine", "einem", "einen", "einer", "eines", "einmal", "er", "es", "etwas", "für", "gegen", "habe", "haben", "hat", "hatte", "hatten", "hier", "hin", "hinter", "ich", "ihr", "ihre", "im", "in", "indem", "ins", "ist", "jede", "jedem", "jeden", "jeder", "jedes", "jene", "jenem", "jenen", "jener", "jenes", "jetzt", "kann", "kannst", "können", "könnt", "machen", "mein", "meine", "meinst", "meinst", "mich", "mir", "mit", "muss", "müssen", "musst", "nach", "nicht", "nichts", "noch", "nun", "nur", "ob", "oder", "ohne", "seid", "seien", "seinem", "sein", "seine", "seinst", "seinst", "sich", "sie", "sind", "soll", "sollen", "sollst", "sollt", "sollte", "sollten", "solltest", "sonst", "soweit", "über", "überhaupt", "übrigens", "unter", "viel", "viele", "vom", "von", "vor", "wann", "war", "waren", "warst", "wart", "warum", "was", "weg", "wegen", "weil", "we"]
 
+plot1_dict = {7: "Images", 8: "Videos", 9: "GIFs", 10: "Stickers", 11: "Audios", 12: "Contacts", 13: "Locations", 14: "Files"}
 
+time_stats_cols = ["first_msg", "last_mgs", "most_msg", "no_msg", "break"]
+
+
+
+
+# ----------------------------------------------------------------
 # the actual data will be stored in the following variables
+# ----------------------------------------------------------------
 
 chat_og = list()
-""" tobefilled: [date, time, sender, message, polarity, emojis, emoji_count, url_count] """
+""" #tobefilled: [date, time, sender, message, polarity, emojis, emoji_count, url_count] """
 
 chat = list()
-""" tobefilled: [date, time, sender, message, polarity, emojis, emoji_count, url_count] """
+""" #tobefilled: [date, time, sender, message, polarity, emojis, emoji_count, url_count] """
 
 senders: list[str] = list()
-""" tobefilled: list of all senders """
+""" #tobefilled: list of all senders """
+
+sc: int = 0
+""" #tobefilled: count of senders """
+
+chat_p_sender = list()
 
 stats_df = list()
-""" tobefilled: 0: msg_count, 1: chars_avg, 2: words_avg, 3: chars_max, 4: words_max, 5: polarity_avg, 6: media_count, 7: image, 8: video, 9: GIF, 10: sticker, 11: audio, 12: contact, 13: location, 14: file, 15: deleted, 16: calls, 17: link, 18: emoji, 19: emoji_unique """
+""" #tobefilled: 0: msg_count, 1: chars_avg, 2: words_avg, 3: chars_max, 4: words_max, 5: polarity_avg, 6: media_count, 7: image, 8: video, 9: GIF, 10: sticker, 11: audio, 12: contact, 13: location, 14: file, 15: deleted, 16: calls, 17: link, 18: emoji, 19: emoji_unique """
+
+time_stats_df = list()
+""" #tobefilled: 0: first_msg, 1: last_mgs, 2: most_msg, 3: no_msg, 4: break """
 
 reports: list[str] = list()
-""" tobefilled: list contains text reports (general and per sender) """
+""" #tobefilled: list contains text reports (general and per sender) """
 
 cwords_df = list()
 
-
+time_stats = list()
+""" #tobefilled: list contains time statistics """
 
 tt = list()
-""" tobefilled: [task, time] """
+""" #tobefilled: [task, time] """
