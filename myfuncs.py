@@ -1,16 +1,18 @@
-from timeit import default_timer as timer
+from timeit import default_timer as timer # for timing
 ts = [timer()]
 
-from outputstyle import *
-import database as db  # used to access local database
-import numpy as np, pandas as pd
-import re
-import emojis
-from wordcloud import WordCloud
-from matplotlib import pyplot as plt, cm
-from plotly import express as px
-from fpdf import FPDF
+import database as db  # for access to local database
+from outputstyle import * # for pretty printing
+import numpy as np, pandas as pd # to create dataframes
+import re # for regex 
+import os
+import emojis # to find emoji in messages
+from wordcloud import WordCloud # to create wordclouds
+from matplotlib import pyplot as plt, dates as mdates, cm # to plot figures
 
+from fpdf import FPDF # to create pdfs
+
+from plotly import express as px 
 # from germansentiment import SentimentModel
 # model = SentimentModel()
 
@@ -39,10 +41,10 @@ def off(*args, file_end: bool=False) -> None:
 
 def export(location: str=None, data=None, name: str=None, database: bool=False) -> None:
 	"""
-	Exports dataframes and text to the data/testing/exports folder.
+	Exports dataframes and text to the data/testing/exports folder. 
 	"""
 	if not database:
-		path = f"data/testing/exports/{location}/"
+		path = f"data/testing/exports/{location}/" 
 		try:
 			if name.endswith(".csv"):
 				return data.to_csv(path + name, index=True)
@@ -52,13 +54,13 @@ def export(location: str=None, data=None, name: str=None, database: bool=False) 
 		except FileNotFoundError:
 			import os
 			os.makedirs(path, exist_ok=True)
-			return export(location, data, name)
+			return export(location, data, name) 
 	else:
-		export("database", db.chat, "chat_df.csv")
-		export("database", db.stats_df, "stats_df.csv")
-		export("database", pd.DataFrame(db.senders), "senders_df.csv")
-		export("database", db.chat_og, "chat_og.csv")
-		time("database exports")
+		export("database", db.chat, "chat_df.csv") 
+		export("database", db.stats_df, "stats_df.csv") 
+		export("database", pd.DataFrame(db.senders), "senders_df.csv") 
+		export("database", db.chat_og, "chat_og.csv") 
+		time("database exports") 
 
 
 def fileformat(path_to_file: str) -> str:
@@ -152,11 +154,21 @@ def convert_to_df(path: str) -> pd.DataFrame:
 	df = pd.DataFrame(chat_listed, columns=db.df_cols)
 	df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True)
 	db.chat = df
-	db.chat_og = db.chat.copy() # Creates copy for later using
-	db.senders = list(db.chat["sender"].unique())
 
-	export("myfuncs/convert_to_df", df, "df_converted.csv")
+	export("myfuncs/convert_to_df", df, "df_converted.csv") #REMOVE
 	time("list -> df")
+	return
+
+
+def prep_db() -> None:
+	db.chat_og = db.chat.copy() # Creates copy for later using
+	db.senders = list(db.chat["sender"].unique()) # Creates list of senders
+	db.sc = len(db.senders) # Number of senders
+
+	db.stats_df = pd.DataFrame(index=db.senders, columns=db.stats_dict.keys())
+	db.time_stats_df = pd.DataFrame(index=db.senders, columns=db.time_stats_cols)
+	
+	time("prep database")
 	return
 
 
@@ -178,7 +190,7 @@ def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 				db.stats_df.at[sender, key] = key_df.shape[0]
 				count += key_df.shape[0]
 	
-	# export("myfuncs/cleanse_df", df, f"df_clean_{sender}.csv")
+	# export("myfuncs/cleanse_df", df, f"df_clean_{sender}.csv") #REMOVE
 	time(f"cleaning df for {db.senders.index(sender)+1}")
 
 	# db.stats_df.at[sender, "polarity_avg"] = calc_polarity(df, db.senders.index(sender)+1)
@@ -202,7 +214,7 @@ def calc_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
 	db.stats_df.at[s,"emoji_unique"] = (len(emoji_set), emoji_set)
 	# db.stats_df.at[s,"polarity_avg"] = round(db.chat.loc[db.chat["sender"] == s, "polarity"].mean(), 1)
 	
-	# export("myfuncs/calc_stats", db.stats_df, f"stats_df_{s}.csv")
+	# export("myfuncs/calc_stats", db.stats_df, f"stats_df_{s}.csv") #REMOVE
 	time(f"calc stats for sender {db.senders.index(s)+1}")
 	return sender_df
 
@@ -220,9 +232,25 @@ def calc_sum_stats() -> None:
 		else:
 			db.stats_df.at["sum", stat] = db.stats_df[stat].sum()
 	
-	# export("myfuncs/get_sum_stats", db.stats_df, "stats_df.csv")
+	# export("myfuncs/get_sum_stats", db.stats_df, "stats_df.csv") #REMOVE
 	return time("calc summary stats")
 
+
+def get_msg_range(i: int) -> None:
+	msg_date = db.chat_p_sender[i].value_counts().sort_index()
+	chat_date_range = pd.date_range(msg_date.index[0], msg_date.index[-1])
+	msg_range = pd.Series(index=chat_date_range, dtype=int)
+	for date in chat_date_range.strftime("%Y-%m-%d"):
+		msg_range[date] = msg_date[date] if date in msg_date.index else 0
+	return msg_range
+
+
+def extract_time_stats(msg_p_date: pd.Series) -> tuple:
+	"""
+	Extracts the first and last message date from the message per date series.
+	"""
+	first = 
+	return msg_p_date.index[0],msg_p_date.index[-1]
 
 # ----------------------------------------------------------------
 #                          word statistics
@@ -249,7 +277,7 @@ def calc_word_stats(df: pd.DataFrame) -> pd.DataFrame:
 	word_cloud(words_str, df.name)
 	word_freq = pd.Series(words_str.lower().split()).value_counts().rename(df.name+ " common words")
 
-	# export("myfuncs/calc_word_stats", word_freq, f"common_words{df.name}.csv")
+	# export("myfuncs/calc_word_stats", word_freq, f"common_words{df.name}.csv") #REMOVE
 	return word_freq
 
 
@@ -306,15 +334,15 @@ def get_txt_reports() -> list[str]:
 		reports_list[-1] += (f"\nYou missed {y(16)} by {s}.") if db.stats_df.iat[i, 16] > 0 else ""
 	
 	# General report about the chat
-	i = len(db.senders)
+	i = db.sc
 	reports_list.append([f"{y(0,6,18)}",
-		f"The average message length is {y(1)}.",
-		f"The {len(db.senders)} senders ...",
+		f"A average message between {say(*db.senders) if db.sc < 3 else str(db.sc)} is {y(1)} long and contains {y(2)}.",
+		f"The {db.sc} senders ...",
 		f"... sent {y(11,7,8,10,9)}",
 		f"... shared {y(12,13,14,17)}",
 		f"... deleted {y(15)} in this chat"]) # add report to the list
 	
-	# export("myfuncs/get_reports", "\n\n".join(reports_list), "reports.txt")
+	# export("myfuncs/get_reports", "\n\n".join(reports_list), "reports.txt") #REMOVE
 	time("txt report creation")
 	return reports_list
 
@@ -324,32 +352,81 @@ def get_txt_reports() -> list[str]:
 
 def make_plots() -> None:
 	plot0()
+	plot1()
+	time_series()
 	return time("make plots")
 
 
-def cmap(cm_name: str, countable):
+def cmap(countable=db.senders, cm_name: str="Greens_r"):
 	if type(countable) != int:
 		countable = len(countable)
 	return cm.get_cmap(cm_name)(np.linspace(.2, .8, countable+1))
 
 
-def time_series():
-	z = db.chat_og["Date"].value_counts()
-	z1 = z.to_dict() #converts to dictionary
-	db.chat_og["Msg_count"] = db.chat_og["Date"].map(z1)
-	### Timeseries plot 
-	fig = px.line(x=db.chat_og["Date"], y=db.chat_og["Msg_count"])
-	fig.update_layout(title="Analysis of number of messages using TimeSeries plot.", xaxis_title="Month", yaxis_title="No. of Messages")
-	fig.update_xaxes(nticks=20)
-	fig.show()
+def time_series(s_no: int=-1) -> None:
+	if s_no == -1:
+		msg_p_date = x
+	else:
+		msg_p_date = db.senders[s_no]["date"].value_counts().sort_index() #TODO: fix this
+	chat_date_range = pd.date_range(start=msg_p_date.index[0], end=msg_p_date.index[-1])
+
+	msg_date = pd.Series(index=chat_date_range, dtype=int)
+	for date in chat_date_range.strftime("%Y-%m-%d"):
+		msg_date[date] = msg_p_date[date] if date in msg_p_date.index else 0
+
+	fig, ax = plt.subplots(figsize=(10,4))
+
+	ax.plot(msg_date.index, msg_date.values, color="green")
+	# Major ticks every half year, minor ticks every month
+	ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 7)))
+	ax.xaxis.set_minor_locator(mdates.MonthLocator())
+	ax.grid(True)
+	ax.set_ylabel("no. messages")
+	ax.set_title("Messages per day")
+	ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
+
+	fig.savefig("data/output/images/firstpage/time_series.png", transparent=True)
 	return
 
 
+def bar_plotter(results, category_names):
+    labels = list(results.keys())
+    data = np.array(list(results.values()))
+    data_cum = data.cumsum(axis=1)
+    category_colors = cmap(data.shape[1])
+    fig, ax = plt.subplots(figsize=(9.2, 5))
+    ax.xaxis.set_visible(False)
+    ax.yaxis.set_visible(True if len(results) > 1 else False)
+    ax.set_xlim(0, np.sum(data, axis=1).max())
+    for i, (colname, color) in enumerate(zip(category_names, category_colors)):
+        widths = data[:, i]
+        starts = data_cum[:, i] - widths
+        rects = ax.barh(labels, widths, left=starts, label=colname, color=color)
+        text_color = "white" if color[0] * color[1] * color[2] < 0.5 else "darkgrey"
+        ax.bar_label(rects, label_type="center", color=text_color)
+    ax.legend(ncol=len(category_names), bbox_to_anchor=(0.5, 1.1), loc="upper center", fontsize="x-small")
+    return fig, ax
+
+
+
+
 def plot0() -> None:
-	# create pie chart from msg_count in stats_df
-	plt.pie(db.stats_df.iloc[0:-1, 0], startangle=90, colors=cmap("Greens_r", db.senders), counterclock=False, autopct="%1.1f%%", wedgeprops={"ec":"w"})
+	"""
+	create pie chart from msg_count in stats_df
+	"""
+	plt.pie(db.stats_df.iloc[0:-1, 0], startangle=90, colors=cmap(db.senders), counterclock=False, autopct="%1.2f%%", wedgeprops={"ec":"w"}, textprops={"c":"w"})
 	plt.legend(labels=db.senders, title="Sender:", shadow=True, loc="best")
 	return plt.savefig("data/output/images/firstpage/plot0.png", transparent=True)
+
+
+def plot1() -> None:
+	"""
+	create bar chart from sum row in stats_df
+	"""
+	bar_plotter({"a":db.stats_df.iloc[-1].iloc[list(db.plot1_dict.keys())]}, list(db.plot1_dict.values()))
+	return plt.savefig("data/output/images/firstpage/plot1.png", transparent=True)
+
+
 
 
 def plot_barh(df: pd.DataFrame, title: str, x_label: str, y_label: str, color: str) -> None:
@@ -415,6 +492,27 @@ def new_section(size: int=0, style: str="", space: int=0, np: int=0) -> None:
 	return None
 
 
+def print_stats(s_no: int=-1) -> None:
+	"""
+	Prints the statistics of a sender to the pdf file
+	"""
+	l1 = [11, 12, 7, 13, 8, 14, 10, 17, 9]
+	w, h = 24, 7
+
+	for i, x in enumerate(l1):
+		if i == 0:
+			pdf.set_font("Arial", "B", 12)
+			pdf.cell(w*4, h+2, "Media types and amount sent", 0, 1, "C")
+			pdf.set_font("Arial", "", 11)
+		value = str(db.stats_df.iat[s_no if s_no != -1 else db.sc, x])
+		item = list(db.stats_dict.values())[x] + "s" if value != 1 else ""
+		pdf.cell(w, h, item.capitalize(), 1, 0, "C")
+		pdf.cell(w, h, value, 1, 0, "C")
+		if i % 2 != 0:
+			pdf.ln(h)
+	return None
+
+
 def make_pdf_report() -> None:
 	"""
 	Creates a pdf file with a summary of the chat and the statistics of each sender
@@ -424,23 +522,27 @@ def make_pdf_report() -> None:
 	new_section(10, space=5)
 	pdf.cell(0, 12, f"between {say(*db.senders)}", align="C")
 	
-	new_section(10, space=20)
-	pdf.cell(90, 1, "This chat contained:" )
-	new_section(14, "B", space=4)
-	pdf.cell(120, 1, "1563330 messages, 6229 media and 34226 emojis")
-	# pdf.cell(120, 1, db.reports[len(db.senders)][0])
+	new_section(11, space=20)
+	pdf.cell(90, 1, "This chat contains" )
+	new_section(14, "B", space=3)
+	pdf.multi_cell(110, 5, db.reports[db.sc][0])
 
+	new_section(space=4)
+	print_stats()
 
-	new_section(10, space=5)
-	pdf.multi_cell(90, 4, "\n".join(db.reports[len(db.senders)][1:]))
 	pdf.image("data/output/images/firstpage/plot0.png", x=80, y=20, w=150)
 
+	pdf.image("data/output/images/firstpage/time_series.png", x=0, y=120, w=210)
+
+	new_section(11, space=15)
+	pdf.multi_cell(96, 4, db.reports[db.sc][1])
+
+
 	for i, s in enumerate(db.senders):
-		# 
 		new_section(16, "B", np=2)
 		pdf.cell(0, 10, "WhatsApp Chat Statistics", align="C")
-		new_section(12, space=5)
-		pdf.cell(0, 10, "for " + s , align="C")
+		new_section(10, space=5)
+		pdf.cell(0, 12, f"for {s} (sender no. {i+1})", align="C")
 
 		new_section(8, space=20)
 		pdf.multi_cell(90, 4, db.reports[i])
