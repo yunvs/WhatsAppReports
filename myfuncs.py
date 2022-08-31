@@ -22,11 +22,12 @@ def time(task: str="untitled") -> None:
 	"""
 	ts.append(timer())
 	if task == "end":
-		print(BOLD(BLUE("main.py"), "took", ts[-1] - ts[0], f"seconds to complete (minus imports {ts[-1] - ts[1]} seconds)"))
-		print(BLUE(pd.concat([db.tt, pd.DataFrame([["- -", "- -"], ["## main.py ##", ts[-1] - ts[0]], ["- imports", ts[-1] - ts[1]]])])))
+		# print(BLUE(db.tt))
+		db.tt = pd.concat([db.tt, pd.DataFrame([["- -", "- -"], ["## main.py ##", ts[-1] - ts[0]], ["- imports", ts[-1] - ts[1]]])])
+		print(f"main.py took {BOLD(ts[-1] - ts[0])} sec. to complete (without the imports {BOLD(ts[-1] - ts[1])} sec.)")
 		return
 	db.tt.loc[len(db.tt)] = [task, ts[-1] - ts[-2]]
-	print(BLUE(task) + " compleded in " + BOLD(ts[-1] - ts[-2], "sec."))
+	print(f"{BLUE(task)} compleded in " + BOLD(ts[-1] - ts[-2], "sec."))
 
 
 db.tt = pd.DataFrame(columns=[0, 1])
@@ -45,21 +46,29 @@ def export(location: str=None, data=None, name: str=None, database: bool=False) 
 	"""
 	if not database:
 		path = f"data/testing/exports/{location}/" 
+		if type(data) != pd.DataFrame:
+			data = pd.DataFrame(data)
 		try:
-			if name.endswith(".csv"):
 				return data.to_csv(path + name, index=True)
-			elif name.endswith(".txt"):
-				with open(path + name, "w") as textfile:
-					textfile.write(str(data))
 		except FileNotFoundError:
 			import os
 			os.makedirs(path, exist_ok=True)
 			return export(location, data, name) 
 	else:
+		export("database", db.chat_og, "chat_og_df.csv")
 		export("database", db.chat, "chat_df.csv") 
+		export("database", db.senders, "senders_df.csv")
+		export("database", db.word_freqs, "word_freqs_df.csv")
 		export("database", db.stats_df, "stats_df.csv") 
-		export("database", pd.DataFrame(db.senders), "senders_df.csv") 
-		export("database", db.chat_og, "chat_og.csv") 
+		export("database", db.time_stats_df, "time_stats_df_df.csv")
+		export("database", db.msg_ranges, "msg_ranges_df.csv")
+		export("database", db.reports, "reports_df.csv")
+		export("database", db.cwords_df, "cwords_df.csv")
+		export("database", db.time_stats, "time_stats_df.csv")
+		export("database", db.tt, "time_df.csv")
+		for i in range(db.sc+1):
+			export("database", db.chat_per_s[i], f"chat_per_s{i}_df.csv")
+			export("database", db.chat_per_s_clean, f"chat_per_s_clean_df.csv")
 		time("database exports") 
 
 
