@@ -64,10 +64,10 @@ senders: list[str] = list()
 sc: int = len(senders)
 """ #tobefilled: count of senders """
 
-sender_chats = list()
+chat_per_s = list()
 """ #tobefilled: Chat per sender [0: chat from sender no.1, 1: chat from sender no.2, ... sc: chat from all senders] """
 
-sender_chats_clean = list()
+chat_per_s_clean = list()
 """ #tobefilled: clean chat per sender [0: chat from sender no.1, 1: chat from sender no.2, ... sc: chat from all senders] """
 
 word_freqs = list()

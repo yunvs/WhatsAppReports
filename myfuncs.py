@@ -191,6 +191,7 @@ def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 				count += key_df.shape[0]
 	
 	# export("myfuncs/cleanse_df", df, f"df_clean_{sender}.csv") #REMOVE
+	db.chat_per_s_clean.append(df)
 	time(f"cleaning df for {db.senders.index(sender)+1}")
 
 	# db.stats_df.at[sender, "polarity_avg"] = calc_polarity(df, db.senders.index(sender)+1)
@@ -236,8 +237,8 @@ def calc_sum_stats() -> None:
 	return time("calc summary stats")
 
 
-def get_msg_range(i: int) -> None:
-	msg_date = db.chat_p_sender[i].value_counts().sort_index()
+def create_msg_range(i: int) -> None:
+	msg_date = db.chat_per_s[i]["date"].value_counts().sort_index()
 	chat_date_range = pd.date_range(msg_date.index[0], msg_date.index[-1])
 	msg_range = pd.Series(index=chat_date_range, dtype=int)
 	for date in chat_date_range.strftime("%Y-%m-%d"):
