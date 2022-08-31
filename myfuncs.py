@@ -297,32 +297,31 @@ def calc_word_stats(df: pd.DataFrame) -> pd.DataFrame:
 # --------------------------------------------
 
 
-def say(*args, spaces: bool=False) -> str:
+def sstr(style: int=0) -> str:
 	"""
-	Returns a string of strings/numbers which are divided with spaces, commas 
-	and the word "and".
+	Returns a string represtaion of the senders
+	style= 0: auto (default), 1: the n senders, 2: s_no1, s_no2 and s_no3 etc.
 	"""
-	listing = str()
-	for i, arg in enumerate(args):
-		if i != 0:
-			listing += " " if spaces else ", " if i+1 < len(args) else " and "
-		listing += str(arg)
-	return listing
+	short, long = f"the {str(db.sc)} senders", pprint(*db.senders)
+	if style != 0:
+		return short if style == 1 else long
+	else:
+		return long if db.sc < 3 else short
 
 
-def calc_numerus(amount: int, term: str) -> str:
+def calc_num(n: int, term: str) -> str:
 	"""
 	Returns the correct plural form of a word depending on the amount passed.
 	"""
-	s = (str(amount) if amount > 1 else ("one" if amount == 1 else "no")) + " " + term
-	return s + ("s" if amount != 1 and term not in ("media", "polarity") else "")
+	s = (str(n) if n > 1 else ("one" if n == 1 else "no")) + " " + term
+	return s + ("s" if n != 1 and term not in ("media", "polarity") else "")
 
 
-def get_stat_pair(stat_idx: int, sender_idx: int) -> tuple[int, str]:
+def get_stat_pair(stat: int, sender: int) -> tuple[int, str]:
 	"""
 	Returns the value and term of a specific statistic.
 	"""
-	return db.stats_df.iat[sender_idx, stat_idx], list(db.stats_dict.values())[stat_idx]
+	return db.stats_df.iat[sender, stat], list(db.stats_dict.values())[stat]
 
 
 def get_txt_reports() -> list[str]:
@@ -332,28 +331,23 @@ def get_txt_reports() -> list[str]:
 	"""
 	reports_list, i = list(), int()
 
-	def y(*idxs): return say(*[calc_numerus(*get_stat_pair(x, i)) for x in idxs])
+	def y(*idxs): return pprint(*[calc_num(*get_stat_pair(x, i)) for x in idxs])
+	def x(*idxs): return pprint(*[db.time_stats_df[i,z] for z in idxs])
 
 	for i, s in enumerate(db.senders): # for each sender create a sender report
-		reports_list.append("\n".join([f"{say(s)}...",
-			f"... sent {y(0,6,18)} in this chat.",
-			f"... average length of a message is {y(1,2)}.",
+		reports_list.append([y(0,6,18),
+			f"A average message from {s} is {y(1)} long and contains {y(2)}.",
 			f"... longest message was {y(3,4)} long.",
-			f"... sent {y(11,7,8,10,9)}"
-			F"... shared {y(12,13,14,17)}",
-			f"... deleted {y(15)} in this chat"]))
-		reports_list[-1] += (f"\nYou missed {y(16)} by {s}.") if db.stats_df.iat[i, 16] > 0 else ""
+			f"... deleted {y(15)} in this chat"])
+		if db.stats_df.iat[i, 16] != 0:
+			reports_list[-1] += (f"\nYou missed {y(16)} by {s}.") 
 	
 	# General report about the chat
 	i = db.sc
-	reports_list.append([f"{y(0,6,18)}",
-		f"A average message between {say(*db.senders) if db.sc < 3 else str(db.sc)} is {y(1)} long and contains {y(2)}.",
-		f"The {db.sc} senders ...",
-		f"... sent {y(11,7,8,10,9)}",
-		f"... shared {y(12,13,14,17)}",
-		f"... deleted {y(15)} in this chat"]) # add report to the list
+	reports_list.append([y(0,6,18),
+	f"A average message between {sstr()} is {y(1)} long and contains {y(2)}." 
+	+ f"\n{y(15)} were deleted by them."]) # add report to the list
 	
-	# export("myfuncs/get_reports", "\n\n".join(reports_list), "reports.txt") #REMOVE
 	time("txt report creation")
 	return reports_list
 
