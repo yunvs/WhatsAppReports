@@ -43,7 +43,7 @@ calc_time_stats()  # get the time stats for the chat
 # bar.text = "Creating plots and tables"
 make_plots()
 
-db.reports = get_txt_reports()  # get general sender stats for the chat
+get_txt_reports()  # get general sender stats for the chat
 
 
 # bar.text = "Creating and saving report @ data/output/pdfs/"

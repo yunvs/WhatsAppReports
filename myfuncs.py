@@ -315,7 +315,7 @@ def calc_word_stats(df: pd.DataFrame, i: int) -> pd.DataFrame:
 # --------------------------------------------
 
 
-def sstr(style: int=0) -> str:
+def ss(style: int=0) -> str:
 	"""
 	Returns a string represtaion of the senders
 	style= 0: auto (default), 1: the n senders, 2: s_no1, s_no2 and s_no3 etc.
@@ -354,20 +354,22 @@ def get_txt_reports() -> list[str]:
 
 	for i, s in enumerate(db.senders): # for each sender create a sender report
 		reports_list.append([y(0,6,18),
-			f"A average message from {s} is {y(1)} long and contains {y(2)}.",
-			f"... longest message was {y(3,4)} long.",
-			f"... deleted {y(15)} in this chat"])
+			f"A average message from {s} is {y(1)} long and contains {y(2)}."
+			+ f"Their longest message was {y(3,4)} long.",
+			f"\n{y(15)} were deleted by {s}.",
+			])
 		if db.stats_df.iat[i, 16] != 0:
-			reports_list[-1] += (f"\nYou missed {y(16)} by {s}.") 
+			reports_list.append(f"\nYou missed {y(16)} by {s}.")
 	
-	# General report about the chat
+	# General report about all chat messages
 	i = db.sc
 	reports_list.append([y(0,6,18),
-	f"A average message between {sstr()} is {y(1)} long and contains {y(2)}." 
-	+ f"\n{y(15)} were deleted by them."]) # add report to the list
+	f"A average message between {ss()} is {y(1)} long and contains {y(2)}."
+	+ f"The longest message was {y(3,4)} long.",
+	f"{y(15)} were deleted by {ss()}."]) # add report to the list
 	
-	time("txt report creation")
-	return reports_list
+	db.reports = reports_list
+	return time("txt report creation")
 
 
 # ----------------------------------------------------------------
@@ -510,7 +512,7 @@ def new_section(size: int=0, style: str="", space: int=0, np: int=0) -> None:
 # 		pdf.ln(cell_height) # next row of table
 
 
-def add_title_footer(s_no: int=-1) -> None:
+def add_title_footer(n: int=-1) -> None:
 	"""
 	Prints the title of the page
 	"""
@@ -521,7 +523,7 @@ def add_title_footer(s_no: int=-1) -> None:
 	new_section(18, "B")
 	pdf.cell(0, 10, "WhatsApp Chat Statistics", align="C")
 	new_section(12, space=5)
-	pdf.cell(0, 12, "for "+ str(sstr() if s_no == -1 else db.senders[s_no]), align="C")
+	pdf.cell(0, 12, "for "+ str(ss() if n == -1 else db.senders[n]), align="C")
 
 	# Create footer of current page
 	pdf.set_xy(0, 270)
@@ -551,7 +553,7 @@ def print_stats(s_no: int=-1, w: int=24, h: int=6) -> None:
 
 def make_pdf_report() -> None:
 	"""
-	Creates a pdf file with a summary of the chat and the statistics of each sender
+	Creates a pdf file with a summary of the chat and the statistics
 	"""
 	add_title_footer()
 	path = "data/output/images/page1/"
@@ -584,7 +586,7 @@ def make_pdf_report() -> None:
 		print_stats(i)
 
 		new_section(11, space=14)
-		pdf.multi_cell(110, 4, db.reports[db.sc][1])
+		pdf.multi_cell(110, 4, db.reports[i][1])
 
 		
 		pdf.image(path+"_ts.png", x=0, y=120, w=210)
