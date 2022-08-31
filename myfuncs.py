@@ -357,13 +357,15 @@ def get_txt_reports() -> list[str]:
 	time("txt report creation")
 	return reports_list
 
+
 # ----------------------------------------------------------------
 # 				Functions to create images for the report
 # ----------------------------------------------------------------
 
+
 def make_plots() -> None:
-	plot0()
-	plot1()
+	msg_pie()
+	# media_bar()
 	time_series()
 	return time("make plots")
 
@@ -374,29 +376,25 @@ def cmap(countable=db.senders, cm_name: str="Greens_r"):
 	return cm.get_cmap(cm_name)(np.linspace(.2, .8, countable+1))
 
 
-def time_series(s_no: int=-1) -> None:
-	if s_no == -1:
-		msg_p_date = x
-	else:
-		msg_p_date = db.senders[s_no]["date"].value_counts().sort_index() #TODO: fix this
-	chat_date_range = pd.date_range(start=msg_p_date.index[0], end=msg_p_date.index[-1])
-
-	msg_date = pd.Series(index=chat_date_range, dtype=int)
-	for date in chat_date_range.strftime("%Y-%m-%d"):
-		msg_date[date] = msg_p_date[date] if date in msg_p_date.index else 0
-
+def time_series() -> None:
+	"""
+	Creates a time series plot of the messages sent per day.
+	"""
+	for i, range in enumerate(db.msg_ranges):
 	fig, ax = plt.subplots(figsize=(10,4))
 
-	ax.plot(msg_date.index, msg_date.values, color="green")
+		ax.plot(range.index, range.values, color="green")
 	# Major ticks every half year, minor ticks every month
-	ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 7)))
-	ax.xaxis.set_minor_locator(mdates.MonthLocator())
+		ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 5, 9), bymonthday=15))
+		ax.xaxis.set_minor_locator(mdates.MonthLocator(bymonthday=15))
 	ax.grid(True)
 	ax.set_ylabel("no. messages")
 	ax.set_title("Messages per day")
 	ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
 
-	fig.savefig("data/output/images/firstpage/time_series.png", transparent=True)
+		page = "page1/" if i == db.sc else f"senderpages/s{str(i)}_"
+		fig.savefig(f"data/output/images/{page}ts.png", transparent=True)
+		plt.close(fig)
 	return
 
 
@@ -421,30 +419,34 @@ def bar_plotter(results, category_names):
 
 
 
-def plot0() -> None:
+def msg_pie() -> None:
 	"""
 	create pie chart from msg_count in stats_df
 	"""
+	i = db.sc #TODO
 	plt.pie(db.stats_df.iloc[0:-1, 0], startangle=90, colors=cmap(db.senders), counterclock=False, autopct="%1.2f%%", wedgeprops={"ec":"w"}, textprops={"c":"w"})
 	plt.legend(labels=db.senders, title="Sender:", shadow=True, loc="best")
-	return plt.savefig("data/output/images/firstpage/plot0.png", transparent=True)
+	page = "page1/" if i == db.sc else f"senderpages/s{str(db.sc)}_"
+	plt.savefig(f"data/output/images/{page}msg_pie.png", transparent=True)
+	plt.close()
+	return
 
 
-def plot1() -> None:
+def media_bar() -> None:
 	"""
 	create bar chart from sum row in stats_df
 	"""
 	bar_plotter({"a":db.stats_df.iloc[-1].iloc[list(db.plot1_dict.keys())]}, list(db.plot1_dict.values()))
-	return plt.savefig("data/output/images/firstpage/plot1.png", transparent=True)
-
-
+	plt.savefig("data/output/images/page1/media_bar.png", transparent=True)
+	plt.close()
+	return
 
 
 def plot_barh(df: pd.DataFrame, title: str, x_label: str, y_label: str, color: str) -> None:
 	df.plot.barh(x=x_label, y=y_label, color=color, figsize=(10,5), legend=False, title=title)
-	return plt.savefig(f"data/output/images/senderpages/barh_{df.name}.png", transparent=True)
-
-
+	plt.savefig(f"data/output/images/senderpages/barh_{df.name}.png", transparent=True)
+	plt.close()
+	return
 
 
 # --------------------------------------------
@@ -456,6 +458,27 @@ pdf = FPDF()
 
 xys: list[tuple[int, int]] = list() # last x, y coordinates
 sizes: list[int] = list() # last text sizes
+
+
+def get_coord(x_offset: int=0, y_offset: int=0) -> tuple[int, int]:
+	"""
+	Returns the x, y cordinates on the current page
+	"""
+	return (pdf.get_x() + x_offset), (pdf.get_y() + y_offset)
+
+
+def new_section(size: int=0, style: str="", space: int=0, np: int=0) -> None:
+	"""
+	Creates a new section in the pdf file and sets the font size and style.
+	np: 0 = no new page (default), 1 = new page, 2 = new page and new section
+	"""
+	pdf.add_page() if np in (1, 2) else None # create new page
+	if np in (0, 2): # create new section	on current or new page
+		pdf.ln(space)
+		xys.append({0: pdf.get_x(), 1: pdf.get_y()})
+		sizes.append(size) if size != 0 else None
+		pdf.set_font("Arial", style, size if size != 0 else sizes[-1])
+	return None
 
 
 # def print_df_to_pdf(df: pd.DataFrame, cell_width: int = 25, cell_height: int = 6) -> None:
@@ -475,47 +498,37 @@ sizes: list[int] = list() # last text sizes
 # 		pdf.ln(cell_height) # next row of table
 
 
-def get_coord(x_offset: int=0, y_offset: int=0) -> tuple[int, int]:
+def add_title_footer(s_no: int=-1) -> None:
 	"""
-	Returns the x, y cordinates on the current page
+	Prints the title of the page
 	"""
-	return (pdf.get_x() + x_offset), (pdf.get_y() + y_offset)
+	pdf.set_margins(15, 20, 15) if pdf.page_no() == 0 else None
+	pdf.add_page()
 
+	# Create title of current page
+	new_section(18, "B")
+	pdf.cell(0, 10, "WhatsApp Chat Statistics", align="C")
+	new_section(12, space=5)
+	pdf.cell(0, 12, "for "+ str(sstr() if s_no == -1 else db.senders[s_no]), align="C")
 
-def new_section(size: int=0, style: str="", space: int=0, np: int=0) -> None:
-	"""
-	Creates a new section in the pdf file and sets the font size and style.
-	np: -1 = only footer, 0 = no new page (default), 1 = new page, 2 = new page and new section
-	"""
-	if pdf.page_no() == 0: # create first page
-		pdf.set_margins(15, 20, 15)
-		pdf.add_page()
-	if np in (-1, 1, 2): # create footer for current page
+	# Create footer of current page
 		pdf.set_xy(0, 270)
-		new_section(8, "I")
+	new_section(10, "I")
 		pdf.cell(0, 5, f"Page {pdf.page_no()}", align="C")
-	pdf.add_page() if np in (1, 2) else None # create new page
-	if np in (0, 2): # create new section	on current or new page
-		pdf.ln(space)
-		xys.append({"x": pdf.get_x(), "y": pdf.get_y()})
-		sizes.append(size) if size != 0 else None
-		pdf.set_font("Arial", style, size if size != 0 else sizes[-1])
-	return None
+	pdf.set_xy(*xys[-2].values())
+	return
 
 
-def print_stats(s_no: int=-1) -> None:
+def print_stats(s_no: int=-1, w: int=24, h: int=6) -> None:
 	"""
 	Prints the statistics of a sender to the pdf file
 	"""
-	l1 = [11, 12, 7, 13, 8, 14, 10, 17, 9]
-	w, h = 24, 7
-
-	for i, x in enumerate(l1):
+	for i, x in enumerate([11, 12, 7, 13, 8, 14, 10, 17, 9]):
 		if i == 0:
-			pdf.set_font("Arial", "B", 12)
+			pdf.set_font("Arial", "", 12)
 			pdf.cell(w*4, h+2, "Media types and amount sent", 0, 1, "C")
 			pdf.set_font("Arial", "", 11)
-		value = str(db.stats_df.iat[s_no if s_no != -1 else db.sc, x])
+		value = str(db.stats_df.iat[db.sc if s_no == -1 else s_no, x])
 		item = list(db.stats_dict.values())[x] + "s" if value != 1 else ""
 		pdf.cell(w, h, item.capitalize(), 1, 0, "C")
 		pdf.cell(w, h, value, 1, 0, "C")
@@ -528,42 +541,45 @@ def make_pdf_report() -> None:
 	"""
 	Creates a pdf file with a summary of the chat and the statistics of each sender
 	"""
-	new_section(16, "B")
-	pdf.cell(0, 10, "WhatsApp Chat Statistics", align="C")
-	new_section(10, space=5)
-	pdf.cell(0, 12, f"between {say(*db.senders)}", align="C")
+	add_title_footer()
+	path = "data/output/images/page1/"
 	
 	new_section(11, space=20)
-	pdf.cell(90, 1, "This chat contains" )
+	pdf.cell(90, 1, "This conversation contains")
 	new_section(14, "B", space=3)
 	pdf.multi_cell(110, 5, db.reports[db.sc][0])
 
 	new_section(space=4)
 	print_stats()
 
-	pdf.image("data/output/images/firstpage/plot0.png", x=80, y=20, w=150)
+	new_section(11, space=14)
+	pdf.multi_cell(110, 4, db.reports[db.sc][1])
 
-	pdf.image("data/output/images/firstpage/time_series.png", x=0, y=120, w=210)
-
-	new_section(11, space=15)
-	pdf.multi_cell(96, 4, db.reports[db.sc][1])
+	pdf.image(f"{path}msg_pie.png", x=80, y=20, w=150)
+	pdf.image(f"{path}ts.png", x=0, y=120, w=210)
 
 
 	for i, s in enumerate(db.senders):
-		new_section(16, "B", np=2)
-		pdf.cell(0, 10, "WhatsApp Chat Statistics", align="C")
-		new_section(10, space=5)
-		pdf.cell(0, 12, f"for {s} (sender no. {i+1})", align="C")
+		add_title_footer(i)
+		path = "data/output/images/senderpages/s" + str(i)
 
-		new_section(8, space=20)
-		pdf.multi_cell(90, 4, db.reports[i])
+		new_section(11, space=20)
+		pdf.cell(90, 1, f"{s} messages contain")
+		new_section(14, "B", space=3)
+		pdf.multi_cell(110, 5, db.reports[i][0])
 
-		new_section(10, "B")
-		pdf.set_xy(105, xys[-1]["y"] - 5)
-		pdf.cell(90, 4, f"{s} WordCloud", align="C")
-		n = s.lower().replace(" ", "")
-		pdf.image(f"data/output/images/senderpages/{n}_wc.png", x=105, y=xys[-2]["y"], w=90)
+		new_section(space=4)
+		print_stats(i)
 
-	new_section(np=-1)
+		new_section(11, space=14)
+		pdf.multi_cell(110, 4, db.reports[db.sc][1])
+
+
+		pdf.image(path+"_ts.png", x=0, y=120, w=210)
+
+
+		add_title_footer(i)
+		pdf.image(path+"_wc.png", x=105, y=40, w=90)
+
 	pdf.output("data/output/pdfs/WA-Report.pdf", "F")
 	return time("PDF creation")
