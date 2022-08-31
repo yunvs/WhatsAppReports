@@ -49,7 +49,7 @@ def export(location: str=None, data=None, name: str=None, database: bool=False) 
 		if type(data) != pd.DataFrame:
 			data = pd.DataFrame(data)
 		try:
-				return data.to_csv(path + name, index=True)
+			return data.to_csv(path + name, index=True)
 		except FileNotFoundError:
 			import os
 			os.makedirs(path, exist_ok=True)
@@ -175,7 +175,7 @@ def prep_db() -> None:
 	db.chat_og = db.chat.copy() # Creates copy for later using
 	db.senders = list(db.chat["sender"].unique()) # Creates list of senders
 	db.sc = len(db.senders) # Number of senders
-
+	
 	db.stats_df = pd.DataFrame(index=db.senders, columns=db.stats_dict.keys())
 	db.time_stats_df = pd.DataFrame(index=db.senders, columns=db.time_stats_cols)
 	
@@ -256,38 +256,56 @@ def create_msg_range(i: int) -> None:
 	return msg_range
 
 
-def extract_time_stats(msg_p_date: pd.Series) -> tuple:
+def calc_time_stats() -> None:
 	"""
 	Extracts the first and last message date from the message per date series.
 	"""
-	first = 
-	return msg_p_date.index[0],msg_p_date.index[-1]
+	for i in range(db.sc+1):
+		row = db.senders[i] if i < db.sc else "sum"
+		msg_range = create_msg_range(i)
+		db.msg_ranges.append(msg_range)
+
+		db.time_stats_df.at[row, "first_msg"] = msg_range.index[0]
+		db.time_stats_df.at[row, "last_msg"] = msg_range.index[-1]
+
+		db.time_stats_df.at[row, "max_day"] = msg_range[msg_range == msg_range.max()].index[0]
+		db.time_stats_df.at[row, "max_msg"] = msg_range.max()
+
+		db.time_stats_df.at[row, "zero_days"] = msg_range[msg_range == 0].shape[0]
+		db.time_stats_df.at[row, "not_zero_days"] = msg_range[msg_range != 0].shape[0]
+
+		# get the amount of days between the first and last message
+		db.time_stats_df.at[row, "msg_days"] = (db.time_stats_df.at[row, "last_msg"] - db.time_stats_df.at[row, "first_msg"]).days
+
+	time("calc time stats")
+	return
+
 
 # ----------------------------------------------------------------
 #                          word statistics
 # ----------------------------------------------------------------
 
 
-def word_cloud(words: str, name: str) -> None:
+def word_cloud(words: str, i:int) -> None:
 	"""
 	Creates a word cloud of the given words and saves it to the plots folder.
 	"""
-	wc = WordCloud(width=500, height=250, background_color="white", colormap="Greens", stopwords=db.stopset)
-	wc.generate(words.upper())
-	n = name.lower().replace(" ", "")
+	wc = WordCloud(None, 250, 250, background_color="white", colormap="Greens", 
+		stopwords=db.stop_words, min_font_size=10, min_word_length=3, 
+		contour_width=1, max_font_size=50).generate(words.upper())
+	wc.to_file(f"data/output/images/senderpages/s{str(i)}_wc.png")
 
-	return wc.to_file(f"data/output/images/senderpages/{n}_wc.png")
 
-
-def calc_word_stats(df: pd.DataFrame) -> pd.DataFrame:
+def calc_word_stats(df: pd.DataFrame, i: int) -> pd.DataFrame:
 	"""
 	Calculates different statistics about the chat and enters collected data.
 	"""
 	# get all words in the chat
-	words_str = " ".join(df.str.replace("\W", " ", regex=True).str.replace("xURL", " "))
-	word_cloud(words_str, df.name)
-	word_freq = pd.Series(words_str.lower().split()).value_counts().rename(df.name+ " common words")
+	words = " ".join(df.str.replace("\W", " ", regex=True).str.replace("xURL", " "))
+	word_cloud(words, i)
+	word_freq = pd.Series(words.lower().split()).value_counts().rename(df.name + " common words")
 
+	db.word_freqs.append(word_freq)
 	# export("myfuncs/calc_word_stats", word_freq, f"common_words{df.name}.csv") #REMOVE
 	return word_freq
 
@@ -375,16 +393,16 @@ def time_series() -> None:
 	Creates a time series plot of the messages sent per day.
 	"""
 	for i, range in enumerate(db.msg_ranges):
-	fig, ax = plt.subplots(figsize=(10,4))
+		fig, ax = plt.subplots(figsize=(10,4))
 
 		ax.plot(range.index, range.values, color="green")
-	# Major ticks every half year, minor ticks every month
+		# Major ticks every half year, minor ticks every month
 		ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 5, 9), bymonthday=15))
 		ax.xaxis.set_minor_locator(mdates.MonthLocator(bymonthday=15))
-	ax.grid(True)
-	ax.set_ylabel("no. messages")
-	ax.set_title("Messages per day")
-	ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
+		ax.grid(True)
+		ax.set_ylabel("no. messages")
+		ax.set_title("Messages per day")
+		ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
 
 		page = "page1/" if i == db.sc else f"senderpages/s{str(i)}_"
 		fig.savefig(f"data/output/images/{page}ts.png", transparent=True)
@@ -506,9 +524,9 @@ def add_title_footer(s_no: int=-1) -> None:
 	pdf.cell(0, 12, "for "+ str(sstr() if s_no == -1 else db.senders[s_no]), align="C")
 
 	# Create footer of current page
-		pdf.set_xy(0, 270)
+	pdf.set_xy(0, 270)
 	new_section(10, "I")
-		pdf.cell(0, 5, f"Page {pdf.page_no()}", align="C")
+	pdf.cell(0, 5, f"Page {pdf.page_no()}", align="C")
 	pdf.set_xy(*xys[-2].values())
 	return
 
@@ -568,7 +586,7 @@ def make_pdf_report() -> None:
 		new_section(11, space=14)
 		pdf.multi_cell(110, 4, db.reports[db.sc][1])
 
-
+		
 		pdf.image(path+"_ts.png", x=0, y=120, w=210)
 
 
