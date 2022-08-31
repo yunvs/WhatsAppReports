@@ -81,8 +81,8 @@ def fileformat(path_to_file: str) -> str:
 	elif path_to_file.endswith(".zip"):
 		from zipfile import ZipFile
 		with ZipFile(path_to_file, "r") as zip_ref:
-			zip_ref.extractall("data")
-		return "data/_chat.txt"
+			zip_ref.extractall("data/input")
+		return "data/input/_chat.txt"
 	else:
 		return off("Only .txt or .zip files are supported")
 
@@ -162,6 +162,8 @@ def convert_to_df(path: str) -> pd.DataFrame:
 	chat_listed = convert_to_list(path)
 	df = pd.DataFrame(chat_listed, columns=db.df_cols)
 	df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True)
+	df["time"] = pd.to_datetime(df["time"], infer_datetime_format=True)
+
 	db.chat = df
 
 	export("myfuncs/convert_to_df", df, "df_converted.csv") #REMOVE
@@ -207,7 +209,7 @@ def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 	return df  # return the cleaned dataframe
 
 
-def calc_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
+def calc_stats(sender_df: pd.DataFrame) -> None:
 	"""
 	Calculates different statistics about the chat and enters collected data 
 	into the stats dataframe.
@@ -224,9 +226,8 @@ def calc_stats(sender_df: pd.DataFrame) -> pd.DataFrame:
 	db.stats_df.at[s,"emoji_unique"] = (len(emoji_set), emoji_set)
 	# db.stats_df.at[s,"polarity_avg"] = round(db.chat.loc[db.chat["sender"] == s, "polarity"].mean(), 1)
 	
-	# export("myfuncs/calc_stats", db.stats_df, f"stats_df_{s}.csv") #REMOVE
 	time(f"calc stats for sender {db.senders.index(s)+1}")
-	return sender_df
+	return
 
 
 def calc_sum_stats() -> None:
