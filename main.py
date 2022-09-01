@@ -21,8 +21,7 @@ calc_sum_stats()  # get the summary statistics for all senders
 calc_time_stats()  # get the time stats for the chat
 
 # bar.text = "Creating plots and tables"
-make_plots()
-
+plot_data()
 create_txt_reports()  # get general sender stats for the chat
 
 

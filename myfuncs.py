@@ -5,14 +5,16 @@ import database as db  # for access to local database
 from outputstyle import * # for pretty printing
 import numpy as np, pandas as pd # to create dataframes
 import re # for regex 
-import os
 import emojis # to find emoji in messages
 from wordcloud import WordCloud # to create wordclouds
 from matplotlib import pyplot as plt, dates as mdates, cm # to plot figures
 
 from fpdf import FPDF # to create pdfs
 
-from plotly import express as px 
+
+# Unused imports
+# import os
+# from plotly import express as px 
 # from germansentiment import SentimentModel
 # model = SentimentModel()
 
@@ -24,7 +26,7 @@ def time(task: str="untitled") -> None:
 	if task == "end":
 		# print(BLUE(db.tt))
 		db.tt = pd.concat([db.tt, pd.DataFrame([["- -", "- -"], ["## main.py ##", ts[-1] - ts[0]], ["- imports", ts[-1] - ts[1]]])])
-		print(f"\n\nmain.py took {BOLD(ts[-1] - ts[0])} sec. to complete (without the imports {BOLD(ts[-1] - ts[1])} sec.)\n\n")
+		print(f"\nmain.py took {BOLD(ts[-1] - ts[0])} sec. to complete (without the imports {BOLD(ts[-1] - ts[1])} sec.)\n\n")
 		return exit()
 	db.tt.loc[len(db.tt)] = [task, ts[-1] - ts[-2]]
 	print(f"{BLUE(task)} compleded in " + BOLD(ts[-1] - ts[-2], "sec."))
@@ -171,7 +173,7 @@ def convert_to_df(path: str) -> pd.DataFrame:
 	return
 
 
-def prep_db() -> None:
+def prepare_db() -> None:
 	db.chat_og = db.chat.copy() # Creates copy for later using
 	db.senders = list(db.chat["sender"].unique()) # Creates list of senders
 	db.sc = len(db.senders) # Number of senders
@@ -180,6 +182,22 @@ def prep_db() -> None:
 	db.time_stats_df = pd.DataFrame(index=db.senders, columns=db.time_stats_cols)
 	
 	time("prep database")
+	return
+
+
+def seperate_data() -> None:
+	# data seperation, cleansing and data analysis per sender
+	for i, s in enumerate(db.senders):
+		# bar.text = f"Cleaning and analyzing messages from {s}" #REMOVE
+		df = db.chat.loc[db.chat["sender"] == s]  # dataframe with messages from sender
+		db.chat_per_s.append(df)
+		clean_df = cleanse_df(df["message"], s)  # get the stats for each sender
+		calc_stats(clean_df) # calculate the stats for each sender
+		# globals()[f"s{i}_df_clean"] = clean_df
+		calc_word_stats(clean_df, i)
+		# globals()[f"s{i}_word_freq"] = word_freq
+
+	db.chat_per_s.append(db.chat_og)
 	return
 
 
@@ -309,7 +327,8 @@ def calc_word_stats(df: pd.DataFrame, i: int) -> pd.DataFrame:
 
 	db.word_freqs.append(word_freq)
 	# export("myfuncs/calc_word_stats", word_freq, f"common_words{df.name}.csv") #REMOVE
-	return word_freq
+	time(f"calc word stats for sender {str(i+1)}")
+	return
 
 
 # --------------------------------------------
@@ -379,7 +398,7 @@ def create_txt_reports() -> list[str]:
 # ----------------------------------------------------------------
 
 
-def make_plots() -> None:
+def plot_data() -> None:
 	msg_pie()
 	# media_bar()
 	time_series()
@@ -441,7 +460,7 @@ def msg_pie() -> None:
 	"""
 	i = db.sc #TODO
 	plt.pie(db.stats_df.iloc[0:-1, 0], startangle=90, colors=cmap(db.senders), counterclock=False, autopct="%1.2f%%", wedgeprops={"ec":"w"}, textprops={"c":"w"})
-	plt.legend(labels=db.senders, title="Sender:", shadow=True, loc="best")
+	plt.legend(labels=db.senders, title="messages sent", shadow=True, loc="upper right")
 	page = "page1/" if i == db.sc else f"senderpages/s{str(db.sc)}_"
 	plt.savefig(f"data/output/images/{page}msg_pie.png", transparent=True)
 	plt.close()
