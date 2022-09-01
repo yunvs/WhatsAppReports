@@ -24,8 +24,8 @@ def time(task: str="untitled") -> None:
 	if task == "end":
 		# print(BLUE(db.tt))
 		db.tt = pd.concat([db.tt, pd.DataFrame([["- -", "- -"], ["## main.py ##", ts[-1] - ts[0]], ["- imports", ts[-1] - ts[1]]])])
-		print(f"main.py took {BOLD(ts[-1] - ts[0])} sec. to complete (without the imports {BOLD(ts[-1] - ts[1])} sec.)")
-		return
+		print(f"\n\nmain.py took {BOLD(ts[-1] - ts[0])} sec. to complete (without the imports {BOLD(ts[-1] - ts[1])} sec.)\n\n")
+		return exit()
 	db.tt.loc[len(db.tt)] = [task, ts[-1] - ts[-2]]
 	print(f"{BLUE(task)} compleded in " + BOLD(ts[-1] - ts[-2], "sec."))
 
@@ -236,8 +236,10 @@ def calc_sum_stats() -> None:
 	into the stats dataframe.
 	"""
 	for stat in db.stats_dict.keys():
-		if "max" in stat or "unique" in stat or "calls" in stat:
+		if "unique" in stat or "calls" in stat:
 			continue
+		elif "max" in stat:
+			db.stats_df.at["sum", stat] = db.stats_df.loc[:, stat].max()
 		elif "avg" in stat:
 			db.stats_df.at["sum", stat] = round(db.stats_df[stat].mean(), 1)
 		else:
@@ -342,7 +344,7 @@ def get_stat_pair(stat: int, sender: int) -> tuple[int, str]:
 	return db.stats_df.iat[sender, stat], list(db.stats_dict.values())[stat]
 
 
-def get_txt_reports() -> list[str]:
+def create_txt_reports() -> list[str]:
 	"""
 	Creates a report about the sender at the given index which includes the 
 	statistics about their messages or a summary report and returns it.
@@ -354,18 +356,18 @@ def get_txt_reports() -> list[str]:
 
 	for i, s in enumerate(db.senders): # for each sender create a sender report
 		reports_list.append([y(0,6,18),
-			f"A average message from {s} is {y(1)} long and contains {y(2)}."
-			+ f"Their longest message was {y(3,4)} long.",
+			f"A average message from {s} contains {y(1)} ({y(2)})."
+			+ f"\nTheir longest message contains {y(3)} ({y(4)}).",
 			f"\n{y(15)} were deleted by {s}.",
 			])
 		if db.stats_df.iat[i, 16] != 0:
-			reports_list.append(f"\nYou missed {y(16)} by {s}.")
+			reports_list[-1].append(f"\nYou missed {y(16)} by {s}.")
 	
 	# General report about all chat messages
 	i = db.sc
 	reports_list.append([y(0,6,18),
 	f"A average message between {ss()} is {y(1)} long and contains {y(2)}."
-	+ f"The longest message was {y(3,4)} long.",
+	+ f"\nThe longest message was {y(3,4)} long.",
 	f"{y(15)} were deleted by {ss()}."]) # add report to the list
 	
 	db.reports = reports_list

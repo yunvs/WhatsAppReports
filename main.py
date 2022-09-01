@@ -3,7 +3,7 @@
 # with alive_bar(monitor=False, stats=False) as bar:
 # bar.text = "Importing modules"
 
-print("main.py started")
+print("\n\nmain.py started")
 from myfuncs import *
 
 # Only Testing # Initializing Variables for autocomplete ###
@@ -43,7 +43,7 @@ calc_time_stats()  # get the time stats for the chat
 # bar.text = "Creating plots and tables"
 make_plots()
 
-get_txt_reports()  # get general sender stats for the chat
+create_txt_reports()  # get general sender stats for the chat
 
 
 # bar.text = "Creating and saving report @ data/output/pdfs/"
