@@ -310,9 +310,13 @@ def word_cloud(words: str, i:int) -> None:
 	"""
 	Creates a word cloud of the given words and saves it to the plots folder.
 	"""
-	wc = WordCloud(None, 250, 250, background_color="white", colormap="Greens", 
-		stopwords=db.stop_words, min_font_size=10, min_word_length=3, 
-		contour_width=1, max_font_size=50).generate(words.upper())
+	x, y = np.ogrid[:1000, :1000]
+	mask = (x - 500) ** 2 + (y - 500) ** 2 > 400 ** 2
+	mask = 255 * mask.astype(int)
+
+	wc = WordCloud(None, 250, 250, prefer_horizontal=.7,
+			colormap="summer", mode="RGBA", mask=mask, background_color=None,
+			stopwords=db.stop_words, min_word_length=2,).generate(words.upper())
 	wc.to_file(f"data/output/images/senderpages/s{str(i)}_wc.png")
 
 
@@ -368,28 +372,28 @@ def create_txt_reports() -> list[str]:
 	Creates a report about the sender at the given index which includes the 
 	statistics about their messages or a summary report and returns it.
 	"""
-	reports_list, i = list(), int()
+	i = int()
 
 	def y(*idxs): return pprint(*[calc_num(*get_stat_pair(x, i)) for x in idxs])
 	def x(*idxs): return pprint(*[db.time_stats_df[i,z] for z in idxs])
 
 	for i, s in enumerate(db.senders): # for each sender create a sender report
-		reports_list.append([y(0,6,18),
-			f"A average message from {s} contains {y(1)} ({y(2)})."
-			+ f"\nTheir longest message contains {y(3)} ({y(4)}).",
-			f"\n{y(15)} were deleted by {s}.",
+		db.reports.append([y(0,6,18),
+			f"An average message from {s} is {y(2)} ({y(1)}) long. "
+			+ f"Their longest message contained {y(4)} and {y(3)}.",
+			f"{s} deleted {y(15)}.",
 			])
 		if db.stats_df.iat[i, 16] != 0:
-			reports_list[-1].append(f"\nYou missed {y(16)} by {s}.")
+			db.reports[-1].append(f"You missed {y(16)} by {s}.")
 	
 	# General report about all chat messages
 	i = db.sc
-	reports_list.append([y(0,6,18),
-	f"A average message between {ss()} is {y(1)} long and contains {y(2)}."
-	+ f"\nThe longest message was {y(3,4)} long.",
-	f"{y(15)} were deleted by {ss()}."]) # add report to the list
+	db.reports.append([y(0,6,18),
+	f"An average message between {ss()} is {y(2)} ({y(1)}) long. "
+	+ f"The longest message contained {y(4)} and {y(3)}.",
+	f"{ss()} deleted {y(15)}.",
+	]) # add report to the list
 	
-	db.reports = reports_list
 	return time("txt report creation")
 
 
@@ -416,14 +420,14 @@ def time_series() -> None:
 	Creates a time series plot of the messages sent per day.
 	"""
 	for i, range in enumerate(db.msg_ranges):
-		fig, ax = plt.subplots(figsize=(10,4))
+		fig, ax = plt.subplots(figsize=(10,3))
 
 		ax.plot(range.index, range.values, color="green")
 		# Major ticks every half year, minor ticks every month
 		ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 5, 9), bymonthday=15))
 		ax.xaxis.set_minor_locator(mdates.MonthLocator(bymonthday=15))
 		ax.grid(True)
-		ax.set_ylabel("no. messages")
+		ax.set_ylabel("message count")
 		ax.set_title("Messages per day")
 		ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
 
@@ -580,7 +584,7 @@ def make_pdf_report() -> None:
 	path = "data/output/images/page1/"
 	
 	new_section(11, space=20)
-	pdf.cell(90, 1, "This conversation contains")
+	pdf.cell(90, 0, "This conversation contains")
 	new_section(14, "B", space=3)
 	pdf.multi_cell(110, 5, db.reports[db.sc][0])
 
@@ -590,8 +594,8 @@ def make_pdf_report() -> None:
 	new_section(11, space=14)
 	pdf.multi_cell(110, 4, db.reports[db.sc][1])
 
-	pdf.image(f"{path}msg_pie.png", x=80, y=20, w=150)
-	pdf.image(f"{path}ts.png", x=0, y=120, w=210)
+	pdf.image(path+"msg_pie.png", x=83, y=20, w=150)
+	pdf.image(path+"ts.png", x=0, y=120, w=210)
 
 
 	for i, s in enumerate(db.senders):
@@ -599,7 +603,7 @@ def make_pdf_report() -> None:
 		path = "data/output/images/senderpages/s" + str(i)
 
 		new_section(11, space=20)
-		pdf.cell(90, 1, f"{s} messages contain")
+		pdf.cell(90, 0, f"{s} messages contain")
 		new_section(14, "B", space=3)
 		pdf.multi_cell(110, 5, db.reports[i][0])
 
@@ -610,11 +614,11 @@ def make_pdf_report() -> None:
 		pdf.multi_cell(110, 4, db.reports[i][1])
 
 		
+		# add_title_footer(i)
+		pdf.image(path+"_wc.png", x=116, y=33, w=88)
 		pdf.image(path+"_ts.png", x=0, y=120, w=210)
 
 
-		add_title_footer(i)
-		pdf.image(path+"_wc.png", x=105, y=40, w=90)
 
 	pdf.output("data/output/pdfs/WA-Report.pdf", "F")
 	return time("PDF creation")

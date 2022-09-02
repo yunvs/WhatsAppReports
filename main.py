@@ -6,7 +6,7 @@
 print("\n\nmain.py started\n")
 from myfuncs import *
 
-path = db.test_data[1]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.txt
+path = db.test_data[5]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.txt
 
 # bar.text = "Importing and converting data"
 
