@@ -1,3 +1,4 @@
+from turtle import color
 from myfuncs import *
 
 # from timeit import default_timer as timer
@@ -9,9 +10,9 @@ from myfuncs import *
 # import numpy as np
 
 # # ----------------------------------------------------------------
-stats_df = pd.read_csv("data/testing/exports/database/stats_df.csv", index_col=0)
+stats_df = pd.read_csv("data/testing/exports/database/stats_df_demo.csv", index_col=0)
 senders = list(pd.read_csv("data/testing/exports/database/senders_df.csv", index_col=0)["0"])
-chat_og = pd.read_csv("data/testing/exports/database/chat_og.csv", index_col=0)
+chat_og = pd.read_csv("data/testing/exports/database/chat_og_df.csv", index_col=0)
 msg = stats_df.iloc[0:-1, 0]
 # # ----------------------------------------------------------------
 
@@ -65,35 +66,83 @@ def make_pdf_report1() -> None:
 	pdf.output("data/testing/testing.pdf", "F")
 
 
-senders = ["1", "2"]
 
 
 def stacked_bars_media() -> None:
 	"""
 	Plots the stcked bar chRT bout data and senders
 	"""
-
 	# data
 	nums = [11, 7, 8, 10, 9, 12, 13, 14, 17]
 	labels = [list(db.stats_dict.values())[x] for x in nums]
+	width = 1
+	fig, ax = plt.subplots()
 	for i, s in enumerate(senders):
-
-
 		# plotting
-		width = .35
-		fig, ax = plt.subplots()
-		ax.bar(labels, stats_df.iat[i, nums], width, label=s)
+		if i == 0:
+			rect = ax.bar(labels, stats_df.iloc[i, nums], width, label=s)
+		else:
+			rect = ax.bar(labels, stats_df.iloc[i, nums], width, bottom=stats_df.iloc[i-1, nums], label=s)
+		ax.bar_label(rect, label_type="center", padding=4)
+	ax.set_xticks(labels);ax.set_xticklabels(labels, rotation=35)
+	ax.set_ylabel("Amount")
+	ax.set_title("Media by types and sender")
+	ax.legend()
+	plt.show()
+
+def grouped_bars_media() -> None:
+	"""
+	Plots the stcked bar chRT bout data and senders
+	"""
+	# data
+	nums = [11, 7, 8, 10, 9, 17, 12, 13, 14]
+	labels = [list(db.stats_dict.values())[x].capitalize() for x in nums]
+	w = .9 # the width of the bars
+	x = np.arange(len(labels)) # the label locations
+	# max_val = stats_df.iloc[:, nums].max().max()
+	max_val = stats_df.iloc[0:s_count, nums].max().max()
+
+	fig, ax = plt.subplots(figsize=(10,3))
+
+	for i, s in enumerate(senders):
+		# plotting
+		rect = ax.bar((x-w/2) + i*w/s_count, stats_df.iloc[i, nums], w/s_count, label=s, align="edge")
+		ax.bar_label(rect, padding=1) if any([s_count < 4 and max_val < 1000, s_count < 6 and max_val < 100, max_val < 10]) else None
+
+	# Add some text for labels, title and custom x-axis tick labels, etc.
+	ax.set_ylabel("amount");ax.set_title("Media types by sender", loc="left")
+	ax.set_xticks(x);ax.set_xticklabels(labels)
+	ax.set_yticks(np.arange(0, max_val, 50), minor=True)
+	ax.set_ylim([0, max_val+30]);ax.grid(axis="y", lw=.8, ls="--")
+	if s_count < 7:
+		ax.legend(bbox_to_anchor=(1,1.15), fontsize="small", ncol=s_count)
+	else:
+		ax.legend(bbox_to_anchor=(1,1.3), fontsize="small", ncol=round(s_count/2))
+
+	fig.tight_layout()
+
+senders = ["Samia", "Besco"]
+
+
+# stacked_bars_media()
+for i in range(2, 8):
+	s_count = len(senders)
+	grouped_bars_media()
+	plt.savefig(f"data/testing/exports/testing/{str(i)}_senders.png", transparent=True)
+	plt.close()
+	senders.append(f"Lopa{i}")
+	time(f"{str(i)} senders")
 
 
 
 
 
 
-pdf = FPDF()
-pdf.add_page()
-pdf.set_font("Arial", size=11)
-make_pdf_report1()
-time("@make_pdf_report1")
+# pdf = FPDF()
+# pdf.add_page()
+# pdf.set_font("Arial", size=11)
+# make_pdf_report1()
+# time("@make_pdf_report1")
 
 
 
