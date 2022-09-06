@@ -404,8 +404,8 @@ def create_txt_reports() -> list[str]:
 
 def plot_data() -> None:
 	msg_pie()
-	# media_bar()
-	time_series()
+	grouped_madia_bars()
+	message_time_series()
 	return time("make plots")
 
 
@@ -415,7 +415,52 @@ def cmap(countable=db.senders, cm_name: str="Greens_r"):
 	return cm.get_cmap(cm_name)(np.linspace(.2, .8, countable+1))
 
 
-def time_series() -> None:
+def msg_pie() -> None:
+	"""
+	create pie chart from msg_count in stats_df
+	"""
+	i = db.sc #TODO
+	plt.pie(db.stats_df.iloc[0:-1, 0], startangle=90, colors=cmap(db.senders), counterclock=False, autopct="%1.2f%%", wedgeprops={"ec":"w"}, textprops={"c":"w"})
+	plt.legend(labels=db.senders, title="messages sent", shadow=True, loc="upper right")
+	page = "page1/" if i == db.sc else f"senderpages/s{str(db.sc)}_"
+	plt.savefig(f"data/output/images/{page}msg_pie.png", transparent=True)
+	plt.close()
+	return
+
+
+def grouped_madia_bars() -> None:
+	"""
+	Plots the stcked bar chRT bout data and senders
+	"""
+	nums = [11, 7, 8, 10, 9, 17, 12, 13, 14]
+	labels = [list(db.stats_dict.values())[x].capitalize() for x in nums]
+	w = .9 # the width of the bars
+	x = np.arange(len(nums)) # the label locations
+	max_val = db.stats_df.iloc[:db.sc, nums].max().max()
+
+
+	fig, ax = plt.subplots(figsize=(10,3))
+	for i, s in enumerate(db.senders):
+		rect = ax.bar((x-w/2) + i*w/db.sc, db.stats_df.iloc[i, nums], w/db.sc, label=s, align="edge")
+		ax.bar_label(rect, padding=1) if any([db.sc < 4 and max_val < 1000, db.sc < 6 and max_val < 100, max_val < 10]) else None
+
+	ax.set_title("Media types by sender", loc="left"); ax.set_ylabel("amount")
+	ax.set_xticks(x); ax.set_xticklabels(labels)
+	ax.set_yticks(np.arange(0, max_val, 50), minor=True)
+	ax.set_ylim([0, max_val+30]); ax.grid(axis="y", lw=.8, ls="--")
+
+	if db.sc < 7:
+		ax.legend(bbox_to_anchor=(1,1.15), fontsize="small", ncol=db.sc)
+	else:
+		ax.legend(bbox_to_anchor=(1,1.3), fontsize="small", ncol=round(db.sc/2))
+
+	fig.tight_layout()
+	
+	plt.savefig(f"data/testing/exports/testing/{str(i)}_senders.png", transparent=True)
+	plt.close()
+
+
+def message_time_series() -> None:
 	"""
 	Creates a time series plot of the messages sent per day.
 	"""
@@ -454,21 +499,6 @@ def bar_plotter(results, category_names):
         ax.bar_label(rects, label_type="center", color=text_color)
     ax.legend(ncol=len(category_names), bbox_to_anchor=(0.5, 1.1), loc="upper center", fontsize="x-small")
     return fig, ax
-
-
-
-
-def msg_pie() -> None:
-	"""
-	create pie chart from msg_count in stats_df
-	"""
-	i = db.sc #TODO
-	plt.pie(db.stats_df.iloc[0:-1, 0], startangle=90, colors=cmap(db.senders), counterclock=False, autopct="%1.2f%%", wedgeprops={"ec":"w"}, textprops={"c":"w"})
-	plt.legend(labels=db.senders, title="messages sent", shadow=True, loc="upper right")
-	page = "page1/" if i == db.sc else f"senderpages/s{str(db.sc)}_"
-	plt.savefig(f"data/output/images/{page}msg_pie.png", transparent=True)
-	plt.close()
-	return
 
 
 def media_bar() -> None:
@@ -603,7 +633,7 @@ def make_pdf_report() -> None:
 		path = "data/output/images/senderpages/s" + str(i)
 
 		new_section(11, space=20)
-		pdf.cell(90, 0, f"{s} messages contain")
+		pdf.cell(90, 0, f"Messages from {s} contain")
 		new_section(14, "B", space=3)
 		pdf.multi_cell(110, 5, db.reports[i][0])
 
