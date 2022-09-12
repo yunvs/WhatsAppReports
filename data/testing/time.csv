@@ -1,0 +1,209 @@
+0,imports,2.848899643
+1,.txt file -> list,0.6147525439999999
+2,list -> df,0.4115838759999999
+3,prep database,0.008282075000000333
+4,cleaning df for 1,0.03480446199999987
+5,calc stats for sender 1,0.021946094000000027
+6,calc word stats for sender 1,3.8491874439999996
+7,cleaning df for 2,0.24266461800000094
+8,calc stats for sender 2,0.03685621799999872
+9,calc word stats for sender 2,4.479556401
+10,calc summary stats,0.007077515000000645
+11,calc time stats,4.564171061
+12,make plots,1.5230120900000017
+13,txt report creation,0.00347808599999766
+14,PDF creation,11.039113803
+15,database exports,0.490496610000001
+0,- -,- -
+1,# main.py #,30.178305255
+2,without imports,27.329405612000002
+0,imports,8.13067556
+1,.txt file -> list,0.962901209
+2,list -> df,0.9001055749999995
+3,prep database,0.21544799800000014
+4,cleaning df for 1,0.14607948600000142
+5,calc stats for sender 1,0.04449176500000007
+6,calc word stats for sender 1,5.023103369999999
+7,cleaning df for 2,0.05977858700000027
+8,calc stats for sender 2,0.01637474300000008
+9,calc word stats for sender 2,4.595101589
+10,calc summary stats,0.057077035999999026
+11,calc time stats,3.2100343480000006
+12,make plots,1.534532716000001
+13,txt report creation,0.004132514999998449
+14,PDF creation,16.132588682
+15,database exports,0.43659620600000437
+0,- -,- -
+1,# main.py #,41.471986993
+2,without imports,33.341311433
+0,imports,13.330569425999999
+1,.txt file -> list,0.8258201310000004
+2,list -> df,1.2402718420000003
+3,prep database,0.01634684000000064
+4,cleaning df for 1,0.5102514399999993
+5,calc stats for sender 1,0.10035274999999899
+6,calc word stats for sender 1,10.409104681000002
+7,cleaning df for 2,0.08584420999999764
+8,calc stats for sender 2,0.011878539000001354
+9,calc word stats for sender 2,6.668043224999998
+10,calc summary stats,0.007948892999998236
+11,calc time stats,9.736293005
+12,make plots,2.619296833
+13,txt report creation,0.0037447100000065348
+14,PDF creation,29.48089268399999
+15,database exports,0.958077502000009
+0,- -,- -
+1,# main.py #,76.05434475700001
+2,without imports,62.723775331000006
+0,imports,7.734612457000001
+1,.txt file -> list,0.4514762379999988
+2,list -> df,0.4372536060000005
+3,prep database,0.005447530999999728
+4,cleaning df for 1,0.03434927600000037
+5,calc stats for sender 1,0.021619644999999466
+6,calc word stats for sender 1,7.830093535
+7,cleaning df for 2,0.06591274600000219
+8,calc stats for sender 2,0.030673920999998217
+9,calc word stats for sender 2,11.316416749000002
+10,calc summary stats,0.03490965299999971
+11,calc time stats,11.114558134999996
+12,make plots,5.418385161000003
+13,txt report creation,0.02730427800000257
+14,PDF creation,16.953861857
+15,database exports,0.3308640340000011
+0,- -,- -
+1,# main.py #,61.810145233
+2,without imports,54.075532775999996
+0,imports,7.458475883
+1,.txt file -> list,0.9265477239999997
+2,list -> df,0.4097610790000008
+3,prep database,0.007729291999998722
+4,cleaning df for 1,0.06083216100000044
+5,calc stats for sender 1,0.22380363599999953
+6,calc word stats for sender 1,3.972091475000001
+7,cleaning df for 2,0.03665725399999964
+8,calc stats for sender 2,0.014051975000000994
+9,calc word stats for sender 2,6.001174430000001
+10,calc summary stats,0.010891647999997645
+11,calc time stats,3.8850413820000007
+12,make plots,2.346226486999999
+13,txt report creation,0.05196872000000141
+14,PDF creation,15.470854844000002
+15,database exports,0.4669109459999987
+0,- -,- -
+1,# main.py #,41.345433117
+2,without imports,33.886957234
+0,imports,6.58438646
+1,.txt file -> list,0.4981682220000003
+2,list -> df,0.44136632999999925
+3,prep database,0.015903809000000102
+4,cleaning df for 1,0.0380875930000002
+5,calc stats for sender 1,0.01685279400000006
+6,calc word stats for sender 1,5.738159549
+7,cleaning df for 2,0.031174334000001025
+8,calc stats for sender 2,0.012950824999999
+9,calc word stats for sender 2,6.01490441
+10,calc summary stats,0.06255861800000062
+11,calc time stats,5.618207577
+12,make plots,1.9229832579999986
+13,txt report creation,0.00431720999999996
+14,PDF creation,16.960264487000003
+15,database exports,0.8777644470000041
+0,- -,- -
+1,# main.py #,44.847924861
+2,without imports,38.263538401000005
+0,imports,9.372745294
+1,.txt file -> list,0.5460520540000005
+2,list -> df,0.6024738690000007
+3,prep database,0.03055746099999901
+4,cleaning df for 1,0.3304931849999999
+5,calc stats for sender 1,0.024397401999999957
+6,calc word stats for sender 1,5.644343949
+7,cleaning df for 2,0.08432443600000283
+8,calc stats for sender 2,0.015624479999999608
+9,calc word stats for sender 2,8.123537451999997
+10,calc summary stats,0.03014449300000166
+11,calc time stats,5.931525496999999
+12,make plots,2.965276242999998
+13,txt report creation,0.05052627000000598
+14,PDF creation,25.012644693999995
+15,database exports,1.0459105680000036
+0,- -,- -
+1,# main.py #,59.813019442
+2,without imports,50.440274148
+0,imports,5.100908453000001
+1,.txt file -> list,1.3659148339999998
+2,list -> df,0.8303776440000004
+3,prep database,0.09796351799999936
+4,cleaning df for 1,0.27899161900000014
+5,calc stats for sender 1,0.015380790000000033
+6,calc word stats for sender 1,5.9434075150000005
+7,cleaning df for 2,0.025207924000000048
+8,calc stats for sender 2,0.010409314000000336
+9,calc word stats for sender 2,6.596347652999999
+10,calc summary stats,0.1378912079999992
+11,calc time stats,4.242389985000003
+12,make plots,2.4270911899999987
+13,txt report creation,0.004212774999999169
+14,PDF creation,11.426921102000001
+15,database exports,0.5280366220000019
+0,- -,- -
+1,# main.py #,39.033865774
+2,without imports,33.932957321
+0,imports,6.705087564
+1,.txt file -> list,0.478580494
+2,list -> df,0.4348956639999999
+3,prep database,0.005592642999999953
+4,cleaning df for 1,0.02917747600000009
+5,calc stats for sender 1,0.09332310899999996
+6,calc word stats for sender 1,5.730521829000001
+7,cleaning df for 2,0.11601216899999933
+8,calc stats for sender 2,0.07246038299999924
+9,calc word stats for sender 2,10.299640482000001
+10,calc summary stats,0.0082463869999998
+11,calc time stats,8.028328728999998
+12,make plots,2.693399651
+13,txt report creation,0.036813707000000306
+14,PDF creation,20.603241430000004
+15,database exports,0.4168551340000022
+0,- -,- -
+1,# main.py #,55.754617743000004
+2,without imports,49.049530179
+0,imports,7.005148158
+1,.txt file -> list,0.8705252899999998
+2,list -> df,0.9414227399999993
+3,prep database,0.03398148299999981
+4,cleaning df for 1,0.0806597610000015
+5,calc stats for sender 1,0.20294844599999884
+6,calc word stats for sender 1,3.7425569860000003
+7,cleaning df for 2,0.0320487939999996
+8,calc stats for sender 2,0.010525326999999862
+9,calc word stats for sender 2,3.904162481000002
+10,calc summary stats,0.006929517999999746
+11,calc time stats,2.625318032999999
+12,make plots,1.4520616279999992
+13,txt report creation,0.0036514140000001305
+14,PDF creation,15.68869526
+15,database exports,0.855526838000003
+0,- -,- -
+1,# main.py #,37.461374399
+2,without imports,30.456226241
+0,imports,13.859637031
+1,.txt file -> list,0.5284391579999994
+2,list -> df,0.6532473980000013
+3,prep database,0.040356529999998614
+4,cleaning df for 1,0.08222892300000062
+5,calc stats for sender 1,0.019247531999999623
+6,calc word stats for sender 1,10.506007689999999
+7,cleaning df for 2,0.45824660300000275
+8,calc stats for sender 2,0.20513532799999723
+9,calc word stats for sender 2,13.051914382
+10,calc summary stats,0.06289660600000246
+11,calc time stats,4.930017386000003
+12,make plots,2.8607331039999977
+13,txt report creation,0.02308814699999573
+14,PDF creation,26.40626913900001
+15,database exports,1.6307101610000103
+0,- -,- -
+1,# main.py #,75.32057829
+2,without imports,61.460941259
