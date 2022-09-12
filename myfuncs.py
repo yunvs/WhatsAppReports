@@ -24,12 +24,15 @@ def time(task: str="untitled") -> None:
 	"""
 	ts.append(timer())
 	if task == "end":
-		# print(BLUE(db.tt))
-		db.tt = pd.concat([db.tt, pd.DataFrame([["- -", "- -"], ["## main.py ##", ts[-1] - ts[0]], ["- imports", ts[-1] - ts[1]]])])
-		print(f"\nmain.py took {BOLD(ts[-1] - ts[0])} sec. to complete (without the imports {BOLD(ts[-1] - ts[1])} sec.)\n\n")
+		export(datab=True)
+		db.tt = pd.concat([db.tt, pd.DataFrame([["- -", "- -"], 
+		["# main.py #", ts[-1] - ts[0]], ["without imports", ts[-1] - ts[1]]])])
+		print(f"\nmain.py took {BOLD(ts[-1] - ts[0])} sec. to complete"
+				+ f"(without the imports {BOLD(ts[-1] - ts[1])} sec.)\n\n")
+		db.tt.to_csv("data/testing/time.csv", mode="a", header=False)
 		return exit()
 	db.tt.loc[len(db.tt)] = [task, ts[-1] - ts[-2]]
-	print(f"{BLUE(task)} compleded in " + BOLD(ts[-1] - ts[-2], "sec."))
+	print(f"{BLUE(task)} compleded in {BOLD(ts[-1] - ts[-2])} sec.")
 
 
 db.tt = pd.DataFrame(columns=[0, 1])
@@ -39,15 +42,16 @@ def off(*args, file_end: bool=False) -> None:
 	"""
 	Prints error message and safely exits the program.
 	"""
-	return exit(BOLD(RED("⛔️ Error: ")) + " ".join(args) + " ⛔️" if len(args) > 0 else "") if not file_end else time("end")
+	return exit(BOLD(RED("⛔️ Error: ")) + " ".join(args) + " ⛔️" 
+					if len(args) > 0 else "") if not file_end else time("end")
 
 
-def export(location: str=None, data=None, name: str=None, database: bool=False) -> None:
+def export(loc: str=None, data=None, name: str=None, datab: bool=False) -> None:
 	"""
 	Exports dataframes and text to the data/testing/exports folder. 
 	"""
-	if not database:
-		path = f"data/testing/exports/{location}/" 
+	if not datab:
+		path = f"data/testing/exports/{loc}/" 
 		if type(data) != pd.DataFrame:
 			data = pd.DataFrame(data)
 		try:
@@ -55,7 +59,7 @@ def export(location: str=None, data=None, name: str=None, database: bool=False) 
 		except FileNotFoundError:
 			import os
 			os.makedirs(path, exist_ok=True)
-			return export(location, data, name) 
+			return export(loc, data, name) 
 	else:
 		export("database", db.chat_og, "chat_og_df.csv")
 		export("database", db.chat, "chat_df.csv") 
@@ -67,10 +71,9 @@ def export(location: str=None, data=None, name: str=None, database: bool=False) 
 		export("database", db.reports, "reports_df.csv")
 		export("database", db.cwords_df, "cwords_df.csv")
 		export("database", db.time_stats, "time_stats_df.csv")
-		export("database", db.tt, "time_df.csv")
+		export("database", db.chat_per_s_clean, f"chat_per_s_clean_df.csv")
 		for i in range(db.sc+1):
 			export("database", db.chat_per_s[i], f"chat_per_s{i}_df.csv")
-			export("database", db.chat_per_s_clean, f"chat_per_s_clean_df.csv")
 		time("database exports") 
 
 
@@ -103,7 +106,7 @@ def convert_ln(input: str) -> list[str]:
 	"""
 	# match pattern and devide into groups: 1:date, 2:time, 3:sender, 4:message
 	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", input)
-	result = [x.group(1), " ".join([x.group(1), x.group(2)])]  # add date and time
+	result = [x.group(1), " ".join([x.group(1), x.group(2)])]  # add datetime
 	result.append(x.group(3).title())  # capitalize first letters of sender
 	message = re.sub("https?://\S+", "xURL", x.group(4))  # replace URLs
 	result.append(message)  # add message
@@ -116,7 +119,9 @@ def convert_ln(input: str) -> list[str]:
 
 def convert_to_list(path_to_file: str) -> list[list[str]]:
 	"""
-	Converts a .txt-file of messages into a list of lists: Each list element contains these elements: [date, time, sender, message, polarity, emojis, emoji_count, url_count].
+	Converts a .txt-file of messages into a list of lists: Each list element 
+	contains these elements: [date, time, sender, message, polarity, emojis, 
+	emoji_count, url_count].
 	"""
 	chat_ls, last_msg = list(), str()
 	try:  # try to open the file
@@ -134,7 +139,7 @@ def convert_to_list(path_to_file: str) -> list[list[str]]:
 	except FileNotFoundError:  # the file does not exist
 		return off("File not found")
 	except (UnicodeDecodeError, UnicodeError):  # the file is not in UTF-8
-		return off("File not in UTF-8 format\nTry again or upload the",GREEN("original .zip file"))
+		return off("File not in UTF-8 format\nTry again or upload the", GREEN("original .zip file"))
 	
 	time(".txt file -> list")
 	return chat_ls
@@ -161,14 +166,13 @@ def convert_to_df(path: str) -> pd.DataFrame:
 	Converts a list of lists into a dataframe with the following columns:
 	[date, time, sender, message, polarity, emojis, emoji_count, url_count] and returns it.
 	"""
-	chat_listed = convert_to_list(path)
-	df = pd.DataFrame(chat_listed, columns=db.df_cols)
+	# chat_listed = convert_to_list(path)
+	df = pd.DataFrame(convert_to_list(path), columns=db.df_cols)
 	df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True)
 	df["time"] = pd.to_datetime(df["time"], infer_datetime_format=True)
-
 	db.chat = df
 
-	export("myfuncs/convert_to_df", df, "df_converted.csv") #REMOVE
+	# export("myfuncs/convert_to_df", df, "df_converted.csv") #REMOVE
 	time("list -> df")
 	return
 
@@ -314,10 +318,11 @@ def word_cloud(words: str, i:int) -> None:
 	mask = (x - 500) ** 2 + (y - 500) ** 2 > 400 ** 2
 	mask = 255 * mask.astype(int)
 
-	wc = WordCloud(None, 250, 250, prefer_horizontal=.7,
+	wc = WordCloud(None, 200, 200, prefer_horizontal=.7,
 			colormap="summer", mode="RGBA", mask=mask, background_color=None,
 			stopwords=db.stop_words, min_word_length=2,).generate(words.upper())
 	wc.to_file(f"data/output/images/senderpages/s{str(i)}_wc.png")
+	return
 
 
 def calc_word_stats(df: pd.DataFrame, i: int) -> pd.DataFrame:
@@ -419,11 +424,11 @@ def msg_pie() -> None:
 	"""
 	create pie chart from msg_count in stats_df
 	"""
-	i = db.sc #TODO
-	plt.pie(db.stats_df.iloc[0:-1, 0], startangle=90, colors=cmap(db.senders), counterclock=False, autopct="%1.2f%%", wedgeprops={"ec":"w"}, textprops={"c":"w"})
-	plt.legend(labels=db.senders, title="messages sent", shadow=True, loc="upper right")
-	page = "page1/" if i == db.sc else f"senderpages/s{str(db.sc)}_"
-	plt.savefig(f"data/output/images/{page}msg_pie.png", transparent=True)
+	fig, ax = plt.subplots(figsize=(3.14, 3.14))
+	ax.pie(db.stats_df.iloc[0:-1, 0], startangle=90, colors=cmap(db.senders), counterclock=False, autopct="%1.2f%%", wedgeprops={"ec":"w"}, textprops={"c":"w"})
+	ax.legend(labels=db.senders, title="sender", shadow=True, loc="upper right", fontsize="small")
+	fig.tight_layout()
+	plt.savefig("data/output/images/page1/msg_pie.png", transparent=True)
 	plt.close()
 	return
 
@@ -438,25 +443,24 @@ def grouped_madia_bars() -> None:
 	x = np.arange(len(nums)) # the label locations
 	max_val = db.stats_df.iloc[:db.sc, nums].max().max()
 
-
-	fig, ax = plt.subplots(figsize=(10,3))
+	fig, ax = plt.subplots(figsize=(8.27, 2))
 	for i, s in enumerate(db.senders):
 		rect = ax.bar((x-w/2) + i*w/db.sc, db.stats_df.iloc[i, nums], w/db.sc, label=s, align="edge")
 		ax.bar_label(rect, padding=1) if any([db.sc < 4 and max_val < 1000, db.sc < 6 and max_val < 100, max_val < 10]) else None
 
 	ax.set_title("Media types by sender", loc="left"); ax.set_ylabel("amount")
-	ax.set_xticks(x); ax.set_xticklabels(labels)
-	ax.set_yticks(np.arange(0, max_val, 50), minor=True)
-	ax.set_ylim([0, max_val+30]); ax.grid(axis="y", lw=.8, ls="--")
+	ax.set_xticks(x); ax.set_yticks(np.arange(0, max_val, 50), minor=True)
+	ax.set_ylim([0, max_val+30]); ax.grid(True, "both", "y", lw=.8)
+	ax.set_xticklabels(labels)
 
 	if db.sc < 7:
 		ax.legend(bbox_to_anchor=(1,1.15), fontsize="small", ncol=db.sc)
 	else:
 		ax.legend(bbox_to_anchor=(1,1.3), fontsize="small", ncol=round(db.sc/2))
 
-	fig.tight_layout()
+	# fig.tight_layout()
 	
-	plt.savefig(f"data/testing/exports/testing/{str(i)}_senders.png", transparent=True)
+	plt.savefig("data/output/images/page1/media_bars.png", transparent=True)
 	plt.close()
 
 
@@ -465,15 +469,15 @@ def message_time_series() -> None:
 	Creates a time series plot of the messages sent per day.
 	"""
 	for i, range in enumerate(db.msg_ranges):
-		fig, ax = plt.subplots(figsize=(10,3))
+		fig, ax = plt.subplots(figsize=(8.27,2))
 
 		ax.plot(range.index, range.values, color="green")
 		# Major ticks every half year, minor ticks every month
 		ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 5, 9), bymonthday=15))
 		ax.xaxis.set_minor_locator(mdates.MonthLocator(bymonthday=15))
-		ax.grid(True)
-		ax.set_ylabel("message count")
-		ax.set_title("Messages per day")
+		ax.grid(True, "both", "y")
+		ax.set_ylabel("amount")
+		ax.set_title("Messages per day", loc="left")
 		ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
 
 		page = "page1/" if i == db.sc else f"senderpages/s{str(i)}_"
@@ -624,8 +628,10 @@ def make_pdf_report() -> None:
 	new_section(11, space=14)
 	pdf.multi_cell(110, 4, db.reports[db.sc][1])
 
-	pdf.image(path+"msg_pie.png", x=83, y=20, w=150)
-	pdf.image(path+"ts.png", x=0, y=120, w=210)
+	pdf.image(path+"msg_pie.png", x=109, y=29, w=96)
+	pdf.image(path+"media_bars.png", x=0, y=120, w=210)
+	pdf.image(path+"ts.png", x=0, y=180, w=210)
+
 
 
 	for i, s in enumerate(db.senders):
@@ -645,7 +651,7 @@ def make_pdf_report() -> None:
 
 		
 		# add_title_footer(i)
-		pdf.image(path+"_wc.png", x=116, y=33, w=88)
+		pdf.image(path+"_wc.png", x=113, y=33, w=88)
 		pdf.image(path+"_ts.png", x=0, y=120, w=210)
 
 
