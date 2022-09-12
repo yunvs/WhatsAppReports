@@ -28,6 +28,5 @@ create_txt_reports()  # get general sender stats for the chat
 # bar.text = "Creating and saving report @ data/output/pdfs/"
 make_pdf_report()  # create the pdf report
 
-export(database=True)
 
 off(file_end=True)
