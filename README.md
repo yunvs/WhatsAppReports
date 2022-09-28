@@ -100,14 +100,16 @@ Text Text Text
 <br>
 
 **Python** is a general-purpose, high-level programming language. It is designed to make simple and easy to use, yet powerful and flexible. Python is used by a wide variety of programmers, and is especially popular for scientific computing. 
-ℹ️ [Python website](https://www.python.org/)  
+
+
+Verions used:  **Python 3.9.7** | ℹ️ [Python website](https://www.python.org/)  
+
+<br>
 
 **Anaconda** is a distribution of the Python and R languages for scientific computing. It includes a complete ecosystem of packages for data science, scientific computing, and software development. It is a free and open source software distribution. 
-ℹ️ [Anaconda website](http://www.anaconda.com)  
 
-Verions I used:  
-**Python 3.9.7**  
-**Anaconda3 Navigator 2.2.0** 
+
+Verions used:  **Anaconda3 Navigator 2.2.0** | ℹ️ [Anaconda website](http://www.anaconda.com)  
 
 ##
 
@@ -127,8 +129,7 @@ Libary | Website | Usage
 [Numpy](https://numpy.org/) | https://numpy.org/ | for numerical calculations
 [Pandas](https://pandas.pydata.org/) | https://pandas.pydata.org/ | for data analysis
 [Matplotlib](https://matplotlib.org/) | https://matplotlib.org/ | for plotting
-[Seaborn](https://seaborn.pydata.org/) | https://seaborn.pydata.org/ | for plotting
-[Pandas](https://pandas.pydata.org/) | https://pandas.pydata.org/ | for data analysis
+[(Seaborn)](https://seaborn.pydata.org/) | https://seaborn.pydata.org/ | for plotting
 [Scikit-learn](https://scikit-learn.org/) | https://scikit-learn.org/ | for machine learning
 [Nltk](https://www.nltk.org/) | https://www.nltk.org/ | for natural language processing
 [Scipy](https://www.scipy.org/) | https://www.scipy.org/ | for numerical calculations
