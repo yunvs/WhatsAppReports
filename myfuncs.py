@@ -1,4 +1,6 @@
-from timeit import default_timer as timer # for timing
+from timeit import default_timer as timer
+
+from unidecode import unidecode # for timing
 ts = [timer()]
 
 import database as db  # for access to local database
@@ -8,11 +10,13 @@ import re # for regex
 import emojis # to find emoji in messages
 from wordcloud import WordCloud # to create wordclouds
 from matplotlib import pyplot as plt, dates as mdates, cm # to plot figures
+from textblob_de import TextBlobDE as TextBlob # for sentiment analysis
 
 from fpdf import FPDF # to create pdfs
 
 
 # Unused imports
+import matplotlib
 # import os
 # from plotly import express as px 
 # from germansentiment import SentimentModel
@@ -27,16 +31,16 @@ def time(task: str="untitled") -> None:
 		export(datab=True)
 		db.tt = pd.concat([db.tt, pd.DataFrame([["- -", "- -"], 
 		["# main.py #", ts[-1] - ts[0]], ["without imports", ts[-1] - ts[1]]])])
-		print(f"\nmain.py took {BOLD(ts[-1] - ts[0])} sec. to complete"
+		print(f"\nmain.py took {BOLD(ts[-1] - ts[0])} sec. to complete "
 				+ f"(without the imports {BOLD(ts[-1] - ts[1])} sec.)\n\n")
 		db.tt.to_csv("data/testing/time.csv", mode="a", header=False)
 		return exit()
 	db.tt.loc[len(db.tt)] = [task, ts[-1] - ts[-2]]
-	print(f"{BLUE(task)} compleded in {BOLD(ts[-1] - ts[-2])} sec.")
+	print(f"{BLUE(task)} took {BOLD(round(ts[-1] - ts[-2], 6))} sec.")
 
 
 db.tt = pd.DataFrame(columns=[0, 1])
-time("imports")
+time("importing neccessary modules")
 
 def off(*args, file_end: bool=False) -> None:
 	"""
@@ -64,17 +68,20 @@ def export(loc: str=None, data=None, name: str=None, datab: bool=False) -> None:
 		export("database", db.chat_og, "chat_og_df.csv")
 		export("database", db.chat, "chat_df.csv") 
 		export("database", db.senders, "senders_df.csv")
-		export("database", db.word_freqs, "word_freqs_df.csv")
 		export("database", db.stats_df, "stats_df.csv") 
-		export("database", db.time_stats_df, "time_stats_df_df.csv")
+		export("database", db.time_stats_df, "time_stats_df.csv")
 		export("database", db.msg_ranges, "msg_ranges_df.csv")
 		export("database", db.reports, "reports_df.csv")
-		export("database", db.cwords_df, "cwords_df.csv")
-		export("database", db.time_stats, "time_stats_df.csv")
 		export("database", db.chat_per_s_clean, f"chat_per_s_clean_df.csv")
 		for i in range(db.sc+1):
-			export("database", db.chat_per_s[i], f"chat_per_s{i}_df.csv")
-		time("database exports") 
+			try:
+				export("database", db.chat_per_s[i], f"chat_per_s{i}.csv")
+				export("database", db.common_words[i], f"common_words_s{i}.csv")
+				export("database", db.common_emojis[i], f"common_emojis_s{i}.csv")
+				# export("database", db.msg_bundles[i], f"msg_bundles_s{i}.csv")
+			except IndexError:
+				pass
+		time("exporting the database contents")
 
 
 def fileformat(path_to_file: str) -> str:
@@ -96,69 +103,54 @@ def new_msg(input: str) -> bool:
 	"""
 	Returns true if the input is the beginning of a new message (date in front).
 	"""
-	return True if re.match("^.? ?\[([\d./]*), ([\d:]*)\] .*", input) else False
+	# return True if re.match("^.? ?\[([\d./]*), ([\d:]*)\] .*", input) else False
+	return re.match("^.? ?\[([\d./]*), ([\d:]*)\] .*", input)
 
 
 def convert_ln(input: str) -> list[str]:
 	"""
 	Converts a WA chat history line into a list with these entries:
-	date, time, sender, message, polarity, emojis_unique, emoji_count, url_count.
+	date, datetime, sender, message, polarity, emojis_unique, emoji_count, url_count.
 	"""
-	# match pattern and devide into groups: 1:date, 2:time, 3:sender, 4:message
+	# match pattern and devide into groups: 1:date, 2:datetime, 3:sender, 4:message
 	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", input)
-	result = [x.group(1), " ".join([x.group(1), x.group(2)])]  # add datetime
+	result = [x.group(1), " ".join([x.group(1), x.group(2)])]  # add date, datetime
 	result.append(x.group(3).title())  # capitalize first letters of sender
-	message = re.sub("https?://\S+", "xURL", x.group(4))  # replace URLs
+	message = re.sub("https?://\S+", "xURLx", x.group(4))  # replace URLs
 	result.append(message)  # add message
-	result.append("polarity")
-	result.append(emojis.get(message))  # get set of unique emoji in message
-	result.append(emojis.count(message))  # count amount of emoji in message
-	result.append(len(re.findall("xURL", message)))  # count URLs
+	if len(message) > 2 and message.upper().isupper():
+		result.append(TextBlob(message.replace("xURLx", "")).sentiment.polarity)  # add polarity
+	else:
+		result.append(pd.NA)
 	return result
 
 
 def convert_to_list(path_to_file: str) -> list[list[str]]:
 	"""
 	Converts a .txt-file of messages into a list of lists: Each list element 
-	contains these elements: [date, time, sender, message, polarity, emojis, 
+	contains these elements: [date, datetime, sender, message, polarity, emojis, 
 	emoji_count, url_count].
 	"""
-	chat_ls, last_msg = list(), str()
+	chat, last_msg = list(), str()
 	try:  # try to open the file
 		with open(path_to_file, "r", encoding="utf-8") as file:
 			for line in file:  # read line by line
 				if new_msg(line):  # the line is the beginning of a new message
 					# add previous message to list if buffer is not empty
-					chat_ls.append(convert_ln(last_msg)) if last_msg != "" else None
+					chat.append(convert_ln(last_msg)) if last_msg != "" else None
 					last_msg = line.strip().strip("\n").strip()  # add new message to buffer
 				else:  # the line is a continuation of the previous message
 					# add line to previous message
 					last_msg += " " + line.strip().strip("\n").strip()
 			# add last message to list if it is not added yet
-			chat_ls.append(convert_ln(last_msg)) if chat_ls[-1] != convert_ln(last_msg) else None
+			chat.append(convert_ln(last_msg)) if chat[-1] != convert_ln(last_msg) else None
 	except FileNotFoundError:  # the file does not exist
-		return off("File not found")
+		return off("File not found\nCheck the path to the file")
 	except (UnicodeDecodeError, UnicodeError):  # the file is not in UTF-8
-		return off("File not in UTF-8 format\nTry again or upload the", GREEN("original .zip file"))
+		return off("File not in UTF-8 format\nTry uploading the original file")
 	
-	time(".txt file -> list")
-	return chat_ls
-
-
-# def calc_polarity(df: pd.DataFrame, s: int) -> float:
-# 	pol = 0
-
-# 	for i in range(len(df)):
-# 		sentence_sentiment = model.model.predict_sentiment(df.iloc[i, 4])
-# 		if sentence_sentiment == "positive":
-# 			pol += 1
-# 		elif sentence_sentiment == "negative":
-# 			pol -= 1
-# 		else:
-# 			pol = pol
-		
-# 	time(f"calc polarity for sender {s}")
-# 	return pol / len(df)
+	time("converting the .zip/.txt file to a python list")
+	return chat
 
 
 def convert_to_df(path: str) -> pd.DataFrame:
@@ -168,38 +160,44 @@ def convert_to_df(path: str) -> pd.DataFrame:
 	"""
 	# chat_listed = convert_to_list(path)
 	df = pd.DataFrame(convert_to_list(path), columns=db.df_cols)
-	df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True)
-	df["time"] = pd.to_datetime(df["time"], infer_datetime_format=True)
+	df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True, format="%d.%m.%Y")
+	df["datetime"] = pd.to_datetime(df["datetime"], infer_datetime_format=True)
 	db.chat = df
 
-	# export("myfuncs/convert_to_df", df, "df_converted.csv") #REMOVE
-	time("list -> df")
+	# export("myfuncs/convert_to_df", df, "df_converted.csv") #TODO remove line
+	time("converting the python list to a pandas dataframe")
 	return
 
 
 def prepare_db() -> None:
+	"""
+	Prepares the database by filling data in #tobefilled placeholders.
+	"""
+	db.chat["weekday"] = db.chat["date"].apply(lambda x: x.weekday())
+	db.chat["hour"] = db.chat["datetime"].apply(lambda x: x.hour)
 	db.chat_og = db.chat.copy() # Creates copy for later using
+
 	db.senders = list(db.chat["sender"].unique()) # Creates list of senders
 	db.sc = len(db.senders) # Number of senders
 	
 	db.stats_df = pd.DataFrame(index=db.senders, columns=db.stats_dict.keys())
 	db.time_stats_df = pd.DataFrame(index=db.senders, columns=db.time_stats_cols)
 	
-	time("prep database")
+	time("preparing the database")
 	return
 
 
 def seperate_data() -> None:
 	# data seperation, cleansing and data analysis per sender
 	for i, s in enumerate(db.senders):
-		# bar.text = f"Cleaning and analyzing messages from {s}" #REMOVE
+		# bar.text = f"Cleaning and analyzing messages from {s}" #TODO bar
 		df = db.chat.loc[db.chat["sender"] == s]  # dataframe with messages from sender
 		db.chat_per_s.append(df)
 		clean_df = cleanse_df(df["message"], s)  # get the stats for each sender
+		count_occurances(clean_df, i)
 		calc_stats(clean_df) # calculate the stats for each sender
-		# globals()[f"s{i}_df_clean"] = clean_df
-		calc_word_stats(clean_df, i)
-		# globals()[f"s{i}_word_freq"] = word_freq
+		# globals()[f"s{i}_df_clean"] = clean_df #TODO remove line
+		# globals()[f"s{i}_word_freq"] = word_freq #TODO remove line
 
 	db.chat_per_s.append(db.chat_og)
 	return
@@ -223,11 +221,11 @@ def cleanse_df(dataframe: pd.DataFrame, sender: str) -> pd.DataFrame:
 				db.stats_df.at[sender, key] = key_df.shape[0]
 				count += key_df.shape[0]
 	
-	# export("myfuncs/cleanse_df", df, f"df_clean_{sender}.csv") #REMOVE
+	# export("myfuncs/cleanse_df", df, f"df_clean_{sender}.csv") #TODO remove line
 	db.chat_per_s_clean.append(df)
-	time(f"cleaning df for {db.senders.index(sender)+1}")
+	time(f"cleaning df for sender{db.senders.index(sender)+1}")
 
-	# db.stats_df.at[sender, "polarity_avg"] = calc_polarity(df, db.senders.index(sender)+1)
+	# db.stats_df.at[sender, "polarity_avg"] = calc_polarity(df, db.senders.index(sender)+1) #TODO remove line
 	return df  # return the cleaned dataframe
 
 
@@ -238,17 +236,17 @@ def calc_stats(sender_df: pd.DataFrame) -> None:
 	"""
 	s = sender_df.name # get column name (sender)
 	db.stats_df.at[s,"msg_count"] = sender_df.shape[0]
-	db.stats_df.at[s,"chars_avg"] = round(sender_df.str.replace(" ", "").str.len().mean(), 1)
-	db.stats_df.at[s,"words_avg"] = round(sender_df.str.split().str.len().mean(), 1)
+	db.stats_df.at[s,"chars_avg"] = round(sender_df.str.replace(" ", "").str.len().mean(), 2)
+	db.stats_df.at[s,"words_avg"] = round(sender_df.str.split().str.len().mean(), 2)
 	db.stats_df.at[s,"chars_max"] = sender_df.str.replace(" ", "").str.len().max()
 	db.stats_df.at[s,"words_max"] = len(sender_df[sender_df.str.len().idxmax()].split())
-	db.stats_df.at[s,"link"] = db.chat.loc[db.chat["sender"] == s, "url_count"].sum()
-	db.stats_df.at[s,"emoji"] = db.chat.loc[db.chat["sender"] == s, "emoji_count"].sum()
-	emoji_set = set().union(*list(db.chat.loc[db.chat["sender"] == s, "emojis"]))
-	db.stats_df.at[s,"emoji_unique"] = (len(emoji_set), emoji_set)
-	# db.stats_df.at[s,"polarity_avg"] = round(db.chat.loc[db.chat["sender"] == s, "polarity"].mean(), 1)
+	db.stats_df.at[s,"polarity_avg"] = round(db.chat.loc[db.chat["sender"] == s, "polarity"].mean(skipna=True), 2)
+	db.stats_df.at[s,"polarity_pos"] = db.chat.loc[db.chat["sender"] == s, "polarity"].gt(0).sum()
+	db.stats_df.at[s,"polarity_neg"] = db.chat.loc[db.chat["sender"] == s, "polarity"].lt(0).sum()
+	db.stats_df.at[s,"polarity_neu"] = db.chat.loc[db.chat["sender"] == s, "polarity"].eq(0).sum() #TODO remove if not needed
+	db.stats_df.at[s,"polarity_nan"] = db.chat.loc[db.chat["sender"] == s, "polarity"].isna().sum() #TODO remove if not needed
 	
-	time(f"calc stats for sender {db.senders.index(s)+1}")
+	time(f"calculating statistics for sender{db.senders.index(s)+1}")
 	return
 
 
@@ -258,17 +256,17 @@ def calc_sum_stats() -> None:
 	into the stats dataframe.
 	"""
 	for stat in db.stats_dict.keys():
-		if "unique" in stat or "calls" in stat:
+		if any(x in stat for x in ["calls", "unique"]):
 			continue
 		elif "max" in stat:
-			db.stats_df.at["sum", stat] = db.stats_df.loc[:, stat].max()
+			db.stats_df.at["sum", stat] = db.stats_df[stat].max()
 		elif "avg" in stat:
-			db.stats_df.at["sum", stat] = round(db.stats_df[stat].mean(), 1)
+			db.stats_df.at["sum", stat] = round(db.stats_df[stat].mean(), 3)
 		else:
 			db.stats_df.at["sum", stat] = db.stats_df[stat].sum()
 	
-	# export("myfuncs/get_sum_stats", db.stats_df, "stats_df.csv") #REMOVE
-	return time("calc summary stats")
+	# export("myfuncs/get_sum_stats", db.stats_df, "stats_df.csv") #TODO remove line
+	return time("calculating summary statistics for all senders")
 
 
 def create_msg_range(i: int) -> None:
@@ -301,7 +299,7 @@ def calc_time_stats() -> None:
 		# get the amount of days between the first and last message
 		db.time_stats_df.at[row, "msg_days"] = (db.time_stats_df.at[row, "last_msg"] - db.time_stats_df.at[row, "first_msg"]).days
 
-	time("calc time stats")
+	time("calculating time statistics for all senders")
 	return
 
 
@@ -310,7 +308,7 @@ def calc_time_stats() -> None:
 # ----------------------------------------------------------------
 
 
-def word_cloud(words: str, i:int) -> None:
+def create_wordcloud(words: str, i:int) -> None:
 	"""
 	Creates a word cloud of the given words and saves it to the plots folder.
 	"""
@@ -320,23 +318,39 @@ def word_cloud(words: str, i:int) -> None:
 
 	wc = WordCloud(None, 200, 200, prefer_horizontal=.7,
 			colormap="summer", mode="RGBA", mask=mask, background_color=None,
-			stopwords=db.stop_words, min_word_length=2,).generate(words.upper())
+		stopwords=db.stop_words, min_word_length=2,).generate(words)
 	wc.to_file(f"data/output/images/senderpages/s{str(i)}_wc.png")
 	return
 
 
-def calc_word_stats(df: pd.DataFrame, i: int) -> pd.DataFrame:
+def count_occurances(df: pd.DataFrame, i: int) -> pd.DataFrame:
 	"""
 	Calculates different statistics about the chat and enters collected data.
 	"""
-	# get all words in the chat
-	words = " ".join(df.str.replace("\W", " ", regex=True).str.replace("xURL", " "))
-	word_cloud(words, i)
-	word_freq = pd.Series(words.lower().split()).value_counts().rename(df.name + " common words")
+	messages = " ".join(df).lower()
 
-	db.word_freqs.append(word_freq)
-	# export("myfuncs/calc_word_stats", word_freq, f"common_words{df.name}.csv") #REMOVE
-	time(f"calc word stats for sender {str(i+1)}")
+	# count emojis
+	emojis_listed = emojis.get(messages)
+	emoji_dict = dict()
+	for item in emojis_listed:
+		emoji_dict[emojis.decode(item)] = messages.count(item) # count the emojis
+	emoji_freq = pd.Series(emoji_dict).sort_values(ascending=False).reset_index()
+	emoji_freq.columns = ["Emoji", "Frequency"]
+	db.common_emojis.append(emoji_freq)
+	db.stats_df.at[db.senders[i], "emoji"] = sum(emoji_dict.values())
+	db.stats_df.at[db.senders[i], "emoji_unique"] = len(emoji_dict)
+	db.stats_df.at[db.senders[i], "link"] = len(re.findall("xurlx", messages))
+
+	# count words
+	messages = re.sub(r"(xurlx)|(\W)|(\d)", " ", unidecode(messages))
+	word_freq = pd.Series(messages.split()).value_counts().reset_index()
+	word_freq.columns = ["Word", "Frequency"]
+	db.common_words.append(word_freq)
+
+	time(f"counting word and emoji occurances for sender{str(i+1)}")
+	
+	create_wordcloud(messages.upper(), i)
+	time(f"creating wordcloud for sender{str(i+1)}")
 	return
 
 
