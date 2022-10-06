@@ -1,5 +1,17 @@
+from dataclasses import replace
 from myfuncs import *
 from unidecode import unidecode
+
+import emojificate
+
+
+import requests
+import re
+emoji_data = requests.get('https://unicode.org/emoji/charts/full-emoji-list.html').text
+def emoji_to_png(emoji, version=0):
+    html_search_string = r"<img alt='{}' class='imga' src='data:image/png;base64,([^']+)'>" #'
+    matchlist = re.findall(html_search_string.format(emoji), emoji_data)
+    return matchlist[version]
 
 
 
@@ -13,7 +25,7 @@ from unidecode import unidecode
 # import numpy as np
 
 # # ----------------------------------------------------------------
-path = "data/testing/exports/database/"
+path = "data/testing/exports/database"
 db.senders = list(pd.read_csv(f"{path}/senders_df.csv", index_col=0)["0"])
 db.sc = len(db.senders)
 db.stats_df = pd.read_csv(f"{path}/stats_df.csv", index_col=0)
@@ -23,26 +35,49 @@ db.stats_df = pd.read_csv(f"{path}/stats_df.csv", index_col=0)
 # chat_psc = pd.read_csv(f"{path}/chat_per_s_clean_df_demo.csv", index_col=0)
 # time("import data from main")
 for i in range(db.sc):
-	db.common_words.append(pd.read_csv(f"{path}/word_freqs_s{i}.csv", index_col=0))
+	db.common_words.append(pd.read_csv(f"{path}/common_words_s{i}.csv", index_col=0))
+	db.common_emojis.append(pd.read_csv(f"{path}/common_emojis_s{i}.csv", index_col=0))
 # # ----------------------------------------------------------------
 
 
 
-def print_df_to_pdf(df: pd.DataFrame, cell_width: int = 25, cell_height: int = 6) -> None:
+
+
+def print_commons(df: pd.DataFrame, cell_height: int = 6) -> None:
 	"""
 	Prints a dataframe to a table in a pdf file
 	"""
-	pdf.set_font("Arial", "B", 10)
-	for col in df.columns:	# Loop over to print column names
-		pdf.cell(cell_width, cell_height, col, align="C", border=1)
+	# get the longest string in each column
+	max_len = df.T.reset_index().T.reset_index(drop=True).astype(str).applymap(len).max().multiply(2)
+
+	pdf.set_font("Arial", "B", 8)
+	for i, col in enumerate(df.columns):	# Loop over to print column names
+		pdf.cell(max_len.iloc[i], cell_height, col, align="C", border=1)
 	pdf.ln(cell_height) # next row of table
 
 	pdf.set_font("Arial", "", 8)
 	for row in df.itertuples():	# Loop over to print each data in the table
-		for col in df.columns:
-			value = str(getattr(row, col))
-			pdf.cell(cell_width, cell_height, unidecode(value), align="C", border=1)
+		pdf.cell(max_len.iloc[i], cell_height, str(df.iloc[row, 0]) , align="C", border=1)
+		pdf.cell(15, cell_height, str(df.iloc[row, 1]) , align="C", border=1)
 		pdf.ln(cell_height) # next row of table
+
+
+# def print_emojis_to_pdf(df: pd.DataFrame, cell_width: int = 25, cell_height: int = 6) -> None:
+# 	"""
+# 	Prints a dataframe to a table in a pdf file
+# 	"""
+# 	pdf.set_font("Arial", "B", 8)
+# 	for col in df.columns:	# Loop over to print column names
+# 		pdf.cell(cell_width, cell_height, col, align="C", border=1)
+# 	pdf.ln(cell_height) # next row of table
+
+# 	pdf.set_font("Arial", "", 8)
+# 	for row in df.itertuples():	# Loop over to print each data in the table
+# 		xpos, ypos = float(pdf.get_x()) + cell_width/2, float(pdf.get_y()) + cell_height/2
+# 		emoji_to_png(getattr(row, 0))
+# 		pdf.image(, xpos, ypos, 5, 5, "PNG")
+# 		pdf.cell(cell_width, cell_height, str(getattr(row, 1)), align="C", border=1)
+# 		pdf.ln(cell_height) # next row of table
 
 
 def count_occurances(messages) -> None:
@@ -57,25 +92,36 @@ def count_occurances(messages) -> None:
 	return
 
 x = """Hshdbcu djchsdbu d d vd d d ndsa 😍 dfdf 😍😍 fja fjv au🤪 😣 😶‍🌫️ 🥳 🥳 😤 😤 🙂 df fvjadf uj😭v av ja vja va🤪 😣 😶‍🌫️ 🥳 🥳 😤 😤 🙂jvbjasbv 😭 😍 😍 😍  ajdn vm🤪 😣 😶‍🌫️ 🥳 🥳 😤 😤 🙂dvncjv djjdn """
-print(count_occurances(x))
+# print(count_occurances(x))
 
 
 
+	
+
+
+for i in range(db.sc+1):
+	sentiment_pies(i)
+
+
+s = ":Hello_Hello:"
+
+#remove the tailing colons and replace underscores with spaces
+s = s.replace(":", "").replace("_", " ")
 
 
 
+# pdf = FPDF()
+# # pdf.add_font("ACE", "", "data/ACE.ttc", uni=True) # Error:  TrueType Fonts Collections not supported
+# for i in range(db.sc):
+# 	pdf.add_page()
+# 	pdf.set_font("Arial", "", 10)
+# 	pdf.cell(200, 10, f"Emoji stats for {db.senders[i]}", align="C")
+# 	pdf.ln(10)
+# 	print_emojis_to_pdf(db.common_emojis[i].head(10))
 
-pdf = FPDF()
-pdf.set_font("Arial", size=11)
 
-for i in range(db.sc):
-	pdf.add_page()
-	pdf.set_font("Arial", size=11)
-	pdf.cell(200, 10, f"Word Frequencies of {db.senders[i]}", align="C")
-	pdf.ln(10)
-	print_df_to_pdf(db.common_words[i].head(10), cell_width=25, cell_height=5)
 
-pdf.output("data/testing/testing.pdf", "F")
+# pdf.output("data/testing/testing.pdf", "F")
 
 
 
