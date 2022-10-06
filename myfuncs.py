@@ -317,7 +317,7 @@ def create_wordcloud(words: str, i:int) -> None:
 	mask = 255 * mask.astype(int)
 
 	wc = WordCloud(None, 200, 200, prefer_horizontal=.7,
-			colormap="summer", mode="RGBA", mask=mask, background_color=None,
+		colormap="summer", mode="RGBA", mask=mask, background_color=None,
 		stopwords=db.stop_words, min_word_length=2,).generate(words)
 	wc.to_file(f"data/output/images/senderpages/s{str(i)}_wc.png")
 	return
@@ -416,7 +416,7 @@ def create_txt_reports() -> list[str]:
 		f"Deleted messages: {y(15)}",
 		f"Ø polarity: {y(5)}",
 		]),
-	f"{ss()} deleted {y(15)}.",
+		f"{ss()} deleted {y(15)}.",
 	])
 	
 	return time("creating a text report")
@@ -539,7 +539,7 @@ def activity_heatmap() -> None:
 
 		page = "page1/" if n == db.sc else f"senderpages/s{str(n)}_"
 		fig.savefig(f"data/output/images/{page}heatmap.png", transparent=True)
-	plt.close()
+		plt.close()
 	return
 
 def sentiment_pies(s_no: int=db.sc):
@@ -620,21 +620,23 @@ def new_section(size: int=0, style: str="", space: int=0, np: int=0) -> None:
 	return None
 
 
-# def print_df_to_pdf(df: pd.DataFrame, cell_width: int = 25, cell_height: int = 6) -> None:
-# 	"""
-# 	Prints a dataframe to a table in a pdf file
-# 	"""
-# 	pdf.set_font("Arial", "B", 10)
-# 	for col in df.columns:	# Loop over to print column names
-# 		pdf.cell(cell_width, cell_height, col, align="C", border=1)
-# 	pdf.ln(cell_height) # next row of table
+def print_commons(df: pd.DataFrame, cell_width: int = 25, cell_height: int = 6) -> None:
+	"""
+	Prints a dataframe to a table in a pdf file
+	"""
+	margin, _ = get_coord()
+	pdf.set_font("Arial", "B", 8)
+	pdf.cell(cell_width, cell_height, df.columns[0], align="C", border=1)
+	pdf.cell(17, cell_height, df.columns[1], align="C", border=1)
+	pdf.set_xy(margin, pdf.get_y() + cell_height)
 
-# 	pdf.set_font("Arial", "", 8)
-# 	for row in df.itertuples():	# Loop over to print each data in the table
-# 		for col in df.columns:
-# 			value = str(getattr(row, col))
-# 			pdf.cell(cell_width, cell_height, value, align="C", border=1)
-# 		pdf.ln(cell_height) # next row of table
+	pdf.set_font("Arial", "", 8)
+	for i in range(len(df)):
+		pdf.cell(cell_width, cell_height, df.iat[i,0].strip(":").replace("_", " ")[:20], align="C", border=1)
+		pdf.cell(17, cell_height, str(df.iat[i,1]), align="C", border=1)
+		pdf.set_xy(margin, pdf.get_y() + cell_height)
+
+
 
 
 def add_title_footer(n: int=-1) -> None:
@@ -688,16 +690,17 @@ def make_pdf_report() -> None:
 	new_section(14, "B", space=3)
 	pdf.multi_cell(110, 5, db.reports[db.sc][0])
 
-	new_section(space=4)
-	print_stats()
+	#new_section(space=4)
+	# print_stats()
 
-	new_section(11, space=14)
-	pdf.multi_cell(110, 4, db.reports[db.sc][1])
+	new_section(11, space=4)
+	pdf.multi_cell(100, 4, db.reports[db.sc][1])
+
+	new_section(space=4)
 
 	pdf.image(path+"msg_pie.png", x=109, y=29, w=96)
 	pdf.image(path+"media_bars.png", x=0, y=120, w=210)
 	pdf.image(path+"ts.png", x=0, y=180, w=210)
-
 
 
 	for i, s in enumerate(db.senders):
@@ -712,15 +715,25 @@ def make_pdf_report() -> None:
 		new_section(space=4)
 		print_stats(i)
 
-		new_section(11, space=14)
+		new_section(11, space=10)
 		pdf.multi_cell(110, 4, db.reports[i][1])
 
 		
 		# add_title_footer(i)
 		pdf.image(path+"_wc.png", x=113, y=33, w=88)
-		pdf.image(path+"_ts.png", x=0, y=120, w=210)
+		pdf.image(path+"_ts.png", x=0, y=125, w=210)
+		pdf.image(path+"_heatmap.png", x=0, y=180, w=210)
+
+		add_title_footer(i)
+
+		pdf.set_xy(20, 40)
+
+		print_commons(db.common_words[i].head(10), cell_width=25, cell_height=5)
+
+		pdf.set_xy(70, 40)
+
+		print_commons(db.common_emojis[i].head(10), cell_width=25, cell_height=5)
 
 
-
-	pdf.output("data/output/pdfs/WA-Report.pdf", "F")
-	return time("PDF creation")
+	pdf.output("data/output/pdfs/WA-Report.pdf", "F",)
+	return time("finishing final PDF Report")
