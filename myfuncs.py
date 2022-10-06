@@ -375,7 +375,7 @@ def calc_num(n: int, term: str) -> str:
 	"""
 	Returns the correct plural form of a word depending on the amount passed.
 	"""
-	s = (str(n) if n > 1 else ("one" if n == 1 else "no")) + " " + term
+	s = (str(n) if not n < 0 else ("one" if n == 1 else "no")) + " " + term
 	return s + ("s" if n != 1 and term not in ("media", "polarity") else "")
 
 
@@ -397,9 +397,12 @@ def create_txt_reports() -> list[str]:
 	def x(*idxs): return pprint(*[db.time_stats_df[i,z] for z in idxs])
 
 	for i, s in enumerate(db.senders): # for each sender create a sender report
-		db.reports.append([y(0,6,18),
-			f"An average message from {s} is {y(2)} ({y(1)}) long. "
-			+ f"Their longest message contained {y(4)} and {y(3)}.",
+		db.reports.append([y(0,6,18),"\n".join([
+			f"Ø message length: {y(2)} ({y(1)})",
+			f"Longest message: {y(4)} ({y(3)})",
+			f"Deleted messages: {y(15)}",
+			f"Ø polarity: {y(5)}",
+			]),
 			f"{s} deleted {y(15)}.",
 			])
 		if db.stats_df.iat[i, 16] != 0:
@@ -407,13 +410,16 @@ def create_txt_reports() -> list[str]:
 	
 	# General report about all chat messages
 	i = db.sc
-	db.reports.append([y(0,6,18),
-	f"An average message between {ss()} is {y(2)} ({y(1)}) long. "
-	+ f"The longest message contained {y(4)} and {y(3)}.",
+	db.reports.append([y(0,6,18),"\n".join([
+		f"Ø message length: {y(2)} ({y(1)})",
+		f"Longest message: {y(4)} ({y(3)})",
+		f"Deleted messages: {y(15)}",
+		f"Ø polarity: {y(5)}",
+		]),
 	f"{ss()} deleted {y(15)}.",
-	]) # add report to the list
+	])
 	
-	return time("txt report creation")
+	return time("creating a text report")
 
 
 # ----------------------------------------------------------------
@@ -425,7 +431,9 @@ def plot_data() -> None:
 	msg_pie()
 	grouped_madia_bars()
 	message_time_series()
-	return time("make plots")
+	activity_heatmap()
+	sentiment_pies()
+	return time("making plots for the report")
 
 
 def cmap(countable=db.senders, cm_name: str="Greens_r"):
@@ -462,36 +470,33 @@ def grouped_madia_bars() -> None:
 		rect = ax.bar((x-w/2) + i*w/db.sc, db.stats_df.iloc[i, nums], w/db.sc, label=s, align="edge")
 		ax.bar_label(rect, padding=1) if any([db.sc < 4 and max_val < 1000, db.sc < 6 and max_val < 100, max_val < 10]) else None
 
-	ax.set_title("Media types by sender", loc="left"); ax.set_ylabel("amount")
+	ax.set_title("Media types sent by sender", loc="left"); ax.set_ylabel("amount")
 	ax.set_xticks(x); ax.set_yticks(np.arange(0, max_val, 50), minor=True)
-	ax.set_ylim([0, max_val+30]); ax.grid(True, "both", "y", lw=.8)
+	ax.set_ylim([0, max_val+35]); ax.grid(True, "both", "y", lw=.8)
 	ax.set_xticklabels(labels)
-
 	if db.sc < 7:
-		ax.legend(bbox_to_anchor=(1,1.15), fontsize="small", ncol=db.sc)
+		ax.legend(bbox_to_anchor=(1,1.2), fontsize="small", ncol=db.sc)
 	else:
 		ax.legend(bbox_to_anchor=(1,1.3), fontsize="small", ncol=round(db.sc/2))
 
-	# fig.tight_layout()
-	
 	plt.savefig("data/output/images/page1/media_bars.png", transparent=True)
 	plt.close()
 
 
 def message_time_series() -> None:
 	"""
-	Creates a time series plot of the messages sent per day.
+	Creates a time series plot of the messages sent over time.
 	"""
 	for i, range in enumerate(db.msg_ranges):
 		fig, ax = plt.subplots(figsize=(8.27,2))
 
 		ax.plot(range.index, range.values, color="green")
 		# Major ticks every half year, minor ticks every month
-		ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 5, 9), bymonthday=15))
+		ax.xaxis.set_major_locator(mdates.MonthLocator((1, 5, 9), 15))
 		ax.xaxis.set_minor_locator(mdates.MonthLocator(bymonthday=15))
 		ax.grid(True, "both", "y")
 		ax.set_ylabel("amount")
-		ax.set_title("Messages per day", loc="left")
+		ax.set_title("Messages sent over time", loc="left")
 		ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
 
 		page = "page1/" if i == db.sc else f"senderpages/s{str(i)}_"
@@ -500,40 +505,87 @@ def message_time_series() -> None:
 	return
 
 
-def bar_plotter(results, category_names):
-    labels = list(results.keys())
-    data = np.array(list(results.values()))
-    data_cum = data.cumsum(axis=1)
-    category_colors = cmap(data.shape[1])
-    fig, ax = plt.subplots(figsize=(9.2, 5))
-    ax.xaxis.set_visible(False)
-    ax.yaxis.set_visible(True if len(results) > 1 else False)
-    ax.set_xlim(0, np.sum(data, axis=1).max())
-    for i, (colname, color) in enumerate(zip(category_names, category_colors)):
-        widths = data[:, i]
-        starts = data_cum[:, i] - widths
-        rects = ax.barh(labels, widths, left=starts, label=colname, color=color)
-        text_color = "white" if color[0] * color[1] * color[2] < 0.5 else "darkgrey"
-        ax.bar_label(rects, label_type="center", color=text_color)
-    ax.legend(ncol=len(category_names), bbox_to_anchor=(0.5, 1.1), loc="upper center", fontsize="x-small")
-    return fig, ax
+days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+hours = [str(i) for i in range(24)]
 
+def activity_heatmap() -> None:
+	"""
+	Creates a heatmap of the activity of the chat members.
+	"""
+	for n in range(db.sc+1):
+		df = db.chat_per_s[n] if n != db.sc else db.chat_og
+		
+		fig, ax = plt.subplots(figsize=(7, 2))
+		vals = df.groupby(["weekday", "hour"]).size().unstack().fillna(0).astype(int)
+		im = ax.imshow(vals, cmap="Greens")
 
-def media_bar() -> None:
-	"""
-	create bar chart from sum row in stats_df
-	"""
-	bar_plotter({"a":db.stats_df.iloc[-1].iloc[list(db.plot1_dict.keys())]}, list(db.plot1_dict.values()))
-	plt.savefig("data/output/images/page1/media_bar.png", transparent=True)
+		# Show all ticks and label them with the respective list entries
+		ax.set_xticks(np.arange(len(hours)), labels=hours)
+		ax.set_yticks(np.arange(len(days)), labels=[x[:3] for x in days])
+
+		val_max = vals.max().max()
+		
+		if val_max < 100:
+			for i in range(len(days)):
+				for j in range(len(hours)):
+					x = vals.iat[i,j] if vals.iat[i,j] != 0 else ""
+					ax.text(j, i, x, ha="center", va="center", 
+						color="black" if vals.iat[i,j] < val_max/2.5 else "w")
+
+		cbar = fig.colorbar(im)
+		cbar.ax.set_ylabel("messages sent", rotation=-90, va="bottom")
+
+		# ax.set_title("Activity by day and hour", loc="left")
+
+		page = "page1/" if n == db.sc else f"senderpages/s{str(n)}_"
+		fig.savefig(f"data/output/images/{page}heatmap.png", transparent=True)
 	plt.close()
 	return
 
-
-def plot_barh(df: pd.DataFrame, title: str, x_label: str, y_label: str, color: str) -> None:
-	df.plot.barh(x=x_label, y=y_label, color=color, figsize=(10,5), legend=False, title=title)
-	plt.savefig(f"data/output/images/senderpages/barh_{df.name}.png", transparent=True)
+def sentiment_pies(s_no: int=db.sc):
+	fig, ax = plt.subplots(figsize=(3.14, 3.14))
+	ax.pie(db.stats_df.iloc[s_no, [20, 22]], labels=["😀", "☹"], startangle=90, colors=["g","r"], autopct="%1.1f%%")
+	ax.axis("equal")
+	fig.tight_layout()
+	page = "page1/" if s_no == db.sc else f"senderpages/s{str(s_no)}_"
+	fig.savefig(f"data/output/images/{page}polpie.png", transparent=True)
 	plt.close()
 	return
+
+# def bar_plotter(results, category_names):
+#     labels = list(results.keys())
+#     data = np.array(list(results.values()))
+#     data_cum = data.cumsum(axis=1)
+#     category_colors = cmap(data.shape[1])
+#     fig, ax = plt.subplots(figsize=(9.2, 5))
+#     ax.xaxis.set_visible(False)
+#     ax.yaxis.set_visible(True if len(results) > 1 else False)
+#     ax.set_xlim(0, np.sum(data, axis=1).max())
+#     for i, (colname, color) in enumerate(zip(category_names, category_colors)):
+#         widths = data[:, i]
+#         starts = data_cum[:, i] - widths
+#         rects = ax.barh(labels, widths, left=starts, label=colname, color=color)
+#         text_color = "white" if color[0] * color[1] * color[2] < 0.5 else "darkgrey"
+#         ax.bar_label(rects, label_type="center", color=text_color)
+#     ax.legend(ncol=len(category_names), bbox_to_anchor=(0.5, 1.1), loc="upper center", fontsize="x-small")
+#     return fig, ax
+
+
+# def media_bar() -> None:
+# 	"""
+# 	create bar chart from sum row in stats_df
+# 	"""
+# 	bar_plotter({"a":db.stats_df.iloc[-1].iloc[list(db.plot1_dict.keys())]}, list(db.plot1_dict.values()))
+# 	plt.savefig("data/output/images/page1/media_bar.png", transparent=True)
+# 	plt.close()
+# 	return
+
+
+# def plot_barh(df: pd.DataFrame, title: str, x_label: str, y_label: str, color: str) -> None:
+# 	df.plot.barh(x=x_label, y=y_label, color=color, figsize=(10,5), legend=False, title=title)
+# 	plt.savefig(f"data/output/images/senderpages/barh_{df.name}.png", transparent=True)
+# 	plt.close()
+# 	return
 
 
 # --------------------------------------------
