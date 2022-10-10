@@ -1174,3 +1174,79 @@
 0,- -,- -
 1,# main.py #,65.338622404
 2,without imports,54.505940815
+0,importing neccessary modules,8.222322
+1,converting the orinial file to a pandas DataFrame,8.52935
+2,cleaning df for sender1,0.03785
+3,counting word and emoji occurances for sender1,0.209365
+4,creating wordcloud for sender1,4.598309
+5,calculating statistics for sender1,0.024164
+6,cleaning df for sender2,0.084371
+7,counting word and emoji occurances for sender2,0.152383
+8,creating wordcloud for sender2,6.989638
+9,calculating statistics for sender2,0.134292
+10,calculating summary statistics for all senders,0.023115
+11,calculating time statistics for all senders,5.798756
+12,making plots for the report,5.859795
+13,creating a text report,0.019296
+14,finishing final PDF Report,15.764168
+15,exporting the database contents,0.255456
+0,- -,- -
+1,# main.py #,56.705064
+2,without imports,48.482742
+0,importing neccessary modules,8.338091
+1,converting the orinial file to a pandas DataFrame,5.639403
+2,cleaning df for sender1,0.032073
+3,counting word and emoji occurances for sender1,0.153282
+4,creating wordcloud for sender1,3.489826
+5,calculating statistics for sender1,0.017793
+6,cleaning df for sender2,0.033859
+7,counting word and emoji occurances for sender2,0.092392
+8,creating wordcloud for sender2,4.094865
+9,calculating statistics for sender2,0.06852
+10,calculating summary statistics for all senders,0.019973
+11,calculating time statistics for all senders,3.71635
+12,making plots for the report,2.63182
+13,creating a text report,0.006898
+14,finishing final PDF Report,12.756291
+15,exporting the database contents,0.207811
+0,- -,- -
+1,# main.py #,41.301628
+2,without imports,32.963537
+0,importing neccessary modules,5.963771
+1,converting the orinial file to a pandas DataFrame,9.878027
+2,cleaning df for sender1,0.027429
+3,counting word and emoji occurances for sender1,0.14819
+4,creating wordcloud for sender1,4.020099
+5,calculating statistics for sender1,0.018445
+6,cleaning df for sender2,0.031148
+7,counting word and emoji occurances for sender2,0.151517
+8,creating wordcloud for sender2,6.997592
+9,calculating statistics for sender2,0.124095
+10,calculating summary statistics for all senders,0.065163
+11,calculating time statistics for all senders,7.626194
+12,making plots for the report,8.049235
+13,creating a text report,0.226815
+14,finishing final PDF Report,13.600435
+15,exporting the database contents,0.457368
+0,- -,- -
+1,# main.py #,57.388391
+2,without imports,51.42462
+0,importing neccessary modules,5.545152
+1,converting the orinial file to a pandas DataFrame,10.771179
+2,cleaning df for sender1,0.037465
+3,counting word and emoji occurances for sender1,0.148164
+4,creating wordcloud for sender1,4.460727
+5,calculating statistics for sender1,0.022077
+6,cleaning df for sender2,0.04241
+7,counting word and emoji occurances for sender2,0.1559
+8,creating wordcloud for sender2,7.42924
+9,calculating statistics for sender2,0.039125
+10,calculating summary statistics for all senders,0.076739
+11,calculating time statistics for all senders,8.941435
+12,making plots for the report,5.968668
+13,creating a text report,0.006262
+14,finishing final PDF Report,15.468053
+15,exporting the database contents,0.587592
+0,- -,- -
+1,# main.py #,59.702842
+2,without imports,54.15769
