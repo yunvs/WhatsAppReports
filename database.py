@@ -59,16 +59,17 @@ time_stats_cols = ["first_msg", "last_msg", "zero_days"]
 # the actual data will be stored in the following variables
 # ----------------------------------------------------------------
 
-chat_og = pd.DataFrame()
+
+chat: pd.DataFrame = pd.DataFrame()
 """ #tobefilled: [date, datetime, sender, message, sentiment] """
 
-chat = pd.DataFrame()
+chat_og: pd.DataFrame = pd.DataFrame()
 """ #tobefilled: [date, datetime, sender, message, sentiment] """
 
 senders: list[str] = list()
 """ #tobefilled: list of all senders """
 
-sc: int = len(senders)
+sc: int = int()
 """ #tobefilled: count of senders """
 
 chat_per_s = list()
@@ -83,10 +84,10 @@ common_words = list()
 common_emojis = list()
 """ #tobefilled: emojis frequencies per sender [0: common emojis from first sender, 1: common emojis from second sender, ...] """
 
-stats_df = pd.DataFrame()
+stats_df: pd.DataFrame = pd.DataFrame()
 """ #tobefilled: 0: msg_count, 1: chars_avg, 2: words_avg, 3: chars_max, 4: words_max, 5: polarity_avg, 6: media_count, 7: image, 8: video, 9: GIF, 10: sticker, 11: audio, 12: contact, 13: location, 14: file, 15: deleted, 16: calls, 17: link, 18: emoji, 19: emoji_unique """
 
-time_stats_df = pd.DataFrame()
+time_stats_df: pd.DataFrame = pd.DataFrame()
 """ #tobefilled: 0: first_msg, 1: last_mgs, 2: most_msg, 3: no_msg, 4: break """
 
 msg_ranges = list()
@@ -98,5 +99,5 @@ reports: list[str] = list()
 msg_bundles: list[list[str]] = list()
 """ #tobefilled: list of lists containing messages bundles by each sender """
 
-tt = pd.DataFrame()
+tt: pd.DataFrame = pd.DataFrame()
 """ #tobefilled: [task, time] """
