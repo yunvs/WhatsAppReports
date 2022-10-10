@@ -11,8 +11,7 @@ path = db.test_data[5]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.tx
 # bar.text = "Importing and converting data" #TODO add bar
 
 # data extraction and preprocessing
-convert_to_df(fileformat(path))  # convert the chat to a pandas dataframe
-prepare_db()
+convert_file_to_df(path)  # convert the chat to a pandas DataFrame
 
 seperate_data()
 
