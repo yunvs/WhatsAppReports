@@ -520,7 +520,7 @@ def activity_heatmaps() -> None:
 	for n in range(db.sc+1):
 		df = db.msg_per_s[n] if n != db.sc else db.chat_og
 
-		fig, ax = plt.subplots(figsize=(7, 2))
+		fig, ax = plt.subplots(figsize=(8, 2))
 		vals = df.groupby(["weekday", "hour"]).size(
 		).unstack().fillna(0).astype(int)
 		im = ax.imshow(vals, cmap="Greens")
@@ -708,31 +708,51 @@ def make_pdf_report() -> None:
 		new_section(11, space=20)
 		pdf.cell(90, 0, f"Messages sent from {s} contain")
 		new_section(14, "B", space=3)
-		pdf.multi_cell(110, 5, db.reports[i][0])
+		pdf.multi_cell(110, 5, db.txt_reports[i][0])
 
 		new_section(space=4)
 		print_stats(i)
 
 		new_section(11, space=10)
-		pdf.multi_cell(110, 4, db.reports[i][1])
+		pdf.multi_cell(110, 4, db.txt_reports[i][1])
 
-		# add_title_footer(i)
-		# pdf.image(path+"_wc.png", x=113, y=33, w=88)
+		# pdf.image(path+"wc.png", x=113, y=33, w=88)
 		pdf.image(path+"sent_pie.png", x=115, y=35, w=84)
 
-		pdf.image(path+"ts.png", x=0, y=125, w=210)
-		pdf.image(path+"heatmap.png", x=0, y=180, w=210)
 
-		
-		add_title_footer(i)
+		pdf.image(path+"wc.png", x=113, y=140, w=88)
 
-		pdf.set_xy(20, 40)
+		pdf.set_xy(20, 160)
 		print_cmms(db.common_words[i].head(10), cell_width=25, cell_height=5)
 
-		pdf.set_xy(70, 40)
+		pdf.set_xy(65, 160)
 		print_cmms(db.common_emojis[i].head(10), cell_width=25, cell_height=5)
 
-		pdf.image(path+"wc.png", x=50, y=100, w=150)
+
+
+
+		# pdf.image(path+"ts.png", x=0, y=130, w=210)
+		# pdf.image(path+"heatmap.png", x=0, y=180, w=210)
+
+		
+		add_title_footer(i) # new page 
+
+		new_section(11, space=20)
+		pdf.multi_cell(100, 4, db.time_reports[i])
+
+
+
+		# pdf.set_xy(20, 40)
+		# print_cmms(db.common_words[i].head(10), cell_width=25, cell_height=5)
+
+		# pdf.set_xy(65, 40)
+		# print_cmms(db.common_emojis[i].head(10), cell_width=25, cell_height=5)
+
+		# pdf.image(path+"wc.png", x=50, y=100, w=150)
+
+
+		pdf.image(path+"ts.png", x=0, y=130, w=210)
+		pdf.image(path+"heatmap.png", x=0, y=185, w=210)
 
 
 	pdf.output("data/output/pdfs/WA-Report.pdf", "F",)

@@ -34,13 +34,18 @@ db.tstats = pd.read_csv(f"{path}/time_stats_df.csv", index_col=0)
 # db.chat = pd.read_csv(f"{path}/chat_df.csv", index_col=0)
 # msg = stats_df.iloc[0:-1, 0]
 # chat_psc = pd.read_csv(f"{path}/chat_per_s_clean_df_demo.csv", index_col=0)
-# time("import data from main")
-# for i in range(db.sc):
-# 	db.common_words.append(pd.read_csv(f"{path}/common_words_s{i}.csv", index_col=0))
-# 	db.common_emojis.append(pd.read_csv(f"{path}/common_emojis_s{i}.csv", index_col=0))
+for i in range(db.sc):
+	db.common_words.append(pd.read_csv(f"{path}/common_words_s{i}.csv", index_col=0))
+	db.common_emojis.append(pd.read_csv(f"{path}/common_emojis_s{i}.csv", index_col=0))
 # # ----------------------------------------------------------------
 
-print(db.tstats.iat[0,0].split()[0])
+
+
+create_txt_reports()
+create_time_reports()
+
+make_pdf_report()
+
 
 
 # def bar_plotter(results, category_names):
