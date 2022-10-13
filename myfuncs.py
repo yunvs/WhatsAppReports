@@ -7,6 +7,7 @@ from unidecode import unidecode
 from fpdf import FPDF  # to create pdfs
 from textblob_de import TextBlobDE as TextBlob  # for sentiment analysis
 from matplotlib import pyplot as plt, dates, cm  # to plot figures
+from matplotlib.colors import Colormap  #TODO maybe redudant
 from wordcloud import WordCloud  # to create wordclouds
 import emojis  # to find emoji in messages
 import re  # for regex
@@ -267,6 +268,22 @@ def calc_remaining_stats() -> None:
 	Calculates summary statistics about the chat and enters collected data
 	into the stats DataFrame.
 	"""
+	for i in range(db.sc+1):
+		row = db.senders[i] if i < db.sc else "sum"
+		msg_r = create_msg_range(i)
+		db.msg_ranges.append(msg_r)
+
+		db.tstats.at[row, "first_msg"] = str(msg_r.index[0]).split()[0]
+		db.tstats.at[row, "last_msg"] = str(msg_r.index[-1]).split()[0]
+		db.tstats.at[row, "msg_span_days"] = (msg_r.index[-1] - msg_r.index[0]).days
+
+		db.tstats.at[row, "max_day"] = str(msg_r[msg_r == msg_r.max()].index[0]).split()[0]
+		db.tstats.at[row, "max_msg"] = msg_r.max()
+
+		db.tstats.at[row, "msg_days"] = msg_r[msg_r != 0].shape[0]
+		db.tstats.at[row, "zero_days"] = msg_r[msg_r == 0].shape[0]
+
+	
 	for stat in db.stats_dict.keys():
 		if any(x in stat for x in ["calls", "unique"]):
 			continue
@@ -288,32 +305,6 @@ def create_msg_range(i: int) -> None:
 	for date in chat_date_range.strftime("%Y-%m-%d"):
 		msg_range[date] = msg_date[date] if date in msg_date.index else 0
 	return msg_range
-
-
-def calc_time_stats() -> None:
-	"""
-	Extracts the first and last message date from the message per date series.
-	"""
-	for i in range(db.sc+1):
-		row = db.senders[i] if i < db.sc else "sum"
-		msg_range = create_msg_range(i)
-		db.msg_ranges.append(msg_range)
-
-		db.time_stats_df.at[row, "first_msg"] = msg_range.index[0]
-		db.time_stats_df.at[row, "last_msg"] = msg_range.index[-1]
-
-		db.time_stats_df.at[row, "max_day"] = msg_range[msg_range == msg_range.max()].index[0]
-		db.time_stats_df.at[row, "max_msg"] = msg_range.max()
-
-		db.time_stats_df.at[row, "zero_days"] = msg_range[msg_range == 0].shape[0]
-		db.time_stats_df.at[row, "not_zero_days"] = msg_range[msg_range != 0].shape[0]
-
-		# get the amount of days between the first and last message
-		db.time_stats_df.at[row, "msg_days"] = (
-			db.time_stats_df.at[row, "last_msg"] - db.time_stats_df.at[row, "first_msg"]).days
-
-	time("calculating time statistics for all senders")
-	return
 
 
 # ----------------------------------------------------------------
@@ -407,19 +398,23 @@ def create_txt_reports() -> None:
 # ----------------------------------------------------------------
 
 
-def plot_data() -> None:
+def visualise_data() -> None:
 	"""
-	Creates the plots for the report.
+	Creates a texual output for some data and plots the grafics for the report.
 	"""
+	create_txt_reports()
+
 	msg_pie()
 	grouped_madia_bars()
 	message_time_series()
 	activity_heatmaps()
-	sentiment_pies()
-	return time("making plots for the report")
+	sent_pies()
+	
+	time("visualising data for the final pdf report")
+	return
 
 
-def cmap(countable=db.senders, cm_name: str = "Greens_r"):
+def cmap(countable=db.senders, cm_name: str = "Greens_r") -> Colormap:
 	"""
 	Returns a colormap for the amount needed of the given countable.
 	"""
@@ -435,8 +430,8 @@ def msg_pie() -> None:
 	fig, ax = plt.subplots(figsize=(3.14, 3.14))
 	ax.pie(db.stats.iloc[0:-1, 0], startangle=90, colors=cmap(db.senders),
 		   counterclock=False, autopct="%1.2f%%", wedgeprops={"ec": "w"}, textprops={"c": "w"})
-	ax.legend(labels=db.senders, title="sender", shadow=True,
-			  loc="upper right", fontsize="small")
+	ax.legend(labels=db.senders, shadow=True, loc="upper right", fontsize="small")
+	ax.set_title("Messages sent")
 	ax.axis("equal")
 	fig.tight_layout()
 	plt.savefig("data/output/images/page1/msg_pie.png", transparent=True)
@@ -469,13 +464,13 @@ def grouped_madia_bars() -> None:
 	ax.grid(True, "both", "y", lw=.8)
 	ax.set_xticklabels(labels)
 	if db.sc < 7:
-		ax.legend(bbox_to_anchor=(1, 1.2), fontsize="small", ncol=db.sc)
+		ax.legend(bbox_to_anchor=(1, 1.2), fontsize="small", ncol=db.sc, shadow=True)
 	else:
-		ax.legend(bbox_to_anchor=(1, 1.3), fontsize="small", ncol=round(db.sc/2))
+		ax.legend(bbox_to_anchor=(1, 1.3), fontsize="small", ncol=round(db.sc/2), shadow=True)
 
 	plt.savefig("data/output/images/page1/media_bars.png", transparent=True)
 	plt.close()
-
+	return
 
 def message_time_series() -> None:
 	"""
@@ -496,13 +491,8 @@ def message_time_series() -> None:
 
 		page = "page1/" if i == db.sc else f"senderpages/s{str(i)}_"
 		fig.savefig(f"data/output/images/{page}ts.png", transparent=True)
-		plt.close(fig)
+		plt.close()
 	return
-
-
-days = ["Monday", "Tuesday", "Wednesday",
-		"Thursday", "Friday", "Saturday", "Sunday"]
-hours = [str(i) for i in range(24)]
 
 
 def activity_heatmaps() -> None:
@@ -510,6 +500,9 @@ def activity_heatmaps() -> None:
 	Creates a heatmap of the activity of the chat members individually and
 	together.
 	"""
+	days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+	hours = [str(i) for i in range(24)]
+
 	for n in range(db.sc+1):
 		df = db.msg_per_s[n] if n != db.sc else db.chat_og
 
@@ -532,9 +525,9 @@ def activity_heatmaps() -> None:
 							color="black" if vals.iat[i, j] < val_max/2.5 else "w")
 
 		cbar = fig.colorbar(im)
-		cbar.ax.set_ylabel("messages sent", rotation=-90, va="bottom")
+		cbar.ax.set_ylabel("Amount", rotation=-90, va="bottom")
 
-		# ax.set_title("Activity by day and hour", loc="left")
+		ax.set_title("Activity by day and hour", loc="left")
 
 		page = "page1/" if n == db.sc else f"senderpages/s{str(n)}_"
 		fig.savefig(f"data/output/images/{page}heatmap.png", transparent=True)
@@ -592,24 +585,6 @@ def new_section(size: int = 0, style: str = "", space: int = 0, np: int = 0) -> 
 	return None
 
 
-def print_cmms(df: pd.DataFrame, cell_width: int = 25, cell_height: int = 6) -> None:
-	"""
-	Prints a DataFrame of common words/emojis to a table in a pdf file
-	"""
-	margin, _ = get_coord()
-	pdf.set_font("Arial", "B", 8)
-	pdf.cell(cell_width, cell_height, df.columns[0], align="C", border=1)
-	pdf.cell(17, cell_height, df.columns[1], align="C", border=1)
-	pdf.set_xy(margin, pdf.get_y() + cell_height)
-
-	pdf.set_font("Arial", "", 8)
-	for i in range(len(df)):
-		pdf.cell(cell_width, cell_height, 
-			df.iat[i, 0].strip(":").replace("_", " ")[:20], align="C", border=1)
-		pdf.cell(17, cell_height, str(df.iat[i, 1]), align="C", border=1)
-		pdf.set_xy(margin, pdf.get_y() + cell_height)
-
-
 def add_title_footer(n: int = -1) -> None:
 	"""
 	Prints the title of the page
@@ -621,8 +596,7 @@ def add_title_footer(n: int = -1) -> None:
 	new_section(18, "B")
 	pdf.cell(0, 10, "WhatsApp Chat Statistics", align="C")
 	new_section(12, space=5)
-	pdf.cell(0, 12, "for " + str(ss() if n == -
-			 1 else db.senders[n]), align="C")
+	pdf.cell(0, 12, "for " + str(ss() if n == -1 else db.senders[n]), align="C")
 
 	# Create footer of current page
 	pdf.set_xy(0, 270)
@@ -647,7 +621,45 @@ def print_stats(s_no: int = -1, w: int = 24, h: int = 6) -> None:
 		pdf.cell(w, h, value, 1, 0, "C")
 		if i % 2 != 0:
 			pdf.ln(h)
-	return None
+	return
+
+
+def print_tstats(s_no: int = -1) -> None:
+	"""
+	Prints the timewise statistics of a sender to the pdf file
+	"""
+	n = db.sc if s_no == -1 else s_no
+	x1 = 35
+	x2 = 20
+	h = 6
+	pdf.set_font("Arial", "", 12)
+	i = 0
+	for key, val in db.tstats_dict.items():
+		pdf.cell(x1, h, val.capitalize(), 1, 0, "C")
+		pdf.cell(x2, h, str(db.tstats.iloc[n, key]), 1, 0, "C")
+		if i % 2 != 0:
+			pdf.ln(h)
+		i += 1
+	return
+
+
+def print_cmms(df: pd.DataFrame, cell_width: int = 25, cell_height: int = 6) -> None:
+	"""
+	Prints a DataFrame of common words/emojis to a table in a pdf file
+	"""
+	margin, _ = get_coord()
+	pdf.set_font("Arial", "B", 8)
+	pdf.cell(cell_width, cell_height, df.columns[0], align="C", border=1)
+	pdf.cell(17, cell_height, df.columns[1], align="C", border=1)
+	pdf.set_xy(margin, pdf.get_y() + cell_height)
+
+	pdf.set_font("Arial", "", 8)
+	for i in range(len(df)):
+		pdf.cell(cell_width, cell_height, 
+			df.iat[i, 0].strip(":").replace("_", " ")[:20], align="C", border=1)
+		pdf.cell(17, cell_height, str(df.iat[i, 1]), align="C", border=1)
+		pdf.set_xy(margin, pdf.get_y() + cell_height)
+	return
 
 
 def make_pdf_report() -> None:
@@ -665,18 +677,22 @@ def make_pdf_report() -> None:
 	new_section(11, space=4)
 	pdf.multi_cell(100, 4, db.reports[db.sc][1])
 
-	new_section(space=4)
+	new_section(space=8)
+	print_tstats()
 
-	pdf.image(path+"msg_pie.png", x=114.5, y=35, w=84.5)
+	pdf.cell(30, 5, str(db.stats.iat[db.sc, 20]), 1, 0, "C")
+	pdf.cell(30, 5, str(db.stats.iat[db.sc, 22]), 1, 1, "C")
+
+	pdf.image(path+"msg_pie.png", x=115, y=35, w=84)
 	pdf.image(path+"media_bars.png", x=0, y=120, w=210)
 	pdf.image(path+"ts.png", x=0, y=180, w=210)
 
 	for i, s in enumerate(db.senders):
 		add_title_footer(i)
-		path = "data/output/images/senderpages/s" + str(i)
+		path = f"data/output/images/senderpages/s{str(i)}_"
 
 		new_section(11, space=20)
-		pdf.cell(90, 0, f"Messages from {s} contain")
+		pdf.cell(90, 0, f"Messages sent from {s} contain")
 		new_section(14, "B", space=3)
 		pdf.multi_cell(110, 5, db.reports[i][0])
 
@@ -687,21 +703,24 @@ def make_pdf_report() -> None:
 		pdf.multi_cell(110, 4, db.reports[i][1])
 
 		# add_title_footer(i)
-		pdf.image(path+"_wc.png", x=113, y=33, w=88)
-		pdf.image(path+"_ts.png", x=0, y=125, w=210)
-		pdf.image(path+"_heatmap.png", x=0, y=180, w=210)
+		# pdf.image(path+"_wc.png", x=113, y=33, w=88)
+		pdf.image(path+"sent_pie.png", x=115, y=35, w=84)
 
+		pdf.image(path+"ts.png", x=0, y=125, w=210)
+		pdf.image(path+"heatmap.png", x=0, y=180, w=210)
+
+		
 		add_title_footer(i)
 
 		pdf.set_xy(20, 40)
-
-		print_cmms(db.common_words[i].head(
-			10), cell_width=25, cell_height=5)
+		print_cmms(db.common_words[i].head(10), cell_width=25, cell_height=5)
 
 		pdf.set_xy(70, 40)
+		print_cmms(db.common_emojis[i].head(10), cell_width=25, cell_height=5)
 
-		print_cmms(db.common_emojis[i].head(
-			10), cell_width=25, cell_height=5)
+		pdf.image(path+"wc.png", x=50, y=100, w=150)
+
 
 	pdf.output("data/output/pdfs/WA-Report.pdf", "F",)
-	return time("finishing final PDF Report")
+	time("finishing final PDF Report")
+	return
