@@ -13,15 +13,13 @@ path = db.test_data[5]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.tx
 # data extraction and preprocessing
 convert_file_to_df(path)  # convert the chat to a pandas DataFrame
 
-seperate_data()
+analysis_per_sender()
 
 # bar.text = "Calculating statistics" #TODO add bar
-calc_sum_stats()  # get the summary statistics for all senders
-calc_time_stats()  # get the time stats for the chat
+calc_remaining_stats()  # get the summary statistics for all senders
 
 # bar.text = "Creating plots and tables" #TODO add bar
-plot_data()
-create_txt_reports()  # get general sender stats for the chat
+visualise_data()
 
 
 # bar.text = "Creating and saving report @ data/output/pdfs/" #TODO add bar

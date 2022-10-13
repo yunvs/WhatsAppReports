@@ -63,12 +63,12 @@ def exp(loc: str = None, data=None, name: str = None, exp_db: bool = False) -> N
 		exp(dbase, db.chat, "chat_df.csv")
 		exp(dbase, db.senders, "senders_df.csv")
 		exp(dbase, db.stats, "stats_df.csv")
-		exp(dbase, db.time_stats_df, "time_stats_df.csv")
+		exp(dbase, db.tstats, "time_stats_df.csv")
 		exp(dbase, db.msg_ranges, "msg_ranges_df.csv")
 		exp(dbase, db.reports, "reports_df.csv")
 		for i in range(db.sc+1):
 			try:
-				exp(dbase, db.chat_per_s[i], f"chat_per_s{i}.csv")
+				exp(dbase, db.msg_per_s[i], f"msg_per_s{i}.csv")
 				exp(dbase, db.common_words[i], f"common_words_s{i}.csv")
 				exp(dbase, db.common_emojis[i], f"common_emojis_s{i}.csv")
 			except IndexError:
@@ -169,28 +169,31 @@ def prepare_database() -> None:
 	"""
 	Prepares the database by filling data in #tobefilled placeholders.
 	"""
-	db.chat["weekday"] = db.chat["date"].apply(lambda x: x.weekday())  # add day
+	db.chat["weekday"] = db.chat["date"].apply(lambda x: x.weekday())  # add weekday
 	db.chat["hour"] = db.chat["datetime"].apply(lambda x: x.hour)  # add hour
 	db.chat_og = db.chat.copy()  # Create copy of chat to use it later
 
 	db.senders = list(db.chat["sender"].unique())  # Creates list of senders
 	db.sc = len(db.senders)  # Number of senders
 
-	db.stats = pd.DataFrame(index=db.senders, columns=db.stats_dict.keys())
-	db.time_stats_df = pd.DataFrame(index=db.senders, columns=db.time_stats_cols)
+	db.stats = pd.DataFrame(None, db.senders, db.stats_dict.keys())
+	db.tstats = pd.DataFrame(None, db.senders, db.tstats_cols)
 	return
 
 
-def seperate_data() -> None:
+def analysis_per_sender() -> None:
 	# data seperation, cleansing and data analysis per sender
 	for i, s in enumerate(db.senders):
 		df = db.chat.loc[db.chat["sender"] == s]  # DataFrame with messages from sender
-		db.chat_per_s.append(df)
+		db.msg_per_s.append(df)
+
 		clean_df = cleanse_df(df["message"], s) # get stats for each sender
 		count_occurances(clean_df, i)  # count occurances of words and emojis
-		calc_stats(clean_df)  # calculate the stats for each sender
+		time(f"sender no. {i}: counting occurances of media, words and emojis")
 
-	db.chat_per_s.append(db.chat_og)
+		calc_stats(clean_df.rename(s))  # calculate the stats for each sender
+		time(f"sender no. {i}: calculating contactwise statistics")
+	db.msg_per_s.append(db.chat_og)
 	return
 
 
@@ -198,50 +201,46 @@ def count_occurances(df: pd.DataFrame, i: int) -> None:
 	"""
 	Calculates different statistics about the chat and enters collected data.
 	"""
-	messages = " ".join(df).lower()
+	all_msg = " ".join(df).lower()  # combine all messages into one string
 
-	emoji_dict = dict()
-	emojis_listed = emojis.get(messages)  # get list of emojis
-	for item in emojis_listed:
-		emoji_dict[emojis.decode(item)] = messages.count(item)  # count emojis
-	emoji_freq = pd.Series(emoji_dict).sort_values(ascending=False).reset_index()
+	# count occurances of emojis
+	emj_dct = dict()
+	emj_lst = emojis.get(all_msg)  # get list of emojis
+	for item in emj_lst:
+		emj_dct[emojis.decode(item)] = all_msg.count(item)  # count emojis
+	emoji_freq = pd.Series(emj_dct).sort_values(ascending=False).reset_index()
 	emoji_freq.columns = ["Emoji", "Frequency"]
 	db.common_emojis.append(emoji_freq)
-	db.stats.at[db.senders[i], "emoji"] = sum(emoji_dict.values())
-	db.stats.at[db.senders[i], "emoji_unique"] = len(emoji_dict)
-	db.stats.at[db.senders[i], "link"] = len(re.findall("xurlx", messages))
+	db.stats.at[db.senders[i], "emoji"] = sum(emj_dct.values())
+	db.stats.at[db.senders[i], "emoji_unique"] = len(emj_dct)
+	db.stats.at[db.senders[i], "link"] = len(re.findall("xurlx", all_msg))
 
-	# count words
-	messages = re.sub(r"(xurlx)|(\W)|(\d)", " ", unidecode(messages))
-	word_freq = pd.Series(messages.split()).value_counts().reset_index()
+	# count occurances of words
+	all_msg = re.sub(r"(xurlx)|(\W)|(\d)", " ", unidecode(all_msg))
+	word_freq = pd.Series(all_msg.split()).value_counts().reset_index()
 	word_freq.columns = ["Word", "Frequency"]
 	db.common_words.append(word_freq)
 
-	time(f"counting word and emoji occurances for sender{str(i+1)}")
-
-	create_wordcloud(messages.upper(), i)
-	time(f"creating wordcloud for sender{str(i+1)}")
+	create_wordcloud(all_msg.upper(), i)
 	return
 
 
-def cleanse_df(DataFrame: pd.DataFrame, sender: str) -> pd.DataFrame:
+def cleanse_df(df: pd.DataFrame, sender: str) -> pd.DataFrame:
 	"""
 	Cleans the DataFrame of non-message enties and replaces URLs and enters
 	collected data into the stats DataFrame.
 	"""
 	count = 0  # counter for media messages cleaned
-	df = DataFrame.copy()
 	for key, val in db.cstats_match.items():
 		if key == "media_count":  # media messages are counted separately
 			db.stats.at[sender, key] = count
 		else:
 			key_df = df[df == val[1]] if val[0] == "exact" else df[df.str.contains(val[1])]
+			df = df.drop(key_df.index) # remove non-messages
 			db.chat = db.chat.drop(key_df.index) # remove non-messages
 			if key in db.stats.columns:  # add counted data to stats_df.if it exists
 				db.stats.at[sender, key] = key_df.shape[0]
 				count += key_df.shape[0]
-
-	time(f"cleaning df for sender{db.senders.index(sender)+1}")
 	return df
 
 
@@ -260,11 +259,10 @@ def calc_stats(s_df: pd.DataFrame) -> None:
 	db.stats.at[s, "sent_pos"] = db.chat.loc[db.chat["sender"] == s, "sentiment"].gt(0).sum()
 	db.stats.at[s, "sent_neg"] = db.chat.loc[db.chat["sender"] == s, "sentiment"].lt(0).sum()
 
-	time(f"calculating statistics for sender{db.senders.index(s)+1}")
 	return
 
 
-def calc_sum_stats() -> None:
+def calc_remaining_stats() -> None:
 	"""
 	Calculates summary statistics about the chat and enters collected data
 	into the stats DataFrame.
@@ -279,11 +277,12 @@ def calc_sum_stats() -> None:
 		else:
 			db.stats.at["sum", stat] = db.stats[stat].sum()
 
-	return time("calculating summary statistics for all senders")
+	time("calculating remaining statistics for all senders")
+	return
 
 
 def create_msg_range(i: int) -> None:
-	msg_date = db.chat_per_s[i]["date"].value_counts().sort_index()
+	msg_date = db.msg_per_s[i]["date"].value_counts().sort_index()
 	chat_date_range = pd.date_range(msg_date.index[0], msg_date.index[-1])
 	msg_range = pd.Series(index=chat_date_range, dtype=int)
 	for date in chat_date_range.strftime("%Y-%m-%d"):
@@ -376,18 +375,17 @@ def create_txt_reports() -> None:
 	"""
 	i = int()
 
-	def y(*idxs): return pprint(*[calc_num(*get_stat_pair(x, i)) for x in idxs])
+	def y(*idxs): return pprint(*[calc_num(*get_stat_pair(a, i)) for a in idxs])
 
-	def x(*idxs): return pprint(*[db.time_stats_df[i, z] for z in idxs])
+	def x(*idxs): return pprint(*[db.stats[a, i] for a in idxs])
 
 	for i, s in enumerate(db.senders):  # for each sender create a sender report
 		db.reports.append([y(0, 6, 18), "\n".join([
 			f"Ø message length: {y(2)} ({y(1)})",
 			f"Longest message: {y(4)} ({y(3)})",
 			f"Deleted messages: {y(15)}",
-			f"Ø sentiment: {y(5)}",
 		]),
-			f"{s} deleted {x(15)}.",
+			f"{s} deleted {y(15)}.",
 		])
 		if db.stats.iat[i, 16] != 0:
 			db.reports[-1].append(f"You missed {y(16)} by {s}.")
@@ -398,12 +396,9 @@ def create_txt_reports() -> None:
 		f"Ø message length: {y(2)} ({y(1)})",
 		f"Longest message: {y(4)} ({y(3)})",
 		f"Deleted messages: {y(15)}",
-		f"Ø sentiment: {x(5)}",
 	]),
 		f"{ss()} deleted {y(15)}.",
 	])
-
-	time("creating a text report")
 	return
 
 
@@ -516,7 +511,7 @@ def activity_heatmaps() -> None:
 	together.
 	"""
 	for n in range(db.sc+1):
-		df = db.chat_per_s[n] if n != db.sc else db.chat_og
+		df = db.msg_per_s[n] if n != db.sc else db.chat_og
 
 		fig, ax = plt.subplots(figsize=(7, 2))
 		vals = df.groupby(["weekday", "hour"]).size(
@@ -547,19 +542,20 @@ def activity_heatmaps() -> None:
 	return
 
 
-def sentiment_pies() -> None:
+def sent_pies() -> None:
 	"""
 	Creates a pie chart of the sentiment of the messages sent by each sender
 	individually and together.
 	"""
 	for n in range(db.sc+1):
 		fig, ax = plt.subplots(figsize=(3.14, 3.14))
-		ax.pie(db.stats.iloc[n, [20, 22]], labels=[
-			   "😀", "☹"], startangle=90, colors=["g", "r"], autopct="%1.1f%%")
+		ax.pie(db.stats.iloc[n, [20, 22]], startangle=90, colors=["darkgreen", "darkred"], autopct="%1.1f%%", wedgeprops={"ec": "w"}, textprops={"c": "w"})
+		ax.legend(labels=["☺️", "☹"], shadow=True, loc="upper right", fontsize="small")
 		ax.axis("equal")
+		ax.set_title("Sentiment of rated messages")
 		fig.tight_layout()
 		page = "page1/" if n == db.sc else f"senderpages/s{str(n)}_"
-		fig.savefig(f"data/output/images/{page}polpie.png", transparent=True)
+		fig.savefig(f"data/output/images/{page}sent_pie.png", transparent=True)
 		plt.close()
 	return
 
