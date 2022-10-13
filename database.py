@@ -52,7 +52,9 @@ stop_words = [word.upper() for word in stop_words]
 plot1_dict = {7: "Images", 8: "Videos", 9: "GIFs", 10: "Stickers", 11: "Audios", 12: "Contacts", 13: "Locations", 14: "Files"}
 """ Dictionary of labels for the first plot """
 
-time_stats_cols = ["first_msg", "last_msg", "zero_days"]
+tstats_cols = ["first_msg", "last_msg", "max_day", "max_msg", "msg_days", "zero_days", "msg_span_days"]
+tstats_dict = {0: "First message", 1: "Last message", 2: "Most messages", 3: "Most messages", 4: "Days with messages", 5: "Days without ", 6: "Days"}
+
 """ List of column names for the time statistics DataFrame """
 
 # ----------------------------------------------------------------
@@ -72,22 +74,19 @@ senders: list[str] = list()
 sc: int = int()
 """ #tobefilled: count of senders """
 
-chat_per_s = list()
-""" #tobefilled: Chat per sender [0: chat from sender no.1, 1: chat from sender no.2, ... sc: chat from all senders] """
-
-chat_per_s_clean = list()
-""" #tobefilled: clean chat per sender [0: chat from sender no.1, 1: chat from sender no.2, ... sc: chat from all senders] """
+msg_per_s = list()
+""" #tobefilled: Messages per sender [0: messages from sender no.1, 1: messages of sender no.2, ... sc: messages of all senders] """
 
 common_words = list()
-""" #tobefilled: word frequencies per sender [0: common words from first sender, 1: common words from second sender, ...] """
+""" #tobefilled: word frequencies per sender [0: common words of first sender, 1: common words of second sender, ...] """
 
 common_emojis = list()
-""" #tobefilled: emojis frequencies per sender [0: common emojis from first sender, 1: common emojis from second sender, ...] """
+""" #tobefilled: emojis frequencies per sender [0: common emojis of first sender, 1: common emojis of second sender, ...] """
 
-stats_df: pd.DataFrame = pd.DataFrame()
+stats: pd.DataFrame = pd.DataFrame()
 """ #tobefilled: 0: msg_count, 1: chars_avg, 2: words_avg, 3: chars_max, 4: words_max, 5: polarity_avg, 6: media_count, 7: image, 8: video, 9: GIF, 10: sticker, 11: audio, 12: contact, 13: location, 14: file, 15: deleted, 16: calls, 17: link, 18: emoji, 19: emoji_unique """
 
-time_stats_df: pd.DataFrame = pd.DataFrame()
+tstats: pd.DataFrame = pd.DataFrame()
 """ #tobefilled: 0: first_msg, 1: last_mgs, 2: most_msg, 3: no_msg, 4: break """
 
 msg_ranges = list()
@@ -95,9 +94,6 @@ msg_ranges = list()
 
 reports: list[str] = list()
 """ #tobefilled: list contains text reports (general and per sender) """
-
-msg_bundles: list[list[str]] = list()
-""" #tobefilled: list of lists containing messages bundles by each sender """
 
 tt: pd.DataFrame = pd.DataFrame()
 """ #tobefilled: [task, time] """
