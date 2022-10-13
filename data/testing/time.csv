@@ -1424,3 +1424,16 @@
 0,- -,- -
 1,# main.py #,74.993257
 2,without imports,65.599775
+0,importing neccessary modules,7.964502
+1,converting the orinial file to a pandas DataFrame,5.912785
+2,"sender no. 0: counting occurances of media, words and emojis",3.970656
+3,sender no. 0: calculating contactwise statistics,0.015587
+4,"sender no. 1: counting occurances of media, words and emojis",4.269523
+5,sender no. 1: calculating contactwise statistics,0.036943
+6,calculating remaining statistics for all senders,2.173224
+7,visualising data for the final pdf report,2.682217
+8,finishing final PDF Report,8.752417
+9,exporting the database contents,0.152706
+0,- -,- -
+1,# main.py #,35.932989
+2,without imports,27.968487
