@@ -92,8 +92,11 @@ tstats: pd.DataFrame = pd.DataFrame()
 msg_ranges = list()
 """ #tobefilled: [start, end] """
 
-reports: list[str] = list()
+txt_reports: list[str] = list()
 """ #tobefilled: list contains text reports (general and per sender) """
+
+time_reports: list[str] = list()
+""" #tobefilled: list contains text reports about time (general and per sender) """
 
 tt: pd.DataFrame = pd.DataFrame()
 """ #tobefilled: [task, time] """
