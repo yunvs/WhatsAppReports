@@ -66,7 +66,7 @@ def exp(loc: str = None, data=None, name: str = None, exp_db: bool = False) -> N
 		exp(dbase, db.stats, "stats_df.csv")
 		exp(dbase, db.tstats, "time_stats_df.csv")
 		exp(dbase, db.msg_ranges, "msg_ranges_df.csv")
-		exp(dbase, db.reports, "reports_df.csv")
+		exp(dbase, db.txt_reports, "reports_df.csv")
 		for i in range(db.sc+1):
 			try:
 				exp(dbase, db.msg_per_s[i], f"msg_per_s{i}.csv")
@@ -362,34 +362,47 @@ def get_stat_pair(stat: int, sender: int) -> tuple[int, str]:
 def create_txt_reports() -> None:
 	"""
 	Creates a report about the sender at the given index which includes the
-	statistics about their messages or a summary report and returns it.
+	statistics about their messages or a summary report.
 	"""
 	i = int()
 
 	def y(*idxs): return pprint(*[calc_num(*get_stat_pair(a, i)) for a in idxs])
 
-	def x(*idxs): return pprint(*[db.stats[a, i] for a in idxs])
+	def x(*idxs): return pprint(*[db.stats.iat[i, a] for a in idxs])
 
 	for i, s in enumerate(db.senders):  # for each sender create a sender report
-		db.reports.append([y(0, 6, 18), "\n".join([
-			f"Ø message length: {y(2)} ({y(1)})",
+		ls = [y(0, 6, 18), "\n".join([
+			f"Avg. message length: {y(2)} ({y(1)})",
 			f"Longest message: {y(4)} ({y(3)})",
-			f"Deleted messages: {y(15)}",
-		]),
+			f"{x(15)} deleted messages",
 			f"{s} deleted {y(15)}.",
-		])
+			])]
 		if db.stats.iat[i, 16] != 0:
-			db.reports[-1].append(f"You missed {y(16)} by {s}.")
+			ls.append(f"You missed {y(16)} by {s}.") #TODO check this
+		db.txt_reports.append(ls)
 
 	# General report about all chat messages
 	i = db.sc
-	db.reports.append([y(0, 6, 18), "\n".join([
-		f"Ø message length: {y(2)} ({y(1)})",
+	db.txt_reports.append([y(0, 6, 18), "\n".join([
+		f"Avg. message length: {y(2)} ({y(1)})",
 		f"Longest message: {y(4)} ({y(3)})",
-		f"Deleted messages: {y(15)}",
-	]),
-		f"{ss()} deleted {y(15)}.",
-	])
+		f"{x(15)} deleted messages",
+		f"{ss()} deleted {y(15)}."])])
+	return
+
+
+def create_time_reports() -> None:
+	"""
+	Creates a report about the sender at the given index which includes the
+	statistics about their messages or a summary report.
+	"""
+	for i in range(db.sc+1):  # for each sender create a sender report 
+		db.time_reports.append("\n".join([
+			f"First message: {db.tstats.iat[i, 0]}",
+			f"Last message: {db.tstats.iat[i, 1]}",
+			f"Most messages sent on {db.tstats.iat[i, 2]} ({db.tstats.iat[i, 3]})",
+			f"Messages sent on {db.tstats.iat[i, 4]} days",
+			f"No messages sent on {db.tstats.iat[i, 5]} days"]))
 	return
 
 
@@ -403,6 +416,7 @@ def visualise_data() -> None:
 	Creates a texual output for some data and plots the grafics for the report.
 	"""
 	create_txt_reports()
+	create_time_reports()
 
 	msg_pie()
 	grouped_madia_bars()
@@ -672,16 +686,16 @@ def make_pdf_report() -> None:
 	new_section(11, space=20)
 	pdf.cell(90, 0, "This conversation contains")
 	new_section(14, "B", space=3)
-	pdf.multi_cell(110, 5, db.reports[db.sc][0])
+	pdf.multi_cell(110, 5, db.txt_reports[db.sc][0])
 
 	new_section(11, space=4)
-	pdf.multi_cell(100, 4, db.reports[db.sc][1])
+	pdf.multi_cell(100, 4, db.txt_reports[db.sc][1])
 
-	new_section(space=8)
-	print_tstats()
+	new_section(space=4)
+	pdf.multi_cell(100, 4, db.time_reports[db.sc])
 
-	pdf.cell(30, 5, str(db.stats.iat[db.sc, 20]), 1, 0, "C")
-	pdf.cell(30, 5, str(db.stats.iat[db.sc, 22]), 1, 1, "C")
+	# new_section(space=4)
+	# print_tstats()
 
 	pdf.image(path+"msg_pie.png", x=115, y=35, w=84)
 	pdf.image(path+"media_bars.png", x=0, y=120, w=210)
