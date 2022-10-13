@@ -28,44 +28,75 @@ from myfuncs import *
 path = "data/testing/exports/database"
 db.senders = list(pd.read_csv(f"{path}/senders_df.csv", index_col=0)["0"])
 db.sc = len(db.senders)
-db.stats_df = pd.read_csv(f"{path}/stats_df.csv", index_col=0)
+db.stats = pd.read_csv(f"{path}/stats_df.csv", index_col=0)
+db.tstats = pd.read_csv(f"{path}/time_stats_df.csv", index_col=0)
 # chat_og = pd.read_csv(f"{path}/chat_og_df.csv", index_col=0)
 # db.chat = pd.read_csv(f"{path}/chat_df.csv", index_col=0)
 # msg = stats_df.iloc[0:-1, 0]
 # chat_psc = pd.read_csv(f"{path}/chat_per_s_clean_df_demo.csv", index_col=0)
 # time("import data from main")
-for i in range(db.sc):
-	db.common_words.append(pd.read_csv(f"{path}/common_words_s{i}.csv", index_col=0))
-	db.common_emojis.append(pd.read_csv(f"{path}/common_emojis_s{i}.csv", index_col=0))
+# for i in range(db.sc):
+# 	db.common_words.append(pd.read_csv(f"{path}/common_words_s{i}.csv", index_col=0))
+# 	db.common_emojis.append(pd.read_csv(f"{path}/common_emojis_s{i}.csv", index_col=0))
 # # ----------------------------------------------------------------
 
+print(db.tstats.iat[0,0].split()[0])
 
 
-pdf = FPDF()
-pdf.add_page()
-pdf.set_font("Arial", size=12)
+# def bar_plotter(results, category_names):
+#     labels = list(results.keys())
+#     data = np.array(list(results.values()))
+#     data_cum = data.cumsum(axis=1)
+#     category_colors = cmap(data.shape[1])
+#     fig, ax = plt.subplots(figsize=(9.2, 5))
+#     ax.xaxis.set_visible(False)
+#     ax.yaxis.set_visible(True if len(results) > 1 else False)
+#     ax.set_xlim(0, np.sum(data, axis=1).max())
+#     for i, (colname, color) in enumerate(zip(category_names, category_colors)):
+#         widths = data[:, i]
+#         starts = data_cum[:, i] - widths
+#         rects = ax.barh(labels, widths, left=starts, label=colname, color=color)
+#         text_color = "white" if color[0] * color[1] * color[2] < 0.5 else "darkgrey"
+#         ax.bar_label(rects, label_type="center", color=text_color)
+#     ax.legend(ncol=len(category_names), bbox_to_anchor=(0.5, 1.1), loc="upper center", fontsize="x-small")
+#     return fig, ax
 
-path = "data/output/images/page1/"
 
-pdf.image(path+"msg_pie.png", x=114.5, y=35, w=84.5)
-pdf.image(path+"media_bars.png", x=0, y=120, w=210)
-pdf.image(path+"ts.png", x=0, y=180, w=210)
-
-pdf.add_page()
-
-path = "data/output/images/senderpages/s1"
-
-pdf.image(path+"_wc.png", x=113, y=33, w=88)
-pdf.image(path+"_ts.png", x=0, y=125, w=210)
-pdf.image(path+"_heatmap.png", x=0, y=180, w=210)
-
-pdf.output("data/testing/testing.pdf", "F")
-
-# def print_commons(df: pd.DataFrame, cell_height: int = 6) -> None:
+# def media_bar() -> None:
 # 	"""
-# 	Prints a DataFrame to a table in a pdf file
+# 	create bar chart from sum row in stats_df
 # 	"""
-# 	# get the longest string in each column
+# 	bar_plotter({"a":db.stats_df.iloc[-1].iloc[list(db.plot1_dict.keys())]}, list(db.plot1_dict.values()))
+# 	plt.savefig("data/output/images/page1/media_bar.png", transparent=True)
+# 	plt.close()
+# 	return
+
+
+# pdf = FPDF()
+# pdf.add_page()
+# pdf.set_font("Arial", size=12)
+
+# path = "data/output/images/page1/"
+
+# pdf.image(path+"msg_pie.png", x=114.5, y=35, w=84.5)
+# pdf.image(path+"media_bars.png", x=0, y=120, w=210)
+# pdf.image(path+"ts.png", x=0, y=180, w=210)
+
+# pdf.add_page()
+
+# path = "data/output/images/senderpages/s1"
+
+# pdf.image(path+"_wc.png", x=113, y=33, w=88)
+# pdf.image(path+"_ts.png", x=0, y=125, w=210)
+# pdf.image(path+"_heatmap.png", x=0, y=180, w=210)
+
+# pdf.output("data/testing/testing.pdf", "F")
+
+# # def print_commons(df: pd.DataFrame, cell_height: int = 6) -> None:
+# # 	"""
+# # 	Prints a DataFrame to a table in a pdf file
+# # 	"""
+# # 	# get the longest string in each column
 # 	max_len = df.T.reset_index().T.reset_index(drop=True).astype(str).applymap(len).max().multiply(2)
 
 # 	pdf.set_font("Arial", "B", 8)
@@ -145,7 +176,7 @@ pdf.output("data/testing/testing.pdf", "F")
 
 
 # # def get_msg_bundles() -> None:
-# # 	db.msg_bundles = list() #TODO remove 
+# # 	db.msg_bundles = list()
 # # 	chat_psc = db.chat_per_s_clean
 # # 	for i in range(chat_psc.shape[0]):
 # # 		sender_list = list()
@@ -240,11 +271,11 @@ pdf.output("data/testing/testing.pdf", "F")
 # # for x in ["chat_per_s_clean_df_demo", "chat_per_s_clean_df", ""]:
 # # 	data = [[], []]
 # # 	if x != "":
-# # 		db.chat_per_s_clean = pd.read_csv(f"{path}{x}.csv", index_col=0) #TODO: remove
+# # 		db.chat_per_s_clean = pd.read_csv(f"{path}{x}.csv", index_col=0) 
 # # 		get_msg_bundles()
 # # 		data = db.msg_bundles
 # # 	else:
-# # 		for i, s in enumerate(list(db.chat["sender"].unique())): #TODO: remove
+# # 		for i, s in enumerate(list(db.chat["sender"].unique())):
 # # 			data[i] = list(db.chat.loc[db.chat["sender"] == s]["message"])
 
 # # 	pols = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]

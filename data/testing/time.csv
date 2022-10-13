@@ -1250,3 +1250,177 @@
 0,- -,- -
 1,# main.py #,59.702842
 2,without imports,54.15769
+0,importing neccessary modules,6.411404
+1,converting the orinial file to a pandas DataFrame,7.695768
+2,cleaning df for sender1,0.026537
+3,counting word and emoji occurances for sender1,0.165932
+4,creating wordcloud for sender1,3.642274
+5,calculating statistics for sender1,0.013685
+6,cleaning df for sender2,0.029646
+7,counting word and emoji occurances for sender2,0.167635
+8,creating wordcloud for sender2,3.94059
+9,calculating statistics for sender2,0.023005
+10,calculating summary statistics for all senders,0.007753
+11,calculating time statistics for all senders,2.113988
+12,making plots for the report,2.566801
+13,creating a text report,0.003404
+14,finishing final PDF Report,11.99797
+15,exporting the database contents,0.155173
+0,- -,- -
+1,# main.py #,38.964071
+2,without imports,32.552667
+0,importing neccessary modules,7.968395
+1,converting the orinial file to a pandas DataFrame,6.818364
+2,cleaning df for sender1,0.071765
+3,counting word and emoji occurances for sender1,0.367064
+4,creating wordcloud for sender1,4.515835
+5,calculating statistics for sender1,0.026981
+6,cleaning df for sender2,0.03639
+7,counting word and emoji occurances for sender2,0.157509
+8,creating wordcloud for sender2,4.320473
+9,calculating statistics for sender2,0.022967
+10,calculating summary statistics for all senders,0.006679
+11,calculating time statistics for all senders,2.131245
+12,creating a text report,0.003106
+13,visualising data for the final pdf report,2.214612
+14,finishing final PDF Report,11.543087
+15,exporting the database contents,0.373807
+0,- -,- -
+1,# main.py #,40.590899
+2,without imports,32.622505
+0,importing neccessary modules,3.519839
+1,converting the orinial file to a pandas DataFrame,5.864589
+2,"counting occurances of media, words and emojis as well as calculating statistics of sender no0",3.681697
+3,"counting occurances of media, words and emojis as well as calculating statistics of sender no1",4.000619
+4,calculating summary statistics for all senders,0.006625
+5,calculating time statistics for all senders,2.290161
+6,creating a text report,0.07242
+7,visualising data for the final pdf report,3.363859
+8,finishing final PDF Report,8.79647
+9,exporting the database contents,0.152318
+0,- -,- -
+1,# main.py #,31.751344
+2,without imports,28.231505
+0,importing neccessary modules,3.009868
+1,converting the orinial file to a pandas DataFrame,6.543311
+2,"counting occurances of media, words and emojis as well as calculating statistics of sender no0",5.067384
+3,"counting occurances of media, words and emojis as well as calculating statistics of sender no1",5.64066
+4,calculating summary statistics for all senders,0.008883
+5,calculating time statistics for all senders,2.987275
+6,visualising data for the final pdf report,2.331261
+7,finishing final PDF Report,9.778803
+8,exporting the database contents,0.200892
+0,- -,- -
+1,# main.py #,35.571664
+2,without imports,32.561796
+0,importing neccessary modules,5.807078
+1,converting the orinial file to a pandas DataFrame,6.847145
+2,"counting occurances of media, words and emojis as well as calculating statistics of sender no0",4.349712
+3,"counting occurances of media, words and emojis as well as calculating statistics of sender no1",3.780875
+4,calculating summary statistics for all senders,0.006967
+5,calculating time statistics for all senders,2.126337
+6,visualising data for the final pdf report,2.314157
+7,finishing final PDF Report,8.328854
+8,exporting the database contents,0.149727
+0,- -,- -
+1,# main.py #,33.713304
+2,without imports,27.906226
+0,importing neccessary modules,6.160464
+1,converting the orinial file to a pandas DataFrame,5.595922
+2,"counting occurances of media, words and emojis as well as calculating statistics of sender no0",3.698408
+3,"counting occurances of media, words and emojis as well as calculating statistics of sender no1",4.131781
+4,calculating summary statistics for all senders,0.007401
+5,calculating time statistics for all senders,2.507187
+6,visualising data for the final pdf report,2.831466
+7,finishing final PDF Report,9.56646
+8,exporting the database contents,0.189637
+0,- -,- -
+1,# main.py #,34.691126
+2,without imports,28.530661
+0,importing neccessary modules,5.048008
+1,converting the orinial file to a pandas DataFrame,10.272054
+2,"counting occurances of media, words and emojis as well as calculating statistics of sender no0",4.663914
+3,"counting occurances of media, words and emojis as well as calculating statistics of sender no1",7.526572
+4,calculating summary statistics for all senders,0.099428
+5,calculating time statistics for all senders,5.06283
+6,visualising data for the final pdf report,4.449852
+7,finishing final PDF Report,14.767925
+8,exporting the database contents,0.507325
+0,- -,- -
+1,# main.py #,52.400355
+2,without imports,47.352347
+0,importing neccessary modules,6.269234
+1,converting the orinial file to a pandas DataFrame,10.721864
+2,"counting occurances of media, words and emojis as well as calculating statistics of sender no0",6.183895
+3,"counting occurances of media, words and emojis as well as calculating statistics of sender no1",5.441078
+4,calculating summary statistics for all senders,0.006619
+5,calculating time statistics for all senders,3.478077
+6,visualising data for the final pdf report,4.875471
+7,finishing final PDF Report,11.922182
+8,exporting the database contents,0.145706
+0,- -,- -
+1,# main.py #,49.046471
+2,without imports,42.777237
+0,importing neccessary modules,6.814525
+1,converting the orinial file to a pandas DataFrame,8.112466
+2,"counting occurances of media, words and emojis as well as calculating statistics of sender no0",4.151671
+3,"counting occurances of media, words and emojis as well as calculating statistics of sender no1",8.039498
+4,calculating remaining statistics for all senders,8.829548
+5,visualising data for the final pdf report,5.199437
+6,finishing final PDF Report,14.787868
+7,exporting the database contents,0.253327
+0,- -,- -
+1,# main.py #,56.191181
+2,without imports,49.376656
+0,importing neccessary modules,6.972931
+1,converting the orinial file to a pandas DataFrame,7.659184
+2,"sender no. 0: counting occurances of media, words and emojis",5.452911
+3,sender no. 0: calculating contactwise statistics,0.016308
+4,"sender no. 1: counting occurances of media, words and emojis",4.34126
+5,sender no. 1: calculating contactwise statistics,0.03629
+6,calculating remaining statistics for all senders,2.761447
+7,visualising data for the final pdf report,5.416548
+8,finishing final PDF Report,11.940584
+9,exporting the database contents,0.165831
+0,- -,- -
+1,# main.py #,44.765995
+2,without imports,37.793063
+0,importing neccessary modules,3.580569
+1,converting the orinial file to a pandas DataFrame,6.206085
+2,"sender no. 0: counting occurances of media, words and emojis",4.195387
+3,sender no. 0: calculating contactwise statistics,0.01835
+4,"sender no. 1: counting occurances of media, words and emojis",4.352963
+5,sender no. 1: calculating contactwise statistics,0.029459
+6,calculating remaining statistics for all senders,2.905222
+7,visualising data for the final pdf report,5.964536
+8,finishing final PDF Report,11.386861
+9,exporting the database contents,0.181929
+0,- -,- -
+1,# main.py #,38.823943
+2,without imports,35.243374
+0,importing neccessary modules,4.208007
+1,converting the orinial file to a pandas DataFrame,7.101772
+2,"sender no. 0: counting occurances of media, words and emojis",4.255355
+3,sender no. 0: calculating contactwise statistics,0.016939
+4,"sender no. 1: counting occurances of media, words and emojis",4.287821
+5,sender no. 1: calculating contactwise statistics,0.021756
+6,calculating remaining statistics for all senders,3.288127
+7,visualising data for the final pdf report,3.831791
+8,finishing final PDF Report,10.745474
+9,exporting the database contents,0.153776
+0,- -,- -
+1,# main.py #,37.914845
+2,without imports,33.706838
+0,importing neccessary modules,9.393482
+1,converting the orinial file to a pandas DataFrame,17.001289
+2,"sender no. 0: counting occurances of media, words and emojis",5.74049
+3,sender no. 0: calculating contactwise statistics,0.017764
+4,"sender no. 1: counting occurances of media, words and emojis",8.295529
+5,sender no. 1: calculating contactwise statistics,0.030213
+6,calculating remaining statistics for all senders,10.175128
+7,visualising data for the final pdf report,7.018071
+8,finishing final PDF Report,17.06063
+9,exporting the database contents,0.258105
+0,- -,- -
+1,# main.py #,74.993257
+2,without imports,65.599775
