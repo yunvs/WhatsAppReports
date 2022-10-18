@@ -4,31 +4,15 @@ import re  # for regex
 from textblob_de import TextBlobDE as TextBlob  # for sentiment analysis
 
 
-def convert_path(path: str) -> None:
+def convert_file(path: str) -> None:
 	"""
 	Checks and converts a file of messages into a pandas DataFrame with the columns date, datetime, sender, message and sentiment.
 	"""
-	new_path = check_file_format(path)
-	chat_list = convert_file_to_list(new_path)
+	chat_list = convert_file_to_list(path)
 	v.chat = convert_list_to_df(chat_list)
 
 	time("converting the orinial file to a pandas DataFrame")
 	return
-
-
-def check_file_format(path_to_file: str) -> str:
-	"""
-	Checks if the format of the file is correct and returns correct path.
-	"""
-	if path_to_file.endswith(".txt"):
-		return path_to_file
-	elif path_to_file.endswith(".zip"):
-		from zipfile import ZipFile
-		with ZipFile(path_to_file, "r") as zip_ref:
-			zip_ref.extractall("data/input")
-		return "data/input/_chat.txt"
-	else:
-		return off("Only .txt or .zip files are supported")
 
 
 def convert_file_to_list(path_to_file: str) -> list[list[str]]:

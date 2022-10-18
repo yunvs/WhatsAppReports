@@ -9,4 +9,18 @@ def get_path(test: bool = False) -> str:
 
 	v.ts = [timer()]
 	print(BOLD("Analyzing file"), "@", path, "\n")
-	return path
+	return check_file_format(path)
+
+def check_file_format(path_to_file: str) -> str:
+	"""
+	Checks if the format of the file is correct and returns correct path.
+	"""
+	if path_to_file.endswith(".txt"):
+		return path_to_file
+	elif path_to_file.endswith(".zip"):
+		from zipfile import ZipFile
+		with ZipFile(path_to_file, "r") as zip_ref:
+			zip_ref.extractall("data/input")
+		return "data/input/_chat.txt"
+	else:
+		return off("Only .txt or .zip files are supported")
