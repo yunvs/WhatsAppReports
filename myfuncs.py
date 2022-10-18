@@ -311,7 +311,7 @@ def create_wordcloud(words: str, i: int) -> None:
 	"""
 	wc = WordCloud(None, 1000, 500, prefer_horizontal=.6, colormap="summer", mode="RGBA", background_color=None, stopwords=db.STOP_WORDS, min_word_length=2, )
 	wc.generate(words)
-
+	
 	wc.to_file(f"data/output/images/senderpages/s{str(i)}_wc.png")
 	return
 
@@ -324,9 +324,9 @@ def create_wordcloud(words: str, i: int) -> None:
 def ss(style: int = 0) -> str:
 	"""
 	Returns a string represtaion of the senders
-	style= 0: auto (default), 1: the n senders, 2: s_no1, s_no2 and s_no3 etc.
+	style= 0: auto (default), 1: the n senders, 2: Sender 1, Sender 2 and Sender 3
 	"""
-	short, long = f"the {str(db.sc)} senders", pprint(*db.senders)
+	short, long = f"the {str(db.sc)} senders", pprint(*db.sender)
 	if style != 0:
 		return short if style == 1 else long
 	else:
@@ -345,7 +345,7 @@ def get_stat_pair(stat: int, sender: int) -> tuple[int, str]:
 	"""
 	Returns the value and term of a specific statistic.
 	"""
-	return db.stats.iat[sender, stat], list(db.stats_dict.values())[stat]
+	return db.stats.iat[sender, stat], list(db.STATS_DICT.values())[stat]
 
 
 def create_txt_reports() -> None:
@@ -424,7 +424,7 @@ def visualise_data() -> None:
 	return
 
 
-def cmap(countable=db.senders, cm_name: str = "Greens_r") -> Colormap:
+def c_m(countable = db.sender, cm_name: str = "Greens_r"):
 	"""
 	Returns a colormap for the amount needed of the given countable.
 	"""
@@ -561,112 +561,107 @@ def sent_pies() -> None:
 	return
 
 
-# --------------------------------------------
-#		Functions used to create pdf ouptut
-# --------------------------------------------
+# ------------------------------------------------------------------------------
+#                      Functions used to create pdf ouptut
+# ------------------------------------------------------------------------------
 
 
 pdf = FPDF()
 
-xys: list[tuple[int, int]] = list()  # last x, y coordinates
-sizes: list[int] = list()  # last text sizes
 
-
-def get_coord(x_offset: int = 0, y_offset: int = 0) -> tuple[int, int]:
+def new_section(size: int = -1, style: str = "", color: tuple[int, int, int] = (0, 0, 0), space: int = 0, xy: tuple[int, int] = (-1, -1)) -> None:
 	"""
-	Returns the x, y cordinates on the current page
+	Creates a new section by setting the font size, style and color for the 
+	next text to be added to the pdf and setting the given position.
 	"""
-	return (pdf.get_x() + x_offset), (pdf.get_y() + y_offset)
-
-
-def new_section(size: int = 0, style: str = "", space: int = 0, np: int = 0) -> None:
-	"""
-	Creates a new section in the pdf file and sets the font size and style.
-	np: 0 = no new page (default), 1 = new page, 2 = new page and new section
-	"""
-	pdf.add_page() if np in (1, 2) else None  # create new page
-	if np in (0, 2):  # create new section	on current or new page
+	db.last_size = size if size != -1 else db.last_size # save last size
+	pdf.set_font("Arial", style, size if size != -1 else db.last_size) 
+	pdf.set_text_color(*color) 
+	if space != 0: 
 		pdf.ln(space)
-		xys.append({0: pdf.get_x(), 1: pdf.get_y()})
-		sizes.append(size) if size != 0 else None
-		pdf.set_font("Arial", style, size if size != 0 else sizes[-1])
-	return None
+	if xy != (-1, -1):
+		pdf.set_xy(*xy)
+	return
 
 
 def add_title_footer(n: int = -1) -> None:
 	"""
-	Prints the title of the page
+	Inserts the title of the page and the footer with the page number.
 	"""
-	pdf.set_margins(15, 20, 15) if pdf.page_no() == 0 else None
+	pdf.set_margins(20, 20, 20) if pdf.page_no() == 0 else None
+
 	pdf.add_page()
+	page = pdf.page_no()
 
 	# Create title of current page
 	new_section(18, "B")
 	pdf.cell(0, 10, "WhatsApp Chat Statistics", align="C")
 	new_section(12, space=5)
-	pdf.cell(0, 12, "for " + str(ss() if n == -1 else db.senders[n]), align="C")
+	xy = (pdf.get_x(), pdf.get_y())
+	pdf.cell(0, 12, "for " + str(ss() if n == -1 else db.sender[n]), align="C")
 
 	# Create footer of current page
-	pdf.set_xy(0, 270)
-	new_section(10, "I")
-	pdf.cell(0, 5, f"Page {pdf.page_no()}", align="C")
-	pdf.set_xy(*xys[-2].values())
+	new_section(10, "I", xy=(20, 270))
+	desc = str("General" if page == 1 else "Sender specific") + " statistics"
+	s_str = ss(1) if n == -1 else db.sender[n]
+	pdf.cell(0, 5, f"Page {str(page)}: {desc} for {s_str}", align="C")
+
+	new_section(11, xy=xy)
 	return
 
 
-def print_stats(s_no: int = -1, w: int = 24, h: int = 6) -> None:
+def insert_media_table(s_no: int = -1, w: int = 24, h: int = 6) -> None:
 	"""
-	Prints the statistics of a sender to the pdf file
+	Inserts the amounts of media types sent by a sender into a table.
 	"""
+	new_section(12, "B", space=4)
 	for i, x in enumerate([11, 12, 7, 13, 8, 14, 10, 17, 9]):
 		if i == 0:
-			pdf.set_font("Arial", "", 12)
-			pdf.cell(w*4, h+2, "Media types and amount sent", 0, 1, "C")
-			pdf.set_font("Arial", "", 11)
+			pdf.cell(w*4-8, h+2, "Media types and amount sent", 0, 1, "C")
+			new_section(11)
 		value = str(db.stats.iat[db.sc if s_no == -1 else s_no, x])
-		item = list(db.stats_dict.values())[x] + "s" if value != 1 else ""
+		item = list(db.STATS_DICT.values())[x] + "s" if value != 1 else ""
 		pdf.cell(w, h, item.capitalize(), 1, 0, "C")
-		pdf.cell(w, h, value, 1, 0, "C")
+		pdf.cell(w-4, h, value, 1, 0, "C")
 		if i % 2 != 0:
 			pdf.ln(h)
 	return
 
 
-def print_tstats(s_no: int = -1) -> None:
-	"""
-	Prints the timewise statistics of a sender to the pdf file
-	"""
-	n = db.sc if s_no == -1 else s_no
-	x1 = 35
-	x2 = 20
-	h = 6
-	pdf.set_font("Arial", "", 12)
-	i = 0
-	for key, val in db.tstats_dict.items():
-		pdf.cell(x1, h, val.capitalize(), 1, 0, "C")
-		pdf.cell(x2, h, str(db.tstats.iloc[n, key]), 1, 0, "C")
-		if i % 2 != 0:
-			pdf.ln(h)
-		i += 1
-	return
-
-
-def print_cmms(df: pd.DataFrame, cell_width: int = 25, cell_height: int = 6) -> None:
+def commons_table(df: pd.DataFrame, x: int, y: int, w: int = 60, h: int = 6, emojis: bool = False) -> None:
 	"""
 	Prints a DataFrame of common words/emojis to a table in a pdf file
 	"""
-	margin, _ = get_coord()
-	pdf.set_font("Arial", "B", 8)
-	pdf.cell(cell_width, cell_height, df.columns[0], align="C", border=1)
-	pdf.cell(17, cell_height, df.columns[1], align="C", border=1)
-	pdf.set_xy(margin, pdf.get_y() + cell_height)
+	# Create table header
+	new_section(10, "B", xy=(x, y))
+	pdf.cell(w, h, f"TOP {len(df)} {df.columns[0]}s", align="C", border=1)
+	pdf.cell(20, h, df.columns[1], align="C", border=1)
 
-	pdf.set_font("Arial", "", 8)
+	# Create table body
+	new_section(xy=(x, pdf.get_y() + h))
 	for i in range(len(df)):
-		pdf.cell(cell_width, cell_height, 
-			df.iat[i, 0].strip(":").replace("_", " ")[:20], align="C", border=1)
-		pdf.cell(17, cell_height, str(df.iat[i, 1]), align="C", border=1)
-		pdf.set_xy(margin, pdf.get_y() + cell_height)
+		if emojis: # Emojis: inserted as link to the google search
+			emoji = df.iat[i, 0].strip(":").replace("_", "+")
+			url = f"https://www.google.com/search?q={emoji}+emoji&tbm=isch"
+			new_section(style="U", color=(0, 0, 200)) # 
+			pdf.cell(w, h, emoji.replace("+", " ")[:int(w*.8)], align="C", border=1, link=url)
+			new_section(color=(0, 0, 0))
+		else: # Words are inserted as link to the google search
+			pdf.cell(w, h, df.iat[i, 0][:int(w*.8)], align="C", border=1)
+		pdf.cell(20, h, str(df.iat[i, 1]), align="C", border=1)
+		new_section(xy=(x, pdf.get_y() + h))
+	return
+
+def ts_info(x: float, y: float, s_no: int = -1) -> None:
+	"""
+	Prints Date of first and last message and date of most active day
+	"""
+	new_section(10, xy=(x, y))
+	pdf.cell(165, 0, db.time_reports[s_no][0], align="L") # First message
+	new_section(xy=(x, y))
+	pdf.cell(165, 0, db.time_reports[s_no][1], align="C") # Most active day
+	new_section(xy=(x, y))
+	pdf.cell(165, 0, db.time_reports[s_no][2], align="R") # Last message
 	return
 
 
@@ -674,81 +669,71 @@ def make_pdf_report() -> None:
 	"""
 	Creates a pdf file with a summary of the chat and the statistics
 	"""
-	add_title_footer()
 	path = "data/output/images/page1/"
 
+	add_title_footer() # Add first page of report
+
+	# Insert the amount of texts, media and emojis sent by all senders
 	new_section(11, space=20)
 	pdf.cell(90, 0, "This conversation contains")
 	new_section(14, "B", space=3)
 	pdf.multi_cell(110, 5, db.txt_reports[db.sc][0])
 
-	new_section(11, space=4)
+	# Insert avg, longest length and some other stats for all senders
+	new_section(11, space=10)
 	pdf.multi_cell(100, 4, db.txt_reports[db.sc][1])
 
-	new_section(space=4)
-	pdf.multi_cell(100, 4, db.time_reports[db.sc])
+	# Insert the general timewise statistics
+	new_section(space=10)
+	pdf.multi_cell(100, 4, "\n".join(db.time_reports[db.sc][3:]))
 
-	# new_section(space=4)
-	# print_tstats()
+	pdf.image(path+"msg_pie.png", x=120, y=35, w=79) # messages pie chart
+	pdf.image(path+"media_bars.png", x=15, y=105, w=180) # media bar chart
 
-	pdf.image(path+"msg_pie.png", x=115, y=35, w=84)
-	pdf.image(path+"media_bars.png", x=0, y=120, w=210)
-	pdf.image(path+"ts.png", x=0, y=180, w=210)
+	pdf.image(path+"ts.png", x=15, y=155, w=180) # activity time series plot
+	ts_info(25, 205) # Print information underneth time series plot
 
-	for i, s in enumerate(db.senders):
-		add_title_footer(i)
+	pdf.image(path+"heatmap.png", x=15, y=215, w=190) # activity heatmap plot
+
+	for i, s in enumerate(db.sender): # loops over all senders
 		path = f"data/output/images/senderpages/s{str(i)}_"
 
+		add_title_footer(i) # Adds first sender page for sender s
+
+		# Insert the amount of texts, media and emojis sent by the sender 
 		new_section(11, space=20)
-		pdf.cell(90, 0, f"Messages sent from {s} contain")
+		pdf.cell(90, 0, f"Messages {s} sent contain")
 		new_section(14, "B", space=3)
 		pdf.multi_cell(110, 5, db.txt_reports[i][0])
 
-		new_section(space=4)
-		print_stats(i)
-
-		new_section(11, space=10)
+		# Insert the amount of media sent and some other stats about the sender
+		insert_media_table(i)
+		new_section(11, space=15)
 		pdf.multi_cell(110, 4, db.txt_reports[i][1])
 
-		# pdf.image(path+"wc.png", x=113, y=33, w=88)
-		pdf.image(path+"sent_pie.png", x=115, y=35, w=84)
+		# Insert the 20 most common words and emojis of the sender
+		commons_table(db.common_words[i].head(20), x=20, y=130)
+		commons_table(db.common_emojis[i].head(20), x=110, y=130, emojis=True)
+
+		# Insert the total number of distinct words and emojis sent by the sender
+		new_section(11, "B", xy=(20, 260))
+		pdf.cell(90, 5, db.txt_reports[i][2], align="L")
+
+		pdf.image(path+"sent_pie.png", x=115, y=40, w=84) # Sentiment plot
 
 
-		pdf.image(path+"wc.png", x=113, y=140, w=88)
+		add_title_footer(i) # Add second sender page for time stats
 
-		pdf.set_xy(20, 160)
-		print_cmms(db.common_words[i].head(10), cell_width=25, cell_height=5)
+		pdf.image(path+"ts.png", x=15, y=40, w=180) # Activity time series plot
+		ts_info(25, 90, i) # Insert information underneth time series plot
 
-		pdf.set_xy(65, 160)
-		print_cmms(db.common_emojis[i].head(10), cell_width=25, cell_height=5)
+		# Insert the timewise statistics of the sender
+		new_section(11, space=10)
+		pdf.multi_cell(0, 4, "\n".join(db.time_reports[i][3:]))
 
+		pdf.image(path+"heatmap.png", x=15, y=120, w=190) # Heatmap plot
+		pdf.image(path+"wc.png", x=20, y=180, w=170) # Wordcloud 
 
-
-
-		# pdf.image(path+"ts.png", x=0, y=130, w=210)
-		# pdf.image(path+"heatmap.png", x=0, y=180, w=210)
-
-		
-		add_title_footer(i) # new page 
-
-		new_section(11, space=20)
-		pdf.multi_cell(100, 4, db.time_reports[i])
-
-
-
-		# pdf.set_xy(20, 40)
-		# print_cmms(db.common_words[i].head(10), cell_width=25, cell_height=5)
-
-		# pdf.set_xy(65, 40)
-		# print_cmms(db.common_emojis[i].head(10), cell_width=25, cell_height=5)
-
-		# pdf.image(path+"wc.png", x=50, y=100, w=150)
-
-
-		pdf.image(path+"ts.png", x=0, y=130, w=210)
-		pdf.image(path+"heatmap.png", x=0, y=185, w=210)
-
-
-	pdf.output("data/output/pdfs/WA-Report.pdf", "F",)
+	pdf.output("data/output/pdfs/WA-Report.pdf", "F")
 	time("finishing final PDF Report")
 	return
