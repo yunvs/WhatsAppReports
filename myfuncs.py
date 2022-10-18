@@ -54,7 +54,7 @@ def exp(loc: str = None, data=None, name: str = None, exp_db: bool = False) -> N
 		dbase = "database"
 		exp(dbase, db.chat_og, "chat_og_df.csv")
 		exp(dbase, db.chat, "chat_df.csv")
-		exp(dbase, db.senders, "senders_df.csv")
+		exp(dbase, db.sender, "sender_df.csv")
 		exp(dbase, db.stats, "stats_df.csv")
 		exp(dbase, db.tstats, "time_stats_df.csv")
 		exp(dbase, db.msg_ranges, "msg_ranges_df.csv")
@@ -150,7 +150,7 @@ def convert_list_to_df(chat_list: list[list[str]]) -> pd.DataFrame:
 	"""
 	Converts the list of messages into a pandas DataFrame and returns it.
 	"""
-	df = pd.DataFrame(chat_list, columns=db.df_cols)  # convert into DataFrame
+	df = pd.DataFrame(chat_list, columns=["date", "datetime", "sender", "message", "sentiment"])  # convert into DataFrame
 	df["date"] = pd.to_datetime(
 		df["date"], infer_datetime_format=True, format="%d.%m.%Y")  # format date
 	df["datetime"] = pd.to_datetime(
@@ -166,17 +166,17 @@ def prepare_database() -> None:
 	db.chat["hour"] = db.chat["datetime"].apply(lambda x: x.hour)  # add hour
 	db.chat_og = db.chat.copy()  # Create copy of chat to use it later
 
-	db.senders = list(db.chat["sender"].unique())  # Creates list of senders
-	db.sc = len(db.senders)  # Number of senders
+	db.sender = list(db.chat["sender"].unique())  # Creates list of senders
+	db.sc = len(db.sender)  # Number of senders
 
-	db.stats = pd.DataFrame(None, db.senders, db.stats_dict.keys())
-	db.tstats = pd.DataFrame(None, db.senders, db.tstats_cols)
+	db.stats = pd.DataFrame(None, db.sender, db.STATS_DICT.keys())
+	db.tstats = pd.DataFrame(None, db.sender, ["first_msg", "last_msg", "max_day", "max_msg", "msg_days", "zero_days", "msg_span_days"])
 	return
 
 
 def analysis_per_sender() -> None:
 	# data seperation, cleansing and data analysis per sender
-	for i, s in enumerate(db.senders):
+	for i, s in enumerate(db.sender):
 		df = db.chat.loc[db.chat["sender"] == s]  # DataFrame with messages from sender
 		db.msg_per_s.append(df)
 
@@ -204,9 +204,9 @@ def count_occurances(df: pd.DataFrame, i: int) -> None:
 	emoji_freq = pd.Series(emj_dct).sort_values(ascending=False).reset_index()
 	emoji_freq.columns = ["Emoji", "Frequency"]
 	db.common_emojis.append(emoji_freq)
-	db.stats.at[db.senders[i], "emoji"] = sum(emj_dct.values())
-	db.stats.at[db.senders[i], "emoji_unique"] = len(emj_dct)
-	db.stats.at[db.senders[i], "link"] = len(re.findall("xurlx", all_msg))
+	db.stats.at[db.sender[i], "emoji"] = sum(emj_dct.values())
+	db.stats.at[db.sender[i], "emoji_unique"] = len(emj_dct)
+	db.stats.at[db.sender[i], "link"] = len(re.findall("xurlx", all_msg))
 
 	# count occurances of words
 	all_msg = re.sub(r"(xurlx)|(\W)|(\d)", " ", unidecode(all_msg))
@@ -224,16 +224,16 @@ def cleanse_df(df: pd.DataFrame, sender: str) -> pd.DataFrame:
 	collected data into the stats DataFrame.
 	"""
 	count = 0  # counter for media messages cleaned
-	for key, val in db.cstats_match.items():
-		if key == "media_count":  # media messages are counted separately
-			db.stats.at[sender, key] = count
-		else:
+	for key, val in db.STATS_PATTERN.items():
+		if key != "media":  # media messages are counted separately
 			key_df = df[df == val[1]] if val[0] == "exact" else df[df.str.contains(val[1])]
 			df = df.drop(key_df.index) # remove non-messages
 			db.chat = db.chat.drop(key_df.index) # remove non-messages
 			if key in db.stats.columns:  # add counted data to stats_df.if it exists
 				db.stats.at[sender, key] = key_df.shape[0]
 				count += key_df.shape[0]
+		else:
+			db.stats.at[sender, key] = count
 	return df
 
 
@@ -244,14 +244,13 @@ def calc_stats(s_df: pd.DataFrame) -> None:
 	"""
 	s = s_df.name  # get column name (sender)
 	db.stats.at[s, "msg_count"] = s_df.shape[0]
-	db.stats.at[s, "chars_avg"] = round(s_df.str.replace(" ", "").str.len().mean(), 2)
-	db.stats.at[s, "words_avg"] = round(s_df.str.split().str.len().mean(), 2)
+	db.stats.at[s, "chars_avg"] = round(s_df.str.replace(" ", "").str.len().mean(), 1)
+	db.stats.at[s, "words_avg"] = round(s_df.str.split().str.len().mean(), 1)
 	db.stats.at[s, "chars_max"] = s_df.str.replace(" ", "").str.len().max()
 	db.stats.at[s, "words_max"] = len(s_df[s_df.str.len().idxmax()].split())
 	db.stats.at[s, "sent_avg"] = round(db.chat.loc[db.chat["sender"] == s, "sentiment"].mean(skipna=True), 2)
 	db.stats.at[s, "sent_pos"] = db.chat.loc[db.chat["sender"] == s, "sentiment"].gt(0).sum()
 	db.stats.at[s, "sent_neg"] = db.chat.loc[db.chat["sender"] == s, "sentiment"].lt(0).sum()
-
 	return
 
 
@@ -261,7 +260,7 @@ def calc_remaining_stats() -> None:
 	into the stats DataFrame.
 	"""
 	for i in range(db.sc+1):
-		row = db.senders[i] if i < db.sc else "sum"
+		row = db.sender[i] if i < db.sc else "sum"
 		msg_r = create_msg_range(i)
 		db.msg_ranges.append(msg_r)
 
@@ -275,8 +274,10 @@ def calc_remaining_stats() -> None:
 		db.tstats.at[row, "msg_days"] = msg_r[msg_r != 0].shape[0]
 		db.tstats.at[row, "zero_days"] = msg_r[msg_r == 0].shape[0]
 
+		# longest time span without messaging
+		db.tstats.at[row, "no_msg"] = msg_r[msg_r == 0].groupby((msg_r != 0).cumsum()).transform("count").max()
 	
-	for stat in db.stats_dict.keys():
+	for stat in db.STATS_DICT.keys():
 		if any(x in stat for x in ["calls", "unique"]):
 			continue
 		elif "max" in stat:
