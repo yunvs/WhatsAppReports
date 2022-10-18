@@ -155,7 +155,7 @@ def sent_pies() -> None:
 	return
 
 
-def create_wordcloud(words: str, i: int) -> None:
+def word_cloud(words: str, i: int) -> None:
 	"""
 	Creates a word cloud of the given words and saves it to the plots folder.
 	"""
