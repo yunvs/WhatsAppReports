@@ -1,29 +1,16 @@
-# from alive_progress import alive_bar #TODO add bar
-
-# with alive_bar(monitor=False, stats=False) as bar: #TODO add bar
-# bar.text = "Importing modules" #TODO add bar
-
 print("\n\nmain.py started\n")
 from myfuncs import *
 
-path = db.test_data[5]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.txt
-
-# bar.text = "Importing and converting data" #TODO add bar
+path = db.TEST_DATA[5]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.txt
 
 # data extraction and preprocessing
 convert_file_to_df(path)  # convert the chat to a pandas DataFrame
 
-analysis_per_sender()
+analysis_per_sender() # data analysis
 
-# bar.text = "Calculating statistics" #TODO add bar
 calc_remaining_stats()  # get the summary statistics for all senders
 
-# bar.text = "Creating plots and tables" #TODO add bar
-visualise_data()
+visualise_data() # data visualization
 
-
-# bar.text = "Creating and saving report @ data/output/pdfs/" #TODO add bar
 make_pdf_report()  # create the pdf report
-
-
 off(file_end=True)
