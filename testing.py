@@ -26,8 +26,8 @@ from myfuncs import *
 
 # # ----------------------------------------------------------------
 path = "data/testing/exports/database"
-db.senders = list(pd.read_csv(f"{path}/senders_df.csv", index_col=0)["0"])
-db.sc = len(db.senders)
+db.sender = list(pd.read_csv(f"{path}/senders_df.csv", index_col=0)["0"])
+db.sc = len(db.sender)
 db.stats = pd.read_csv(f"{path}/stats_df.csv", index_col=0)
 db.tstats = pd.read_csv(f"{path}/time_stats_df.csv", index_col=0)
 # chat_og = pd.read_csv(f"{path}/chat_og_df.csv", index_col=0)
@@ -40,7 +40,9 @@ for i in range(db.sc):
 # # ----------------------------------------------------------------
 
 
-
+# c_m = c_m(db.senders)
+# print(db.senders)
+# print(c_m)
 create_txt_reports()
 create_time_reports()
 
