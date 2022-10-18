@@ -309,13 +309,9 @@ def create_wordcloud(words: str, i: int) -> None:
 	"""
 	Creates a word cloud of the given words and saves it to the plots folder.
 	"""
-	x, y = np.ogrid[:1000, :1000]
-	mask = (x - 500) ** 2 + (y - 500) ** 2 > 400 ** 2
-	mask = 255 * mask.astype(int)
+	wc = WordCloud(None, 1000, 500, prefer_horizontal=.6, colormap="summer", mode="RGBA", background_color=None, stopwords=db.STOP_WORDS, min_word_length=2, )
+	wc.generate(words)
 
-	wc = WordCloud(None, 200, 200, prefer_horizontal=.7,
-				   colormap="summer", mode="RGBA", mask=mask, background_color=None,
-				   stopwords=db.stop_words, min_word_length=2,).generate(words)
 	wc.to_file(f"data/output/images/senderpages/s{str(i)}_wc.png")
 	return
 
