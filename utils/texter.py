@@ -1,7 +1,7 @@
 from utils.helper import *
 
 
-def create_tetual_reports() -> None:
+def create_texts() -> None:
 	"""
 	Creates the reports for the pdf report.
 	"""
