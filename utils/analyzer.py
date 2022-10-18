@@ -1,0 +1,149 @@
+from utils.helper import *
+from utils.plotter import create_wordcloud
+
+import re
+from unidecode import unidecode
+import emojis
+
+
+def prepare_database() -> None:
+	"""
+	Prepares the database by filling data in #tobefilled placeholders.
+	"""
+	v.chat["weekday"] = v.chat["date"].apply(lambda x: x.weekday())  # add weekday
+	v.chat["hour"] = v.chat["datetime"].apply(lambda x: x.hour)  # add hour
+	v.chat_og = v.chat.copy()  # Create copy of chat to use it later
+
+	v.sender = list(v.chat["sender"].unique())  # Creates list of senders
+	v.sc = len(v.sender)  # Number of senders
+
+	v.stats = pd.DataFrame(None, v.sender, c.STATS_DICT.keys())
+	v.tstats = pd.DataFrame(None, v.sender, ["first_msg", "last_msg", "max_day", "max_msg", "msg_days", "zero_days", "msg_span_days"])
+	return
+
+
+
+def analysis_per_sender() -> None:
+	# data seperation, cleansing and data analysis per sender
+	for i, s in enumerate(v.sender):
+		df = v.chat.loc[v.chat["sender"] == s]  # DataFrame with messages from sender
+		v.msg_per_s.append(df)
+
+		clean_df = cleanse_df(df["message"], s) # get stats for each sender
+		count_occurances(clean_df, i)  # count occurances of words and emojis
+		time(f"sender no. {i}: counting occurances of media, words and emojis")
+
+		calc_stats(clean_df.rename(s))  # calculate the stats for each sender
+		time(f"sender no. {i}: calculating contactwise statistics")
+	v.msg_per_s.append(v.chat_og)
+	return
+
+
+def count_occurances(df: pd.DataFrame, i: int) -> None:
+	"""
+	Calculates different statistics about the chat and enters collected data.
+	"""
+	all_msg = " ".join(df).lower()  # combine all messages into one string
+
+	# count occurances of emojis
+	emj_dct = dict()
+	emj_lst = emojis.get(all_msg)  # get list of emojis
+	for item in emj_lst:
+		emj_dct[emojis.decode(item)] = all_msg.count(item)  # count emojis
+	emoji_freq = pd.Series(emj_dct).sort_values(ascending=False).reset_index()
+	emoji_freq.columns = ["Emoji", "Frequency"]
+	v.common_emojis.append(emoji_freq)
+	v.stats.at[v.sender[i], "emoji"] = sum(emj_dct.values())
+	v.stats.at[v.sender[i], "emoji_unique"] = len(emj_dct)
+	v.stats.at[v.sender[i], "link"] = len(re.findall("xurlx", all_msg))
+
+	# count occurances of words
+	all_msg = re.sub(r"(xurlx)|(\W)|(\d)", " ", unidecode(all_msg))
+	word_freq = pd.Series(all_msg.split()).value_counts().reset_index()
+	word_freq.columns = ["Word", "Frequency"]
+	v.common_words.append(word_freq)
+
+	create_wordcloud(all_msg.upper(), i)
+	return
+
+
+def cleanse_df(df: pd.DataFrame, sender: str) -> pd.DataFrame:
+	"""
+	Cleans the DataFrame of non-message enties and replaces URLs and enters
+	collected data into the stats DataFrame.
+	"""
+	count = 0  # counter for media messages cleaned
+	for key, val in c.STATS_PATTERN.items():
+		if key != "media":  # media messages are counted separately
+			key_df = df[df == val[1]] if val[0] == "exact" else df[df.str.contains(val[1])]
+			df = df.drop(key_df.index) # remove non-messages
+			v.chat = v.chat.drop(key_df.index) # remove non-messages
+			if key in v.stats.columns:  # add counted data to stats_df.if it exists
+				v.stats.at[sender, key] = key_df.shape[0]
+				count += key_df.shape[0]
+		else:
+			v.stats.at[sender, key] = count
+	return df
+
+
+def calc_stats(s_df: pd.DataFrame) -> None:
+	"""
+	Calculates different statistics about the chat and enters collected data
+	into the stats DataFrame.
+	"""
+	s = s_df.name  # get column name (sender)
+	v.stats.at[s, "msg_count"] = s_df.shape[0]
+	v.stats.at[s, "chars_avg"] = round(s_df.str.replace(" ", "").str.len().mean(), 1)
+	v.stats.at[s, "words_avg"] = round(s_df.str.split().str.len().mean(), 1)
+	v.stats.at[s, "chars_max"] = s_df.str.replace(" ", "").str.len().max()
+	v.stats.at[s, "words_max"] = len(s_df[s_df.str.len().idxmax()].split())
+	v.stats.at[s, "sent_avg"] = round(v.chat.loc[v.chat["sender"] == s, "sentiment"].mean(skipna=True), 2)
+	v.stats.at[s, "sent_pos"] = v.chat.loc[v.chat["sender"] == s, "sentiment"].gt(0).sum()
+	v.stats.at[s, "sent_neg"] = v.chat.loc[v.chat["sender"] == s, "sentiment"].lt(0).sum()
+	return
+
+
+def calc_remaining_stats() -> None:
+	"""
+	Calculates summary statistics about the chat and enters collected data
+	into the stats DataFrame.
+	"""
+	for i in range(v.sc+1):
+		row = v.sender[i] if i < v.sc else "sum"
+		msg_r = create_msg_range(i)
+		v.msg_ranges.append(msg_r)
+
+		v.tstats.at[row, "first_msg"] = str(msg_r.index[0]).split()[0]
+		v.tstats.at[row, "last_msg"] = str(msg_r.index[-1]).split()[0]
+		v.tstats.at[row, "msg_span_days"] = (msg_r.index[-1] - msg_r.index[0]).days
+
+		v.tstats.at[row, "max_day"] = str(msg_r[msg_r == msg_r.max()].index[0]).split()[0]
+		v.tstats.at[row, "max_msg"] = msg_r.max()
+
+		v.tstats.at[row, "msg_days"] = msg_r[msg_r != 0].shape[0]
+		v.tstats.at[row, "zero_days"] = msg_r[msg_r == 0].shape[0]
+
+		# longest time span without messaging
+		v.tstats.at[row, "no_msg"] = msg_r[msg_r == 0].groupby((msg_r != 0).cumsum()).transform("count").max()
+	
+	for stat in c.STATS_DICT.keys():
+		if any(x in stat for x in ["calls", "unique"]):
+			continue
+		elif "max" in stat:
+			v.stats.at["sum", stat] = v.stats[stat].max()
+		elif "avg" in stat:
+			v.stats.at["sum", stat] = round(v.stats[stat].mean(), 3)
+		else:
+			v.stats.at["sum", stat] = v.stats[stat].sum()
+
+	time("calculating remaining statistics for all senders")
+	return
+
+
+def create_msg_range(i: int) -> None:
+	msg_date = v.msg_per_s[i]["date"].value_counts().sort_index()
+	chat_date_range = pd.date_range(msg_date.index[0], msg_date.index[-1])
+	msg_range = pd.Series(index=chat_date_range, dtype=int)
+	for date in chat_date_range.strftime("%Y-%m-%d"):
+		msg_range[date] = msg_date[date] if date in msg_date.index else 0
+	return msg_range
