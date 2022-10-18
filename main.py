@@ -1,18 +1,19 @@
-from utils import helper, getter, converter, analyzer, outputer, plotter, pdf_creater
+from utils import helper, getter, converter, analyzer, plotter, pdf_creater, texter
 
-path = getter.get_path(test=True)
+# get path to file and check if it is correct
+path = getter.get_path(test=True) 
 
 # data extraction and preprocessing
-converter.convert_path(path)  # convert the chat to a pandas DataFrame
+converter.convert_file(path)  # convert the file to a pandas DataFrame
 
-analyzer.prepare_database()
-analyzer.analysis_per_sender() # data analysis
+# data analysis
+analyzer.analyze_chat()
 
-analyzer.calc_remaining_stats()  # get the summary statistics for all senders
-
-outputer.create_tetual_reports() # create the text reports
+# data visualization
+texter.create_texts() # create the text reports
 plotter.plot_data() # data visualization
 
+# final PDF creation
 pdf_creater.make_pdf_report()  # create the pdf report
 
 helper.off(file_end=True)
