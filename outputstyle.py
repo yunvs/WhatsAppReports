@@ -1,16 +1,16 @@
 # this file contains functions which change the style and colour of the output
 
 def pprint(*args, spaces: bool=False) -> str:
-	"""
-	Returns a string of strings/numbers which are divided with spaces, commas 
-	and the word "and".
-	"""
-	listing = str()
-	for i, arg in enumerate(args):
-		if i != 0:
-			listing += " " if spaces else ", " if i+1 < len(args) else " and "
-		listing += str(arg)
-	return listing
+    """
+    Returns a string of strings/numbers which are divided with spaces, commas 
+    and the word "and".
+    """
+    string = str()
+    for i, arg in enumerate(args):
+        if i != 0:
+            string += " " if spaces else ", " if i+1 < len(args) else " and "
+        string += str(arg)
+    return string
 
 
 def NORM(*args) -> str:
