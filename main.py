@@ -1,16 +1,19 @@
-print("\n\nmain.py started\n")
-from myfuncs import *
+from utils.helper import * 
+from utils import getter, converter, analyzer, outputer, plotter, pdf_creater
 
-path = db.TEST_DATA[5]  # 0: small, 1: txt, 2: zip, 3: trash, 4: AB, 5: _chat.txt
+path = getter.get_path(test=True)
 
 # data extraction and preprocessing
-convert_file_to_df(path)  # convert the chat to a pandas DataFrame
+converter.convert_path(path)  # convert the chat to a pandas DataFrame
 
-analysis_per_sender() # data analysis
+analyzer.prepare_database()
+analyzer.analysis_per_sender() # data analysis
 
-calc_remaining_stats()  # get the summary statistics for all senders
+analyzer.calc_remaining_stats()  # get the summary statistics for all senders
 
-visualise_data() # data visualization
+outputer.create_tetual_reports() # create the text reports
+plotter.plot_data() # data visualization
 
-make_pdf_report()  # create the pdf report
+pdf_creater.make_pdf_report()  # create the pdf report
+
 off(file_end=True)
