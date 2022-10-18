@@ -7,20 +7,12 @@ from unidecode import unidecode
 from fpdf import FPDF  # to create pdfs
 from textblob_de import TextBlobDE as TextBlob  # for sentiment analysis
 from matplotlib import pyplot as plt, dates, cm  # to plot figures
-from matplotlib.colors import Colormap  #TODO maybe redudant
 from wordcloud import WordCloud  # to create wordclouds
 import emojis  # to find emoji in messages
 import re  # for regex
+
 from outputstyle import *  # for pretty printing
 import database as db  # for access to local database
-
-
-# Unused imports
-# import matplotlib
-# import os
-# from plotly import express as px
-# from germansentiment import SentimentModel
-# model = SentimentModel()
 
 
 def time(task: str = "untitled") -> None:
