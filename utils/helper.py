@@ -25,7 +25,7 @@ def export(loc, data, name):
 		return export(loc, data, name)
 
 
-def export_db() -> None:
+def export_data() -> None:
 	"""
 	Exports DataFrames and text to the data/testing/exports folder.
 	"""
@@ -73,13 +73,6 @@ def pprint(*args, spaces: bool=False) -> str:
     return string
 
 
-def NORM(*args) -> str:
-    """
-    Resets all the style and color settings
-    """
-    return "\033[0m" + pprint(*args, spaces=True)
-
-
 def BOLD(*args) -> str:
     """
     Returns given arguments seperated by spaces and bold 
@@ -94,27 +87,6 @@ def DIM(*args) -> str:
     return "\033[2m" + pprint(*args, spaces=True) + "\033[22m"
 
 
-def ITAL(*args) -> str:
-    """
-    Returns given arguments seperated by spaces and italic 
-    """
-    return "\033[3m" + pprint(*args, spaces=True) + "\033[23m"
-
-
-def UNDL(*args) -> str:
-    """
-    Returns given arguments seperated by spaces and underlined 
-    """
-    return "\033[4m" + pprint(*args, spaces=True) + "\033[24m"
-
-
-def STRIKE(*args) -> str:
-    """
-    Returns given arguments seperated by spaces and striked 
-    """
-    return "\033[9m" + pprint(*args, spaces=True) + "\033[29m"
-
-
 def RED(*args) -> str:
     """
     Returns given arguments seperated by spaces and in red 
@@ -127,13 +99,6 @@ def GREEN(*args) -> str:
     Returns given arguments seperated by spaces and in green 
     """
     return "\033[32m" + pprint(*args, spaces=True) + "\033[39m"
-
-
-def YELLOW(*args) -> str:
-    """
-    Returns given arguments seperated by spaces and in yellow 
-    """
-    return "\033[33m" + pprint(*args, spaces=True) + "\033[39m"
 
 
 def BLUE(*args) -> str:
