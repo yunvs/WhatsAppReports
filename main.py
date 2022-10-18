@@ -1,5 +1,4 @@
-from utils.helper import * 
-from utils import getter, converter, analyzer, outputer, plotter, pdf_creater
+from utils import helper, getter, converter, analyzer, outputer, plotter, pdf_creater
 
 path = getter.get_path(test=True)
 
@@ -16,4 +15,4 @@ plotter.plot_data() # data visualization
 
 pdf_creater.make_pdf_report()  # create the pdf report
 
-off(file_end=True)
+helper.off(file_end=True)
