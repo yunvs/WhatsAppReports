@@ -438,46 +438,42 @@ def msg_pie() -> None:
 	Creates a pie chart of the amount of messages sent by each sender.
 	"""
 	fig, ax = plt.subplots(figsize=(3.14, 3.14))
-	ax.pie(db.stats.iloc[0:-1, 0], startangle=90, colors=cmap(db.senders),
-		   counterclock=False, autopct="%1.2f%%", wedgeprops={"ec": "w"}, textprops={"c": "w"})
-	ax.legend(labels=db.senders, shadow=True, loc="upper right", fontsize="small")
+	ax.pie(db.stats.iloc[0:-1, 0], startangle=90, colors=c_m(db.sender), autopct="%1.2f%%", wedgeprops={"ec": "w"}, textprops={"c": "w"})
+	ax.legend(labels=db.sender, shadow=True, loc="lower right", fontsize="small")
 	ax.set_title("Messages sent")
 	ax.axis("equal")
+
 	fig.tight_layout()
 	plt.savefig("data/output/images/page1/msg_pie.png", transparent=True)
 	plt.close()
 	return
 
 
-def grouped_madia_bars() -> None:
+def grouped_madia_bars(w: float = .9) -> None:
 	"""
 	Creates a bar chart of the amount of media messages sent by each sender.
 	"""
 	nums = [11, 7, 8, 10, 9, 17, 12, 13, 14]
-	labels = [list(db.stats_dict.values())[x].capitalize() for x in nums]
-	w = .9  # the width of the bars
+	labels = [list(db.STATS_DICT.values())[x].capitalize() for x in nums]
 	x = np.arange(len(nums))  # the label locations
 	max_val = db.stats.iloc[:db.sc, nums].max().max()
 
-	fig, ax = plt.subplots(figsize=(8.27, 2))
-	for i, s in enumerate(db.senders):
-		rect = ax.bar((x-w/2) + i*w/db.sc,
-					  db.stats.iloc[i, nums], w/db.sc, label=s, align="edge")
+	fig, ax = plt.subplots(figsize=(9, 2.5))
+	cmap = c_m(db.sender)
+	for i, s in enumerate(db.sender):
+		rect = ax.bar((x-w/2) + i*w/db.sc, db.stats.iloc[i, nums], w/db.sc, label=s, align="edge", color=cmap[i])
 		ax.bar_label(rect, padding=1) if any(
 			[db.sc < 4 and max_val < 1000, db.sc < 6 and max_val < 100, max_val < 10]) else None
 
-	ax.set_title("Media types sent by sender", loc="left")
+	ax.set_title("Media sent by type and sender", loc="left")
 	ax.set_ylabel("amount")
 	ax.set_xticks(x)
 	ax.set_yticks(np.arange(0, max_val, 50), minor=True)
 	ax.set_ylim([0, max_val+35])
 	ax.grid(True, "both", "y", lw=.8)
 	ax.set_xticklabels(labels)
-	if db.sc < 7:
-		ax.legend(bbox_to_anchor=(1, 1.2), fontsize="small", ncol=db.sc, shadow=True)
-	else:
-		ax.legend(bbox_to_anchor=(1, 1.3), fontsize="small", ncol=round(db.sc/2), shadow=True)
 
+	fig.tight_layout()
 	plt.savefig("data/output/images/page1/media_bars.png", transparent=True)
 	plt.close()
 	return
@@ -488,9 +484,9 @@ def message_time_series() -> None:
 	individually and together.
 	"""
 	for i, range in enumerate(db.msg_ranges):
-		fig, ax = plt.subplots(figsize=(8.27, 2))
+		fig, ax = plt.subplots(figsize=(9, 2.5))
 
-		ax.plot(range.index, range.values, color="green")
+		ax.plot(range.index, range.values, color="#10590B")
 		# Major ticks every half year, minor ticks every month
 		ax.xaxis.set_major_locator(dates.MonthLocator((1, 5, 9), 15))
 		ax.xaxis.set_minor_locator(dates.MonthLocator(bymonthday=15))
@@ -499,6 +495,7 @@ def message_time_series() -> None:
 		ax.set_title("Messages sent over time", loc="left")
 		ax.xaxis.set_major_formatter(dates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
 
+		fig.tight_layout()
 		page = "page1/" if i == db.sc else f"senderpages/s{str(i)}_"
 		fig.savefig(f"data/output/images/{page}ts.png", transparent=True)
 		plt.close()
@@ -516,9 +513,8 @@ def activity_heatmaps() -> None:
 	for n in range(db.sc+1):
 		df = db.msg_per_s[n] if n != db.sc else db.chat_og
 
-		fig, ax = plt.subplots(figsize=(8, 2))
-		vals = df.groupby(["weekday", "hour"]).size(
-		).unstack().fillna(0).astype(int)
+		fig, ax = plt.subplots(figsize=(9, 2.5))
+		vals = df.groupby(["weekday", "hour"]).size().unstack().fillna(0).astype(int)
 		im = ax.imshow(vals, cmap="Greens")
 
 		# Show all ticks and label them with the respective list entries
@@ -535,9 +531,10 @@ def activity_heatmaps() -> None:
 							color="black" if vals.iat[i, j] < val_max/2.5 else "w")
 
 		cbar = fig.colorbar(im)
-		cbar.ax.set_ylabel("Amount", rotation=-90, va="bottom")
+		cbar.ax.set_ylabel("messages", rotation=-90, va="bottom")
 
-		ax.set_title("Activity by day and hour", loc="left")
+		fig.tight_layout()
+		ax.set_title("Messages sent by day and hour", loc="left")
 
 		page = "page1/" if n == db.sc else f"senderpages/s{str(n)}_"
 		fig.savefig(f"data/output/images/{page}heatmap.png", transparent=True)
@@ -552,10 +549,11 @@ def sent_pies() -> None:
 	"""
 	for n in range(db.sc+1):
 		fig, ax = plt.subplots(figsize=(3.14, 3.14))
-		ax.pie(db.stats.iloc[n, [20, 22]], startangle=90, colors=["darkgreen", "darkred"], autopct="%1.1f%%", wedgeprops={"ec": "w"}, textprops={"c": "w"})
-		ax.legend(labels=["☺️", "☹"], shadow=True, loc="upper right", fontsize="small")
+		ax.pie(db.stats.iloc[n, [20, 21]], startangle=90, colors=["#9BE7C4", "#FBB3AE"], autopct="%1.1f%%", wedgeprops={"ec": "w"}, textprops={"c": "w"})
+		ax.legend(labels=["☺️", "☹"], shadow=True, loc="lower right", fontsize="small")
 		ax.axis("equal")
 		ax.set_title("Sentiment of rated messages")
+
 		fig.tight_layout()
 		page = "page1/" if n == db.sc else f"senderpages/s{str(n)}_"
 		fig.savefig(f"data/output/images/{page}sent_pie.png", transparent=True)
