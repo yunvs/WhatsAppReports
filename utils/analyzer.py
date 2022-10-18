@@ -1,9 +1,24 @@
 from utils.helper import *
-from utils.plotter import create_wordcloud
+from utils.plotter import word_cloud
 
 import re
 from unidecode import unidecode
 import emojis
+
+
+def analyze_chat() -> None:
+	"""
+	Analyzes the chat and creates the stats DataFrame.
+	"""
+	prepare_database()
+
+	analysis_per_sender() # data analysis
+	v.msg_per_s.append(v.chat_og) # add original chat to msg_per_s
+	time("counting occurances and calculating contactwise statistics")
+
+	calc_remaining_stats()  # get the summary statistics for all senders
+	time("calculating remaining statistics for all senders")
+	return
 
 
 def prepare_database() -> None:
@@ -22,8 +37,10 @@ def prepare_database() -> None:
 	return
 
 
-
 def analysis_per_sender() -> None:
+	"""
+	Performs the analysis of the chat per sender.
+	"""
 	# data seperation, cleansing and data analysis per sender
 	for i, s in enumerate(v.sender):
 		df = v.chat.loc[v.chat["sender"] == s]  # DataFrame with messages from sender
@@ -31,12 +48,28 @@ def analysis_per_sender() -> None:
 
 		clean_df = cleanse_df(df["message"], s) # get stats for each sender
 		count_occurances(clean_df, i)  # count occurances of words and emojis
-		time(f"sender no. {i}: counting occurances of media, words and emojis")
 
 		calc_stats(clean_df.rename(s))  # calculate the stats for each sender
-		time(f"sender no. {i}: calculating contactwise statistics")
-	v.msg_per_s.append(v.chat_og)
 	return
+
+
+def cleanse_df(df: pd.DataFrame, sender: str) -> pd.DataFrame:
+	"""
+	Cleans the DataFrame of non-message enties and replaces URLs and enters
+	collected data into the stats DataFrame.
+	"""
+	count = 0  # counter for media messages cleaned
+	for key, val in c.STATS_PATTERN.items():
+		if key != "media":  # media messages are counted separately
+			key_df = df[df == val[1]] if val[0] == "exact" else df[df.str.contains(val[1])]
+			df = df.drop(key_df.index) # remove non-messages
+			v.chat = v.chat.drop(key_df.index) # remove non-messages
+			if key in v.stats.columns:  # add counted data to stats_df.if it exists
+				v.stats.at[sender, key] = key_df.shape[0]
+				count += key_df.shape[0]
+		else:
+			v.stats.at[sender, key] = count
+	return df
 
 
 def count_occurances(df: pd.DataFrame, i: int) -> None:
@@ -63,27 +96,8 @@ def count_occurances(df: pd.DataFrame, i: int) -> None:
 	word_freq.columns = ["Word", "Frequency"]
 	v.common_words.append(word_freq)
 
-	create_wordcloud(all_msg.upper(), i)
+	word_cloud(all_msg.upper(), i)
 	return
-
-
-def cleanse_df(df: pd.DataFrame, sender: str) -> pd.DataFrame:
-	"""
-	Cleans the DataFrame of non-message enties and replaces URLs and enters
-	collected data into the stats DataFrame.
-	"""
-	count = 0  # counter for media messages cleaned
-	for key, val in c.STATS_PATTERN.items():
-		if key != "media":  # media messages are counted separately
-			key_df = df[df == val[1]] if val[0] == "exact" else df[df.str.contains(val[1])]
-			df = df.drop(key_df.index) # remove non-messages
-			v.chat = v.chat.drop(key_df.index) # remove non-messages
-			if key in v.stats.columns:  # add counted data to stats_df.if it exists
-				v.stats.at[sender, key] = key_df.shape[0]
-				count += key_df.shape[0]
-		else:
-			v.stats.at[sender, key] = count
-	return df
 
 
 def calc_stats(s_df: pd.DataFrame) -> None:
@@ -93,9 +107,9 @@ def calc_stats(s_df: pd.DataFrame) -> None:
 	"""
 	s = s_df.name  # get column name (sender)
 	v.stats.at[s, "msg_count"] = s_df.shape[0]
-	v.stats.at[s, "chars_avg"] = round(s_df.str.replace(" ", "").str.len().mean(), 1)
+	v.stats.at[s, "chars_avg"] = round(s_df.str.replace("\W", "", regex=True).str.len().mean(), 1)
 	v.stats.at[s, "words_avg"] = round(s_df.str.split().str.len().mean(), 1)
-	v.stats.at[s, "chars_max"] = s_df.str.replace(" ", "").str.len().max()
+	v.stats.at[s, "chars_max"] = s_df.str.replace("\W", "", regex=True).str.len().max()
 	v.stats.at[s, "words_max"] = len(s_df[s_df.str.len().idxmax()].split())
 	v.stats.at[s, "sent_avg"] = round(v.chat.loc[v.chat["sender"] == s, "sentiment"].mean(skipna=True), 2)
 	v.stats.at[s, "sent_pos"] = v.chat.loc[v.chat["sender"] == s, "sentiment"].gt(0).sum()
@@ -135,12 +149,13 @@ def calc_remaining_stats() -> None:
 			v.stats.at["sum", stat] = round(v.stats[stat].mean(), 3)
 		else:
 			v.stats.at["sum", stat] = v.stats[stat].sum()
-
-	time("calculating remaining statistics for all senders")
 	return
 
 
 def create_msg_range(i: int) -> None:
+	"""
+	Creates a Series with the number of messages sent per day.
+	"""
 	msg_date = v.msg_per_s[i]["date"].value_counts().sort_index()
 	chat_date_range = pd.date_range(msg_date.index[0], msg_date.index[-1])
 	msg_range = pd.Series(index=chat_date_range, dtype=int)
