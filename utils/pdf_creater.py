@@ -1,5 +1,5 @@
 from utils.helper import *
-from utils.outputer import ss
+from utils.texter import ss
 
 from fpdf import FPDF  # to create pdfs
 
@@ -76,7 +76,7 @@ def commons_table(df: pd.DataFrame, x: int, y: int, w: int = 60, h: int = 6, emo
 	# Create table body
 	new_section(xy=(x, pdf.get_y() + h))
 	for i in range(len(df)):
-		if emojis: # Emojis: inserted as link to the google search
+		if emojis: # Emojis: inserted as link to a google image search
 			emoji = df.iat[i, 0].strip(":").replace("_", "+")
 			url = f"https://www.google.com/search?q={emoji}+emoji&tbm=isch"
 			new_section(style="U", color=(0, 0, 200)) # 
