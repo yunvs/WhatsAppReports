@@ -1,9 +1,8 @@
 from nltk.corpus import stopwords
 
-# ----------------------------------------------------------------
-# This file contains dictionaries, list for the statistics
-# which will be derived from the chat
-# ----------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# 			This file contains constants used in the program
+# ------------------------------------------------------------------------------
 
 STATS_DICT = {"msg_count": "text", "chars_avg": "char", "words_avg": "word", "chars_max": "char", "words_max": "word", "sent_avg": "sentiment", "media": "media", "image": "image", "video": "video", "GIF": "GIF", "sticker": "sticker", "audio": "audio", "contact": "contact", "location": "location", "file": "file", "deleted": "message", "calls": "video/audio call", "link": "link", "emoji": "emoji", "emoji_unique": "distinct emoji", "sent_pos": "positve message", "sent_neg": "negative message"}
 """ Dictionary of statistics and their corresponding names """
