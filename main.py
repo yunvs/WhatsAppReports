@@ -1,19 +1,18 @@
-from utils import helper, getter, converter, analyzer, plotter, pdf_creater, texter
+from utils import getter, converter, analyzer, plotter, texter, helper
 
 # get path to file and check if it is correct
-path = getter.get_path(test=True) 
+path = getter.get_path("") # you can specify the path here if you want
 
 # data extraction and preprocessing
 converter.convert_file(path)  # convert the file to a pandas DataFrame
 
 # data analysis
-analyzer.analyze_chat()
+analyzer.analyze_chat() # analyze the chat and create the stats DataFrame
 
 # data visualization
-texter.create_texts() # create the text reports
-plotter.plot_data() # data visualization
+plotter.plot_data() # data visualization and plotting
 
-# final PDF creation
-pdf_creater.make_pdf_report()  # create the pdf report
+# textual outputs and final PDF creation
+texter.make_pdf_report()  # create txt reports and the pdf report
 
-helper.off(file_end=True)
+helper.off(error=False) # program is ending because it finished successfully
