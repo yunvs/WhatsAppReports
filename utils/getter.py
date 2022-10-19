@@ -1,15 +1,20 @@
 from utils.helper import *
 
-def get_path(test: bool = False) -> str:
-	if not test:
-		path = input(BOLD("\nEnter path to file: "))
-	else:
-		path = "data/input/test_chat.txt"
-		path = "/Users/yunusrenz/Others/chat_mum.zip" #TODO: remove
+def get_path(path_to_file: str = "") -> str:
+	if path_to_file == "":
+		path_to_file = input(
+			BOLD("\nPlese enter the path to the chat file")
+			+ "\nOnly .txt or .zip files are supported"
+			+ "\nEnter 'sample' if you dont have a file at hand"
+			+ "\nEnter the path here: ")
+	
+	if path_to_file == "sample":
+		path_to_file = "data/input/sample_chat.txt"
+		path_to_file = "/Users/yunusrenz/Others/chat_mum.zip" #TODO: remove
 
 	v.ts = [timer()]
-	print(BOLD("Analyzing file"), "@", path, "\n")
-	return check_file_format(path)
+	print("\n" + BOLD("Analyzing file"), f"@ '{GREEN(path_to_file)}'\n")
+	return check_file_format(path_to_file)
 
 def check_file_format(path_to_file: str) -> str:
 	"""
