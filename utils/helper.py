@@ -14,50 +14,56 @@ def time(task: str = "untitled") -> None:
 	return
 
 
-def export(loc, data, name):
-	path = f"data/testing/exports/{loc}/"
+def export(data, name):
 	if type(data) != pd.DataFrame:
-		data = pd.DataFrame(data)
+		try:
+			data = pd.DataFrame(data)
+		except ValueError:
+			with open("database/exports/" + name, "w") as f:
+				f.write(data)
 	try:
-		return data.to_csv(path + name, index=True)
+		return data.to_csv("database/exports/" + name, index=True)
 	except FileNotFoundError:
-		os.makedirs(path, exist_ok=True)
-		return export(loc, data, name)
+		os.makedirs("database/exports/", exist_ok=True)
+		return export(data, name)
 
 
-def export_data() -> None:
+def export_database() -> None:
 	"""
 	Exports DataFrames and text to the data/testing/exports folder.
 	"""
-	export("database", v.chat_og, "chat_og_df.csv")
-	export("database", v.chat, "chat_df.csv")
-	export("database", v.sender, "sender_df.csv")
-	export("database", v.stats, "stats_df.csv")
-	export("database", v.tstats, "time_stats_df.csv")
-	export("database", v.msg_ranges, "msg_ranges_df.csv")
-	export("database", v.txt_reports, "reports_df.csv")
-	for i in range(v.sc+1):
-		try:
-			export("database", v.msg_per_s[i], f"msg_per_s{i}.csv")
-			export("database", v.common_words[i], f"common_words_s{i}.csv")
-			export("database", v.common_emojis[i], f"common_emojis_s{i}.csv")
-		except IndexError:
-			pass
+	export(v.chat, "v_chat.csv")
+	export(v.chat_og, "v_chat_og.csv")
+	export(v.stats, "v_stats.csv")
+	export(v.tstats, "v_time_stats.csv")
+	export(v.sender, "v_sender.csv")
+	export(v.msg_ranges, "v_msg_ranges.csv")
+	export(v.txt_reports, "v_txt_reports.csv")
+	export(v.time_reports, "v_time_reports.csv")
+	export(v.ts, "v_timestamps.csv")
+	export(v.msg_per_s[v.sc], f"v_msg_per_sc.csv")
+	for i in range(v.sc):
+		export(v.msg_per_s[i], f"v_msg_per_s{i}.csv")
+		export(v.common_words[i], f"v_common_words_s{i}.csv")
+		export(v.common_emojis[i], f"v_common_emojis_s{i}.csv")
+	
 	time("exporting the database contents")
 	return
 
 
-def off(*args, file_end: bool = False) -> None:
+def off(*args, error: bool = True) -> None:
 	"""
 	Prints error message and safely exits the program.
 	"""
-	if not file_end:
-		return exit(BOLD(RED("⛔️ Error: ")) + " ".join(args) + " ⛔️" if len(args) > 0 else "")
-	else:
-		print(f"\nAnalyzing took {BOLD(round(timer() - v.ts[0], 6))} seconds")
-		print(f"\nYou can find the PDF report here: '{os.getcwd()}/data/output/pdfs/WA-Report.pdf'")
-		# export_db()
-		return exit()
+	# export_database() # uncomment to export all variables from the database
+
+	if error: # program is ending because of a file error
+		exit(" ".join([BOLD(RED("⛔️ Error")), *args, "⛔️"]))
+	# program has finished successfully
+	print("\n".join([BOLD(GREEN("\n✅ Success: Analysis finished ✅")), 
+		f"Analyzing took {BOLD(round(timer() - v.ts[0], 6))} seconds in total.",
+		f"The PDF Report is located here: '{os.getcwd()}/data/output/Report.pdf'\n"]))
+	return
 
 
 def pprint(*args, spaces: bool=False) -> str:
@@ -78,13 +84,6 @@ def BOLD(*args) -> str:
     Returns given arguments seperated by spaces and bold 
     """
     return "\033[1m" + pprint(*args, spaces=True) + "\033[22m"
-
-
-def DIM(*args) -> str:
-    """
-    Returns given arguments seperated by spaces and dimmed 
-    """
-    return "\033[2m" + pprint(*args, spaces=True) + "\033[22m"
 
 
 def RED(*args) -> str:
