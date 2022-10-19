@@ -45,10 +45,14 @@ You can use this program to analyse 🧐 your chats and get a report about the c
     <b><a href="#top">⇧ back to top</a></b>
 </div>
 
+#### Before you start make sure you have Python 3 and all neccessary libraries (specifed in the [requirements.txt](requirements.txt) file) installed on your machine.
+
+
 ## How to <sub><sup> analyse a WhatsApp chat </sub></sup>  
+
 First you need to export the chat from WhatsApp. Then you can import and process the chat. Finally, you will get the results.
 
-### **1. Export**:
+### **1. Export from WhatsApp**:
 > #### Export the chat from WhatsApp to a .txt or .zip file
 
 To export a WhatsApp chat, go to the **information page** of that chat. You can export the chat, at the bottom of that page. WhatsApp will ask you, if you want to export the file with or without media. **Export without media files!**  
@@ -65,10 +69,35 @@ You will get a **.zip file**, which you have to save. After unziping that file, 
     <b><a href="#top">⇧ back to top</a></b>
 </div>
 
-### 2. Import and Process:
-> #### Import the file and let the program do it's thing  
+### 2. Import to the file and process it:
+> #### Specify the filepath and let the program do it's thing
 
-Text Text Text
+After you have exported the chat, you can import it into the program. You can either go main.py file and specify the **filepath of the .txt or .zip file** into the intented place (marked by a comment) or run the main.py file and enter the filepath when asked.
+
+The program will then process the file and derive the statistics. This might take a few seconds, depending on the size of the file and your computer. 
+
+While analyzing, the program will print out the steps it goes through and the time it took to process each step. After finalization, you will be nofitied and the program will terminate.
+
+The terminal should look like this:
+
+```
+Plese enter the path to the chat file
+Only .txt or .zip files are supported
+Enter 'sample' if you dont have a file at hand
+Enter the path here: sample
+
+Analyzing file @ '.../WhatsAppReports/data/input/sample_chat.txt"'
+
+converting the orinial file to a pandas DataFrame took 6.556389 sec
+counting occurances and calculating contactwise statistics took 9.516935 sec
+calculating remaining statistics for all senders took 0.787263 sec
+visualising data for the final pdf report took 7.74283 sec
+finishing final PDF Report took 6.080913 sec
+
+✅ Success: Analysis finished ✅
+Analyzing took 30.686177 seconds in total.
+The PDF Report is located here: '.../WhatsAppReports/data/output/Report.pdf'
+```
 
 ##
 
@@ -80,6 +109,8 @@ Text Text Text
 
 ### **3. Results**:
 > #### Review and understand the results  
+
+After completing the analysis, you will get a PDF report, which contains all the derived statistics in a reader friendly fromat. You can find the report in the **[output folder](data/output)**. The PDF will be named **Report.pdf**.
 
 Text Text Text
 
