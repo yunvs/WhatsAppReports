@@ -1,6 +1,9 @@
 from utils.helper import *
 
 def get_path(path_to_file: str = "") -> str:
+	"""
+	Asks the user for the path to the file and checks if it is correct.
+	"""
 	if path_to_file == "":
 		path_to_file = input(
 			BOLD("\nPlease enter the path to the chat file")
@@ -13,6 +16,7 @@ def get_path(path_to_file: str = "") -> str:
 
 	v.ts = [timer()]
 	print("\n" + BOLD("Analyzing file"), f"@ '{GREEN(path_to_file)}'\n")
+	
 	return check_file_format(path_to_file)
 
 def check_file_format(path_to_file: str) -> str:

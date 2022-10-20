@@ -18,4 +18,4 @@ texter.make_pdf_report()  # create txt reports and the pdf report
 # program has finished successfully
 helper.off(error=False) # print out success message and analyzing time 
 
-helper.export_database() # uncomment to export all derived statistics
+# helper.export_database() # uncomment to export all derived statistics
