@@ -92,16 +92,16 @@ The terminal should look like this:
     Enter 'sample' if you do not have a file at hand
     Enter the path here: sample
 
-    Starting to analyze file @ '.../WhatsAppReports/data/sample_chat.txt"'
+    Analyzing file @ 'data/sample_chat.txt'
 
-    converting the original file to a pandas DataFrame took 6.556389 sec
-    counting occurrences and calculating contact-wise statistics took 9.516935 sec
-    calculating remaining statistics for all senders took 0.787263 sec
-    visualizing data for the final pdf report took 7.74283 sec
-    finishing final PDF Report took 6.080913 sec
+    converting the original file to a pandas DataFrame took 0.879407 sec
+    counting occurrences and calculating contact-wise statistics took 15.968035 sec
+    calculating remaining statistics for all senders took 0.49279 sec
+    visualizing data for the final pdf report took 8.656221 sec
+    finishing final PDF Report took 13.204573 sec
 
     ✅ Success: Analysis finished ✅
-    Analyzing took 30.686177 seconds in total.
+    Analyzing took 39.201137 seconds in total.
     The PDF Report is located here: '.../WhatsAppReports/data/output/Report.pdf'
 
 <br>
@@ -188,17 +188,17 @@ Version used:  **Anaconda3 Navigator 2.2.0** | ℹ️ [Anaconda website](http://
 
 Library  | Version | Usage
 :--- | :---: | ---:
-[Pandas](http://pandas.pydata.org/) | 1.5.0 | Flexible and powerful data analysis / manipulation
+[Pandas](http://pandas.pydata.org/) | 1.5.0 | Data analysis and manipulation
 [Textblob-de](https://textblob-de.readthedocs.io/en/latest/) | 0.4.3 | German sentiment analysis
-[Unidecode](https://pypi.org/project/Unidecode/) | 1.3.6 | ASCII transliterations of Unicode text
+[Unidecode](https://pypi.org/project/Unidecode/) | 1.3.6 | ASCII transliterations 
 [Emojis](https://emojis.readthedocs.io/en/latest/api.html) | 0.6.0 | Emoji handling
 [Numpy](https://numpy.org/) | 1.23.4| Numerical calculations
-[Matplotlib](https://matplotlib.org/) | 3.6.1 | Data plotting
+[Matplotlib](https://matplotlib.org/) | 3.6.1 | Data Visualization
 [WordCloud](https://wordcloud.readthedocs.io/) | 1.8.2.2 | WordCloud generation
 [Pyfpdf](https://pyfpdf.readthedocs.io/en/latest/) | 1.7.2 | PDF generation
 [Nltk](https://www.nltk.org/) | 3.7 | Natural language processing
 [os](https://docs.python.org/3/library/os.html) | Python3 | Operating system functionality
-[timeit](https://docs.python.org/3/library/timeit.html) | Python3 | Measure execution time
+[timeit](https://docs.python.org/3/library/timeit.html) | Python3 | Time measuring functionality
 [re](https://docs.python.org/3/library/re.html) | Python3 | Regular expression operations
 
 <br>
@@ -316,15 +316,29 @@ To do so, open a terminal and navigate to the project folder. Then run the follo
 
 - **WordClouds** using the wordcloud module 
 
+> ![WordCloud Example](data/output/images/senderpages/s0_wc.png "WordCloud Example")
+
 - **Bar charts** using the matplotlib module
+
+> ![Bar Chart Example](data/output/images/page1/media_bars.png "Bar Chart Example")
 
 - **Pie charts** using the matplotlib module
 
+> ![Pie Chart Example](data/output/images/page1/msg_pie.png "Pie Chart Example")
+
 - **Line charts** using the matplotlib module
 
+> ![Line Chart Example](data/output/images/page1/ts.png "Line Chart Example")
+
 - **Heatmaps** using the matplotlib module
+
+> ![Heatmap Example](data/output/images/page1/heatmap.png "Heatmap Example")
 
 <br>
 
 - **PDFs** using the fpdf module
+    - including text
+    - including images (all of above)
     - including cells and tables
+
+Check out the [**PDF example**](data/output/Report.pdf) to see how it looks like.
