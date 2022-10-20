@@ -15,15 +15,16 @@ def time(task: str = "untitled") -> None:
 
 
 def export(data, name):
-	if type(data) != pd.DataFrame:
-		try:
-			data = pd.DataFrame(data)
-		except ValueError:
-			with open("database/exports/" + name, "w") as f:
-				f.write(data)
 	try:
+		if type(data) != pd.DataFrame:
+			try:
+				data = pd.DataFrame(data)
+			except ValueError: # data cant be converted to a pandas DataFrame
+				with open("database/exports/" + name, "w") as f:
+					f.write(data)
+				return
 		return data.to_csv("database/exports/" + name, index=True)
-	except FileNotFoundError:
+	except OSError: # create the folder if it does not exist
 		os.makedirs("database/exports/", exist_ok=True)
 		return export(data, name)
 
@@ -46,19 +47,19 @@ def export_database() -> None:
 		export(v.msg_per_s[i], f"v_msg_per_s{i}.csv")
 		export(v.common_words[i], f"v_common_words_s{i}.csv")
 		export(v.common_emojis[i], f"v_common_emojis_s{i}.csv")
-	
-	time("exporting the database contents")
 	return
 
 
-def off(*args, error: bool = True) -> None:
+def off(*args, error: bool = True, export: bool = False) -> None:
 	"""
-	Prints error message and safely exits the program.
+	Prints error message and safely exits the program. 
 	"""
-	# export_database() # uncomment to export all variables from the database
+	if export:
+		export_database() # export all variables from the database
 
 	if error: # program is ending because of a file error
 		exit(" ".join([BOLD(RED("⛔️ Error")), *args, "⛔️"]))
+	
 	# program has finished successfully
 	print("\n".join([BOLD(GREEN("\n✅ Success: Analysis finished ✅")), 
 		f"Analyzing took {BOLD(round(timer() - v.ts[0], 6))} seconds in total.",
@@ -81,27 +82,27 @@ def pprint(*args, spaces: bool=False) -> str:
 
 def BOLD(*args) -> str:
     """
-    Returns given arguments seperated by spaces and bold 
+    Returns given arguments separated by spaces and bold 
     """
     return "\033[1m" + pprint(*args, spaces=True) + "\033[22m"
 
 
 def RED(*args) -> str:
     """
-    Returns given arguments seperated by spaces and in red 
+    Returns given arguments separated by spaces and in red 
     """
     return "\033[31m" + pprint(*args, spaces=True) + "\033[39m"
 
 
 def GREEN(*args) -> str:
     """
-    Returns given arguments seperated by spaces and in green 
+    Returns given arguments separated by spaces and in green 
     """
     return "\033[32m" + pprint(*args, spaces=True) + "\033[39m"
 
 
 def BLUE(*args) -> str:
     """
-    Returns given arguments seperated by spaces and in blue 
+    Returns given arguments separated by spaces and in blue 
     """
     return "\033[34m" + pprint(*args, spaces=True) + "\033[39m"

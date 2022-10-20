@@ -1,12 +1,12 @@
 from utils.helper import *
 
-from fpdf import FPDF  # to create pdfs
+from fpdf import FPDF  # to create PDF
 pdf = FPDF()
 
 
 def ss(style: int = 0) -> str:
 	"""
-	Returns a string represtaion of the senders
+	Returns a string representation of the senders
 	style= 0: auto (default), 1: the n senders, 2: Sender 1, Sender 2 and Sender 3
 	"""
 	short, long = f"the {str(v.sc)} senders", pprint(*v.sender)
@@ -38,7 +38,7 @@ def create_txt_reports() -> None:
 	"""
 	i = int()
 
-	def y(*idxs): return pprint(*[calc_num(*get_stat_pair(a, i)) for a in idxs])
+	def y(*ids): return pprint(*[calc_num(*get_stat_pair(a, i)) for a in ids])
 
 	for i, s in enumerate(v.sender):  # for each sender create a sender report
 		ls = [y(0, 6, 18), "\n".join([
@@ -202,7 +202,7 @@ def make_pdf_report() -> None:
 	new_section(11, space=10)
 	pdf.multi_cell(100, 4, v.txt_reports[v.sc][1])
 
-	# Insert the general timewise statistics
+	# Insert the general time-wise statistics
 	new_section(space=10)
 	pdf.multi_cell(100, 4, "\n".join(v.time_reports[v.sc][3:]))
 
@@ -210,7 +210,7 @@ def make_pdf_report() -> None:
 	pdf.image(path+"media_bars.png", x=15, y=105, w=180) # media bar chart
 
 	pdf.image(path+"ts.png", x=15, y=155, w=180) # activity time series plot
-	ts_info(25, 205) # Print information underneth time series plot
+	ts_info(25, 205) # Print information underneath time series plot
 
 	pdf.image(path+"heatmap.png", x=15, y=215, w=190) # activity heatmap plot
 
@@ -244,14 +244,14 @@ def make_pdf_report() -> None:
 		add_title_footer(i) # Add second sender page for time stats
 
 		pdf.image(path+"ts.png", x=15, y=40, w=180) # Activity time series plot
-		ts_info(25, 90, i) # Insert information underneth time series plot
+		ts_info(25, 90, i) # Insert information underneath time series plot
 
-		# Insert the timewise statistics of the sender
+		# Insert the time-wise statistics of the sender
 		new_section(11, space=10)
 		pdf.multi_cell(0, 4, "\n".join(v.time_reports[i][3:]))
 
 		pdf.image(path+"heatmap.png", x=15, y=120, w=190) # Heatmap plot
-		pdf.image(path+"wc.png", x=20, y=180, w=170) # Wordcloud 
+		pdf.image(path+"wc.png", x=20, y=180, w=170) # WordCloud 
 	
 	pdf.output("data/output/Report.pdf", "F")
 	time("finishing final PDF Report")

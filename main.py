@@ -15,4 +15,7 @@ plotter.plot_data() # data visualization and plotting
 # textual outputs and final PDF creation
 texter.make_pdf_report()  # create txt reports and the pdf report
 
-helper.off(error=False) # program is ending because it finished successfully
+# program has finished successfully
+helper.off(error=False) # print out success message and analyzing time 
+
+helper.export_database() # uncomment to export all derived statistics

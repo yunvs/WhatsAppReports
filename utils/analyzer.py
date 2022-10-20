@@ -14,7 +14,7 @@ def analyze_chat() -> None:
 
 	analysis_per_sender() # data analysis
 	v.msg_per_s.append(v.chat_og) # add original chat to msg_per_s
-	time("counting occurances and calculating contactwise statistics")
+	time("counting occurrences and calculating contact-wise statistics")
 
 	calc_remaining_stats()  # get the summary statistics for all senders
 	time("calculating remaining statistics for all senders")
@@ -23,7 +23,7 @@ def analyze_chat() -> None:
 
 def prepare_database() -> None:
 	"""
-	Prepares the database by filling data in #tobefilled placeholders.
+	Prepares the database by filling data in variables placeholder.
 	"""
 	v.chat["weekday"] = v.chat["date"].apply(lambda x: x.weekday())  # add weekday
 	v.chat["hour"] = v.chat["datetime"].apply(lambda x: x.hour)  # add hour
@@ -41,13 +41,13 @@ def analysis_per_sender() -> None:
 	"""
 	Performs the analysis of the chat per sender.
 	"""
-	# data seperation, cleansing and data analysis per sender
+	# data separation, cleansing and data analysis per sender
 	for i, s in enumerate(v.sender):
 		df = v.chat.loc[v.chat["sender"] == s]  # DataFrame with messages from sender
 		v.msg_per_s.append(df)
 
 		clean_df = cleanse_df(df["message"], s) # get stats for each sender
-		count_occurances(clean_df, i)  # count occurances of words and emojis
+		count_occurrences(clean_df, i)  # count occurrences of words and emojis
 
 		calc_stats(clean_df.rename(s))  # calculate the stats for each sender
 	return
@@ -55,7 +55,7 @@ def analysis_per_sender() -> None:
 
 def cleanse_df(df: pd.DataFrame, sender: str) -> pd.DataFrame:
 	"""
-	Cleans the DataFrame of non-message enties and replaces URLs and enters
+	Cleans the DataFrame of non-message entities and replaces URLs and enters
 	collected data into the stats DataFrame.
 	"""
 	count = 0  # counter for media messages cleaned
@@ -72,13 +72,13 @@ def cleanse_df(df: pd.DataFrame, sender: str) -> pd.DataFrame:
 	return df
 
 
-def count_occurances(df: pd.DataFrame, i: int) -> None:
+def count_occurrences(df: pd.DataFrame, i: int) -> None:
 	"""
 	Calculates different statistics about the chat and enters collected data.
 	"""
 	all_msg = " ".join(df).lower()  # combine all messages into one string
 
-	# count occurances of emojis
+	# count occurrences of emojis
 	emj_dct = dict()
 	emj_lst = emojis.get(all_msg)  # get list of emojis
 	for item in emj_lst:
@@ -90,7 +90,7 @@ def count_occurances(df: pd.DataFrame, i: int) -> None:
 	v.stats.at[v.sender[i], "emoji_unique"] = len(emj_dct)
 	v.stats.at[v.sender[i], "link"] = len(re.findall("xurlx", all_msg))
 
-	# count occurances of words
+	# count occurrences of words
 	all_msg = re.sub(r"(xurlx)|(\W)|(\d)", " ", unidecode(all_msg))
 	word_freq = pd.Series(all_msg.split()).value_counts().reset_index()
 	word_freq.columns = ["Word", "Frequency"]

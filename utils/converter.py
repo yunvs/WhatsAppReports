@@ -11,13 +11,13 @@ def convert_file(path: str) -> None:
 	chat_list = convert_file_to_list(path)
 	v.chat = convert_list_to_df(chat_list)
 
-	time("converting the orinial file to a pandas DataFrame")
+	time("converting the original file to a pandas DataFrame")
 	return
 
 
 def convert_file_to_list(path_to_file: str) -> list[list[str]]:
 	"""
-	Converts a .txt-file of messages into a list of messeages and returns it.
+	Converts a .txt-file of messages into a list of messages and returns it.
 	"""
 	chat, last_msg = list(), str()
 	try:  # try to open the file
@@ -43,7 +43,7 @@ def convert_ln(input: str) -> list[str]:
 	"""
 	Converts a line of the WhatsApp chat history into a list and returns it.
 	"""
-	# match pattern and devide into groups: 1:date, 2:datetime, 3:sender, 4:message
+	# match pattern and divide into groups: 1:date, 2:datetime, 3:sender, 4:message
 	x = re.search("^.? ?\[([\d./]*), ([\d:]*)\] ([\w ]*): (\u200E?.*)$", input)
 	result = [x.group(1), " ".join([x.group(1), x.group(2)])]  # add date, datetime
 	result.append(x.group(3).title())  # add name of sender

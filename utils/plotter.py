@@ -1,20 +1,20 @@
 from utils.helper import *
 
-from wordcloud import WordCloud  # to create wordclouds
 import numpy as np
 from matplotlib import pyplot as plt, dates, cm  # to plot figures
+from wordcloud import WordCloud  # to create WordClouds
 
 def plot_data() -> None:
 	"""
-	Creates a texual output for some data and plots the grafics for the report.
+	Creates a textual output for some data and plots the graphics for the report.
 	"""
 	msg_pie()
-	grouped_madia_bars()
+	grouped_media_bars()
 	message_time_series()
 	activity_heatmaps()
 	sent_pies()
 	
-	time("visualising data for the final pdf report")
+	time("visualizing data for the final pdf report")
 	return
 
 
@@ -43,7 +43,7 @@ def msg_pie() -> None:
 	return
 
 
-def grouped_madia_bars(w: float = .9) -> None:
+def grouped_media_bars(w: float = .9) -> None:
 	"""
 	Creates a bar chart of the amount of media messages sent by each sender.
 	"""
@@ -120,9 +120,12 @@ def activity_heatmaps() -> None:
 		if val_max < 100:
 			for i in range(len(days)):
 				for j in range(len(hours)):
-					x = vals.iat[i, j] if vals.iat[i, j] != 0 else ""
-					ax.text(j, i, x, ha="center", va="center",
-							color="black" if vals.iat[i, j] < val_max/2.5 else "w")
+					try:
+						x = vals.iat[i, j] if vals.iat[i, j] != 0 else ""
+						ax.text(j, i, x, ha="center", va="center",
+								color="black" if vals.iat[i, j] < val_max/2.5 else "w")
+					except IndexError:
+						ax.text(j, i, "", ha="center", va="center", color="w")
 
 		cbar = fig.colorbar(im)
 		cbar.ax.set_ylabel("messages", rotation=-90, va="bottom")
