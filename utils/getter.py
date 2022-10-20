@@ -8,7 +8,7 @@ def get_path(path_to_file: str = "") -> str:
 		path_to_file = input(
 			BOLD("\nPlease enter the path to the chat file")
 			+ "\nOnly .txt or .zip files are supported"
-			+ "\nEnter 'sample' if you dont have a file at hand"
+			+ "\nEnter 'sample' if you do not have a file at hand"
 			+ "\nEnter the path here: ")
 	
 	if path_to_file == "sample":
