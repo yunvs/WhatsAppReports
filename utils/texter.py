@@ -250,7 +250,11 @@ def make_pdf_report() -> None:
 		new_section(11, space=10)
 		pdf.multi_cell(0, 4, "\n".join(v.time_reports[i][3:]))
 
+		pdf.set_fill_color(248, 252, 246)
+		pdf.rect(26.5, 125.5, 140.7, 41.7, style="F") # Draw rectangle behind heatmap
+
 		pdf.image(path+"heatmap.png", x=15, y=120, w=190) # Heatmap plot
+
 		pdf.image(path+"wc.png", x=20, y=180, w=170) # WordCloud 
 	
 	pdf.output("data/output/Report.pdf", "F")

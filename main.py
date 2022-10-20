@@ -1,7 +1,7 @@
 from utils import getter, converter, analyzer, plotter, texter, helper
 
 # get path to file and check if it is correct
-path = getter.get_path("") # you can specify the path here if you want
+path = getter.get_path("") # you can specify the path here or in the terminal
 
 # data extraction and preprocessing
 converter.convert_file(path)  # convert the file to a pandas DataFrame

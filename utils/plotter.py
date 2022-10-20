@@ -117,21 +117,21 @@ def activity_heatmaps() -> None:
 
 		val_max = vals.max().max()
 
-		if val_max < 100:
-			for i in range(len(days)):
-				for j in range(len(hours)):
-					try:
-						x = vals.iat[i, j] if vals.iat[i, j] != 0 else ""
-						ax.text(j, i, x, ha="center", va="center",
-								color="black" if vals.iat[i, j] < val_max/2.5 else "w")
-					except IndexError:
-						ax.text(j, i, "", ha="center", va="center", color="w")
+		# if val_max < 100:
+		# 	for i in range(len(days)):
+		# 		for j in range(len(hours)):
+		# 			try:
+		# 				x = vals.iat[i, j] if vals.iat[i, j] != 0 else ""
+		# 				ax.text(j, i, x, ha="center", va="center",
+		# 						color="black" if vals.iat[i, j] < val_max/2.5 else "w")
+		# 			except IndexError:
+		# 				continue
 
 		cbar = fig.colorbar(im)
 		cbar.ax.set_ylabel("messages", rotation=-90, va="bottom")
 
-		fig.tight_layout()
 		ax.set_title("Messages sent by day and hour", loc="left")
+		fig.tight_layout()
 
 		page = "page1/" if n == v.sc else f"senderpages/s{str(n)}_"
 		fig.savefig(f"data/output/images/{page}heatmap.png", transparent=True)
