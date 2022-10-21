@@ -1,9 +1,9 @@
+import re
+import emojis
+from unidecode import unidecode
+
 from utils.helper import *
 from utils.visualizer import word_cloud
-
-import re
-from unidecode import unidecode
-import emojis
 
 
 def analyze_chat() -> None:
@@ -12,11 +12,11 @@ def analyze_chat() -> None:
 	"""
 	prepare_database()
 
-	analysis_per_sender() # data analysis
-	v.msg_per_s.append(v.chat_og) # add original chat to msg_per_s
+	analysis_per_sender()  # data analysis
+	v.msg_per_s.append(v.chat_og)  # add original chat to msg_per_s
 
 	calc_remaining_stats()  # get the summary statistics for all senders
-	time("Calculating remaining statistics for all senders")
+	time("Calculating remaining statistics")
 	return
 
 
@@ -32,7 +32,19 @@ def prepare_database() -> None:
 	v.sc = len(v.sender)  # Number of senders
 
 	v.stats = pd.DataFrame(None, v.sender, c.STATS_DICT.keys())
-	v.tstats = pd.DataFrame(None, v.sender, ["first_msg", "last_msg", "max_day", "max_msg", "msg_days", "zero_days", "msg_span_days"])
+	v.tstats = pd.DataFrame(
+		None,
+		v.sender,
+		[
+			"first_msg",
+			"last_msg",
+			"max_day",
+			"max_msg",
+			"msg_days",
+			"zero_days",
+			"msg_span_days",
+		],
+	)
 	return
 
 
@@ -45,7 +57,7 @@ def analysis_per_sender() -> None:
 		df = v.chat.loc[v.chat["sender"] == s]  # DataFrame with messages from sender
 		v.msg_per_s.append(df)
 
-		clean_df = cleanse_df(df["message"], s) # get stats for each sender
+		clean_df = cleanse_df(df["message"], s)  # get stats for each sender
 		count_occurrences(clean_df, i)  # count occurrences of words and emojis
 
 		calc_stats(clean_df.rename(s))  # calculate the stats for each sender
@@ -61,9 +73,11 @@ def cleanse_df(df: pd.DataFrame, sender: str) -> pd.DataFrame:
 	count = 0  # counter for media messages cleaned
 	for key, val in c.STATS_PATTERN.items():
 		if key != "media":  # media messages are counted separately
-			key_df = df[df == val[1]] if val[0] == "exact" else df[df.str.contains(val[1])]
-			df = df.drop(key_df.index) # remove non-messages
-			v.chat = v.chat.drop(key_df.index) # remove non-messages
+			key_df = (
+				df[df == val[1]] if val[0] == "exact" else df[df.str.contains(val[1])]
+			)
+			df = df.drop(key_df.index)  # remove non-messages
+			v.chat = v.chat.drop(key_df.index)  # remove non-messages
 			if key in v.stats.columns:  # add counted data to stats_df.if it exists
 				v.stats.at[sender, key] = key_df.shape[0]
 				count += key_df.shape[0]
@@ -108,14 +122,21 @@ def calc_stats(s_df: pd.DataFrame) -> None:
 	"""
 	s = s_df.name  # get column name (sender)
 	v.stats.at[s, "msg_count"] = s_df.shape[0]
-	v.stats.at[s, "chars_avg"] = round(s_df.str.replace("\W", "", regex=True).str.len().mean(), 1)
+	v.stats.at[s, "chars_avg"] = round(
+		s_df.str.replace("\W", "", regex=True).str.len().mean(), 1)
 	v.stats.at[s, "words_avg"] = round(s_df.str.split().str.len().mean(), 1)
 	v.stats.at[s, "chars_max"] = s_df.str.replace("\W", "", regex=True).str.len().max()
 	if v.stats.at[s, "chars_max"] > 0:
 		v.stats.at[s, "words_max"] = len(s_df[s_df.str.len().idxmax()].split())
-	v.stats.at[s, "sent_avg"] = round(v.chat.loc[v.chat["sender"] == s, "sentiment"].mean(skipna=True), 2)
-	v.stats.at[s, "sent_pos"] = v.chat.loc[v.chat["sender"] == s, "sentiment"].gt(0).sum()
-	v.stats.at[s, "sent_neg"] = v.chat.loc[v.chat["sender"] == s, "sentiment"].lt(0).sum()
+	v.stats.at[s, "sent_avg"] = round(
+		v.chat.loc[v.chat["sender"] == s, "sentiment"].mean(skipna=True), 2
+	)
+	v.stats.at[s, "sent_pos"] = (
+		v.chat.loc[v.chat["sender"] == s, "sentiment"].gt(0).sum()
+	)
+	v.stats.at[s, "sent_neg"] = (
+		v.chat.loc[v.chat["sender"] == s, "sentiment"].lt(0).sum()
+	)
 	return
 
 
@@ -124,7 +145,7 @@ def calc_remaining_stats() -> None:
 	Calculates summary statistics about the chat and enters collected data
 	into the stats DataFrame.
 	"""
-	for i in range(v.sc+1):
+	for i in range(v.sc + 1):
 		row = v.sender[i] if i < v.sc else "sum"
 		msg_r = create_msg_range(i)
 		v.msg_ranges.append(msg_r)
@@ -133,15 +154,19 @@ def calc_remaining_stats() -> None:
 		v.tstats.at[row, "last_msg"] = str(msg_r.index[-1]).split()[0]
 		v.tstats.at[row, "msg_span_days"] = (msg_r.index[-1] - msg_r.index[0]).days
 
-		v.tstats.at[row, "max_day"] = str(msg_r[msg_r == msg_r.max()].index[0]).split()[0]
+		v.tstats.at[row, "max_day"] = str(msg_r[msg_r == msg_r.max()].index[0]).split()[
+			0
+		]
 		v.tstats.at[row, "max_msg"] = msg_r.max()
 
 		v.tstats.at[row, "msg_days"] = msg_r[msg_r != 0].shape[0]
 		v.tstats.at[row, "zero_days"] = msg_r[msg_r == 0].shape[0]
 
 		# longest time span without messaging
-		v.tstats.at[row, "no_msg"] = msg_r[msg_r == 0].groupby((msg_r != 0).cumsum()).transform("count").max()
-	
+		v.tstats.at[row, "no_msg"] = (
+			msg_r[msg_r == 0].groupby((msg_r != 0).cumsum()).transform("count").max()
+		)
+
 	for stat in c.STATS_DICT.keys():
 		if any(x in stat for x in ["calls", "unique"]):
 			continue

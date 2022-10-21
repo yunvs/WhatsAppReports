@@ -4,7 +4,7 @@ import pandas as pd
 #        the derived data will be stored in the following variables
 # ------------------------------------------------------------------------------
 
-last_text_size = 11
+last_txt_size = 11
 
 chat: pd.DataFrame = pd.DataFrame()
 """

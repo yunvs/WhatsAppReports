@@ -84,25 +84,31 @@ While analyzing, the program will print out the steps it goes through and the ti
 
 <br>
 
-The terminal should look like this:
-
+The terminal should look like when you run the [main.py](main.py) file:
 
     Please enter the path to the chat file
     Only .txt or .zip files are supported
     Enter 'sample' if you do not have a file at hand
-    Enter the path here: sample
+    Enter the path here: 
 
     Analyzing file @ 'data/sample_chat.txt'
 
-    converting the original file to a pandas DataFrame took 0.879407 sec
-    counting occurrences and calculating contact-wise statistics took 15.968035 sec
-    calculating remaining statistics for all senders took 0.49279 sec
-    visualizing data for the final pdf report took 8.656221 sec
-    finishing final PDF Report took 13.204573 sec
+    Converting chat to pandas.DataFrame took 0.892869 sec
+    Analyzing chat for sender 1 / 2 took 3.678047 sec
+    Analyzing chat for sender 2 / 2 took 6.468708 sec
+    Calculating remaining statistics took 0.299369 sec
+    Visualizing data for sender 1 / 2 took 2.22736 sec
+    Visualizing data for sender 2 / 2 took 1.558695 sec
+    Visualizing remaining data took 2.025149 sec
+    Finishing final PDF Report took 11.972623 sec
 
     ✅ Success: Analysis finished ✅
-    Analyzing took 39.201137 seconds in total.
+    Analyzing took 29.122883 seconds in total.
     The PDF Report is located here: '.../WhatsAppReports/data/output/Report.pdf'
+
+
+
+
 
 <br>
 
