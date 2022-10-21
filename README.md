@@ -15,7 +15,7 @@
 >		4.1. [General Statistics](#general-stats)  
 >		4.2. [Sender specific Statistics](#sender-stats)  
 >		4.3. [Time based Statistics](#time-stats)  
-> 5. [**Graphs & Graphics**](#graphics) *created by the program*  
+> 5. [**Graphics**](#graphics) *created by the program*  
 
 
 <div id="information"/> <div id="about-me"/>
@@ -313,6 +313,10 @@ To do so, open a terminal and navigate to the project folder. Then run the follo
 ## <sub><sup>What</sub></sup> Graphics <sub><sup>does the program create?</sub></sup> 
 
 #### The program creates different graphics:
+> #### The Graphics are created with a transparent background, that is why these could look a little off here (e.g. when using dark mode). 
+Check them out in the [**images**](data/output/images) folder and download them to get the full experience. 😉
+
+<br>
 
 - **WordClouds** using the wordcloud module 
 
@@ -342,3 +346,9 @@ To do so, open a terminal and navigate to the project folder. Then run the follo
     - including cells and tables
 
 Check out the [**PDF example**](data/output/Report.pdf) to see how it looks like.
+
+<br>
+
+<br>
+
+Thanks for reading this far. This really means a lot for me!
