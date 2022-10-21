@@ -192,17 +192,17 @@ def make_pdf_report() -> None:
 
 	add_title_footer() # Add first page of report
 
-	# Insert the amount of texts, media and emojis sent by all senders
+	# insert the amount of texts, media and emojis sent by all senders
 	new_section(11, space=20)
 	pdf.cell(90, 0, "This conversation contains")
 	new_section(14, "B", space=3)
 	pdf.multi_cell(110, 5, v.txt_reports[v.sc][0])
 
-	# Insert avg, longest length and some other stats for all senders
+	# insert avg, longest length and some other stats for all senders
 	new_section(11, space=10)
 	pdf.multi_cell(100, 4, v.txt_reports[v.sc][1])
 
-	# Insert the general time-wise statistics
+	# insert the general time-wise statistics
 	new_section(space=10)
 	pdf.multi_cell(100, 4, "\n".join(v.time_reports[v.sc][3:]))
 
@@ -210,8 +210,10 @@ def make_pdf_report() -> None:
 	pdf.image(path+"media_bars.png", x=15, y=105, w=180) # media bar chart
 
 	pdf.image(path+"ts.png", x=15, y=155, w=180) # activity time series plot
-	ts_info(25, 205) # Print information underneath time series plot
+	ts_info(25, 205) # insert information underneath time series plot
 
+	pdf.set_fill_color(248, 252, 246)
+	pdf.rect(26.5, 220.5, 140.7, 41.7, style="F") # draw rectangle behind heatmap
 	pdf.image(path+"heatmap.png", x=15, y=215, w=190) # activity heatmap plot
 
 	for i, s in enumerate(v.sender): # loops over all senders
@@ -219,44 +221,42 @@ def make_pdf_report() -> None:
 
 		add_title_footer(i) # Adds first sender page for sender s
 
-		# Insert the amount of texts, media and emojis sent by the sender 
+		# insert the amount of texts, media and emojis sent by the sender 
 		new_section(11, space=20)
 		pdf.cell(90, 0, f"Messages {s} sent contain")
 		new_section(14, "B", space=3)
 		pdf.multi_cell(110, 5, v.txt_reports[i][0])
 
-		# Insert the amount of media sent and some other stats about the sender
+		# insert the amount of media sent and some other stats about the sender
 		insert_media_table(i)
 		new_section(11, space=15)
 		pdf.multi_cell(110, 4, v.txt_reports[i][1])
 
-		# Insert the 20 most common words and emojis of the sender
+		# insert the 20 most common words and emojis of the sender
 		commons_table(v.common_words[i].head(20), x=20, y=130)
 		commons_table(v.common_emojis[i].head(20), x=110, y=130, emojis=True)
 
-		# Insert the total number of distinct words and emojis sent by the sender
+		# insert the total number of distinct words and emojis sent by the sender
 		new_section(11, "B", xy=(20, 260))
 		pdf.cell(90, 5, v.txt_reports[i][2], align="L")
 
-		pdf.image(path+"sent_pie.png", x=115, y=40, w=84) # Sentiment plot
+		pdf.image(path+"sent_pie.png", x=115, y=40, w=84) # sentiment plot
 
 
-		add_title_footer(i) # Add second sender page for time stats
+		add_title_footer(i) # add second sender page for time stats
 
-		pdf.image(path+"ts.png", x=15, y=40, w=180) # Activity time series plot
-		ts_info(25, 90, i) # Insert information underneath time series plot
+		pdf.image(path+"ts.png", x=15, y=40, w=180) # activity time series plot
+		ts_info(25, 90, i) # insert information underneath time series plot
 
-		# Insert the time-wise statistics of the sender
+		# insert the time-wise statistics of the sender
 		new_section(11, space=10)
 		pdf.multi_cell(0, 4, "\n".join(v.time_reports[i][3:]))
 
-		pdf.set_fill_color(248, 252, 246)
-		pdf.rect(26.5, 125.5, 140.7, 41.7, style="F") # Draw rectangle behind heatmap
-
-		pdf.image(path+"heatmap.png", x=15, y=120, w=190) # Heatmap plot
+		pdf.rect(26.5, 125.5, 140.7, 41.7, style="F") # draw rectangle behind heatmap
+		pdf.image(path+"heatmap.png", x=15, y=120, w=190) # heatmap plot
 
 		pdf.image(path+"wc.png", x=20, y=180, w=170) # WordCloud 
 	
 	pdf.output("data/output/Report.pdf", "F")
-	time("finishing final PDF Report")
+	time("Finishing final PDF Report")
 	return
