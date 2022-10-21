@@ -32,7 +32,7 @@ My name is Yunus, I am studying Computational Linguistics at the Heinrich Heine 
 
 ## 
 
-You can use this program to analyze 🧐 your chats and get a report about the chat. It can derive statistics of both **private chats** 👤👤 (between two users) and **group chats** 👥👤👥 (with multiple users).  
+You can use this program to analyze 🧐 your chats and get a report about the chat.
 🛑 None of your data will be saved in any kind, your machine will derive the statistics and discard your data afterwards. No one other than yourself, will see any of your personal information ℹ️ nor any of your messages. You can check for your self. 😉
 
 <br>
