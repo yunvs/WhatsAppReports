@@ -1,5 +1,5 @@
 from utils.helper import *
-from utils.plotter import word_cloud
+from utils.visualizer import word_cloud
 
 import re
 from unidecode import unidecode
@@ -14,10 +14,9 @@ def analyze_chat() -> None:
 
 	analysis_per_sender() # data analysis
 	v.msg_per_s.append(v.chat_og) # add original chat to msg_per_s
-	time("counting occurrences and calculating contact-wise statistics")
 
 	calc_remaining_stats()  # get the summary statistics for all senders
-	time("calculating remaining statistics for all senders")
+	time("Calculating remaining statistics for all senders")
 	return
 
 
@@ -50,6 +49,7 @@ def analysis_per_sender() -> None:
 		count_occurrences(clean_df, i)  # count occurrences of words and emojis
 
 		calc_stats(clean_df.rename(s))  # calculate the stats for each sender
+		time(f"Analyzing chat for sender {str(i+1)} / {str(v.sc)}")
 	return
 
 
@@ -81,11 +81,12 @@ def count_occurrences(df: pd.DataFrame, i: int) -> None:
 	# count occurrences of emojis
 	emj_dct = dict()
 	emj_lst = emojis.get(all_msg)  # get list of emojis
-	for item in emj_lst:
-		emj_dct[emojis.decode(item)] = all_msg.count(item)  # count emojis
-	emoji_freq = pd.Series(emj_dct).sort_values(ascending=False).reset_index()
-	emoji_freq.columns = ["Emoji", "Frequency"]
-	v.common_emojis.append(emoji_freq)
+	if emj_lst:
+		for item in emj_lst:
+			emj_dct[emojis.decode(item)] = all_msg.count(item)  # count emojis
+		emoji_freq = pd.Series(emj_dct).sort_values(ascending=False).reset_index()
+		emoji_freq.columns = ["Emoji", "Frequency"]
+		v.common_emojis.append(emoji_freq)
 	v.stats.at[v.sender[i], "emoji"] = sum(emj_dct.values())
 	v.stats.at[v.sender[i], "emoji_unique"] = len(emj_dct)
 	v.stats.at[v.sender[i], "link"] = len(re.findall("xurlx", all_msg))
@@ -110,7 +111,8 @@ def calc_stats(s_df: pd.DataFrame) -> None:
 	v.stats.at[s, "chars_avg"] = round(s_df.str.replace("\W", "", regex=True).str.len().mean(), 1)
 	v.stats.at[s, "words_avg"] = round(s_df.str.split().str.len().mean(), 1)
 	v.stats.at[s, "chars_max"] = s_df.str.replace("\W", "", regex=True).str.len().max()
-	v.stats.at[s, "words_max"] = len(s_df[s_df.str.len().idxmax()].split())
+	if v.stats.at[s, "chars_max"] > 0:
+		v.stats.at[s, "words_max"] = len(s_df[s_df.str.len().idxmax()].split())
 	v.stats.at[s, "sent_avg"] = round(v.chat.loc[v.chat["sender"] == s, "sentiment"].mean(skipna=True), 2)
 	v.stats.at[s, "sent_pos"] = v.chat.loc[v.chat["sender"] == s, "sentiment"].gt(0).sum()
 	v.stats.at[s, "sent_neg"] = v.chat.loc[v.chat["sender"] == s, "sentiment"].lt(0).sum()
