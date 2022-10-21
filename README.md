@@ -15,7 +15,7 @@
 >		4.1. [General Statistics](#general-stats)  
 >		4.2. [Sender specific Statistics](#sender-stats)  
 >		4.3. [Time based Statistics](#time-stats)  
-> 5. [**Graphs & Graphics**](#graphics) *created by the program*  
+> 5. [**Graphics**](#graphics) *created by the program*  
 
 
 <div id="information"/> <div id="about-me"/>
@@ -32,7 +32,7 @@ My name is Yunus, I am studying Computational Linguistics at the Heinrich Heine 
 
 ## 
 
-You can use this program to analyze 🧐 your chats and get a report about the chat. It can derive statistics of both **private chats** 👤👤 (between two users) and **group chats** 👥👤👥 (with multiple users).  
+You can use this program to analyze 🧐 your chats and get a report about the chat.
 🛑 None of your data will be saved in any kind, your machine will derive the statistics and discard your data afterwards. No one other than yourself, will see any of your personal information ℹ️ nor any of your messages. You can check for your self. 😉
 
 <br>
@@ -319,6 +319,10 @@ To do so, open a terminal and navigate to the project folder. Then run the follo
 ## <sub><sup>What</sub></sup> Graphics <sub><sup>does the program create?</sub></sup> 
 
 #### The program creates different graphics:
+> #### The Graphics are created with a transparent background, that is why these could look a little off here (e.g. when using dark mode). 
+Check them out in the [**images**](data/output/images) folder and download them to get the full experience. 😉
+
+<br>
 
 - **WordClouds** using the wordcloud module 
 
@@ -348,3 +352,9 @@ To do so, open a terminal and navigate to the project folder. Then run the follo
     - including cells and tables
 
 Check out the [**PDF example**](data/output/Report.pdf) to see how it looks like.
+
+<br>
+
+<br>
+
+Thanks for reading this far. This really means a lot for me!
