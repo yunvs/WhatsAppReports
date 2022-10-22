@@ -24,7 +24,7 @@
 
 ## Information <sub><sup> about me and about this project </sub></sup>
 
-#### Hey 👋 Thank you for visiting my GitHub project!
+#### Hey 👋 Thank you for visiting my GitHub project!  
 
 My name is Yunus, I am studying Computational Linguistics at the Heinrich Heine University in Düsseldorf, Germany 👨‍💻. This is a project for my *Advanced Natural Language Processing* Class.
 

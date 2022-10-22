@@ -98,9 +98,10 @@ def count_occurrences(df: pd.DataFrame, i: int) -> None:
 
 	# count occurrences of words
 	all_msg = re.sub(r"(xurlx)|(\W)|(\d)", " ", unidecode(all_msg))
-	word_freq = pd.Series(all_msg.split()).value_counts().reset_index()
-	word_freq.columns = ["Word", "Frequency"]
-	v.common_words.append(word_freq)
+	if all_msg:
+		word_freq = pd.Series(all_msg.split()).value_counts().reset_index()
+		word_freq.columns = ["Word", "Frequency"]
+		v.common_words.append(word_freq)
 
 	v.all_msgs_clean.append(all_msg.upper())
 	return
