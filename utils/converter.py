@@ -47,6 +47,8 @@ def convert_ln(input: str) -> list[str]:
 	"""
 	# match pattern and divide into groups: 1:date, 2:datetime, 3:sender, 4:message
 	x = re.search(r"^.? ?\[([\d./]*), ([\d:]*)\] (.+?\u202A?): (\u200E?.*)$", input)
+	if not x:
+		return list()
 	result = [x.group(1), " ".join([x.group(1), x.group(2)])]  # add date, datetime
 	result.append(x.group(3).strip("‪").strip("‬").title())  # add name of sender
 	message = re.sub(r"https?://\S+", "xURLx", x.group(4))  # replace URLs

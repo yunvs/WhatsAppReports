@@ -43,17 +43,14 @@ def create_txt_reports() -> None:
 		return pprint(*[calc_num(*get_stat_pair(a, i)) for a in ids])
 
 
-	for i, s in enumerate(v.sender):  # for each sender create a sender report
-		ls = [
-			y(0, 6, 18),
-			"\n".join(
-				[
-					f"Avg. message length: {y(2)} ({y(1)})",
-					f"Longest message: {y(4)} ({y(3)})",
-					f"{y(15)} were deleted by {s}.",
-				]
-			),
-		]
+	for i in range(v.sc+1):  # for each sender create a sender report
+		s = v.sender[i] if i != v.sc else ss()
+		ls = [y(0, 6, 18)]
+		ls.append("\n".join([
+			f"Avg. message length: {y(2)} ({y(1)})",
+			f"Longest message: {y(4)} ({y(3)})",
+			f"{s} deleted {y(15)}.",
+			]))
 		if v.stats.iat[i, 16] != 0:
 			ls[-1] += f"\n{y(16)} by {s} were missed."
 		ls.append(
@@ -61,21 +58,6 @@ def create_txt_reports() -> None:
 			+ f"words and {len(v.common_emojis[i])} distinct emojis."
 		)
 		v.txt_reports.append(ls)
-
-	# General report about all chat messages
-	i = v.sc
-	v.txt_reports.append(
-		[
-			y(0, 6, 18),
-			"\n".join(
-				[
-					f"Avg. message length: {y(2)} ({y(1)})",
-					f"Longest message: {y(4)} ({y(3)})",
-					f"{ss()} deleted {y(15)}.",
-				]
-			),
-		]
-	)
 	return
 
 
@@ -236,7 +218,7 @@ def make_pdf_report() -> None:
 	create_txt_reports()
 	create_time_reports()
 
-	path = "data/output/images/page1/"
+	path = "data/output/images/generalpage/"
 
 	add_title_footer()  # Add first page of report
 
@@ -263,6 +245,22 @@ def make_pdf_report() -> None:
 	pdf.set_fill_color(248, 252, 246)
 	pdf.rect(26.5, 220.5, 140.7, 41.7, style="F")  # rectangle behind heatmap
 	pdf.image(path + "heatmap.png", x=15, y=215, w=190)  # activity heatmap plot
+
+
+	add_title_footer()  # Add second page of report
+
+	pdf.image(path + "char_violinplot.png", x=15, y=35, w=90)  # char violinplot
+	pdf.image(path + "word_violinplot.png", x=105, y=35, w=90)  # word violinplot
+
+
+	# insert the 20 most common words and emojis of the sender
+	commons_table(v.common_words[v.sc].head(20), x=20, y=130)
+	commons_table(v.common_emojis[v.sc].head(20), x=110, y=130, emojis=True)
+
+	# insert the total number of distinct words and emojis sent by the sender
+	new_section(11, "B", xy=(20, 260))
+	pdf.cell(90, 5, v.txt_reports[v.sc][2], align="L")
+
 
 	for i, s in enumerate(v.sender):  # loops over all senders
 		path = f"data/output/images/senderpages/s{str(i)}_"

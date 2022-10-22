@@ -1,6 +1,6 @@
 # WhatsApp Reports <sub><sup><sub> README.md </sub></sup></sub> <div id="top"/>
 
-> ### Contents  
+> ## Contents  
 > 1. [**Information**](#information) *about me and this project*  
 >		1.1. [About me](#about-me)  
 >		1.2. [About the project](#about-the-project)
@@ -130,7 +130,7 @@ After completing the analysis, you will get a PDF report, which contains all the
 The PDF report is structured like this:
 
 <dl>
-    <dt>First Page: General information </dt>
+    <dt>First and second Page: General information </dt>
         <dd>The information on this page is about the messages sent by all users in the chat. This page gives a general overview of the chat by showing the total number of messages, media and emojis; the number of users; the total number of messages and media sent by each user; average word length and more statistics and graphics.</dd>
     <dt>Following Pages: Sender specific information </dt>
         <dd>The information on these pages is specific to the sender specified in the title and footer. Per sender there will be two pages, the first one containing general information about the messages sent by that sender and the second one containing time-wise statistics and graphics. </dd>
@@ -330,19 +330,23 @@ Check them out in the [**images**](data/output/images) folder and download them 
 
 - **Bar charts** using the matplotlib module
 
-> ![Bar Chart Example](data/output/images/page1/media_bars.png "Bar Chart Example")
+> ![Bar Chart Example](data/output/images/generalpage/media_bars.png "Bar Chart Example")
 
 - **Pie charts** using the matplotlib module
 
-> ![Pie Chart Example](data/output/images/page1/msg_pie.png "Pie Chart Example")
+> ![Pie Chart Example](data/output/images/generalpage/msg_pie.png "Pie Chart Example")
 
 - **Line charts** using the matplotlib module
 
-> ![Line Chart Example](data/output/images/page1/ts.png "Line Chart Example")
+> ![Line Chart Example](data/output/images/generalpage/ts.png "Line Chart Example")
 
 - **Heatmaps** using the matplotlib module
 
-> ![Heatmap Example](data/output/images/page1/heatmap.png "Heatmap Example")
+> ![Heatmap Example](data/output/images/generalpage/heatmap.png "Heatmap Example")
+
+- **Violinplot** using the matplotlib module
+
+> ![violinplot Example](data/output/images/generalpage/word_violinplot.png "violinplot Example")
 
 <br>
 

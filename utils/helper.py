@@ -15,16 +15,16 @@ def time(task: str = "untitled") -> None:
 	return
 
 
-def export(data, name):
+def export(data, name) -> None:
 	try:
 		if type(data) != pd.DataFrame:
 			try:
 				data = pd.DataFrame(data)
 			except ValueError:  # data cant be converted to a pandas DataFrame
-				with open("database/exports/" + name, "w") as f:
+				with open("database/exports/" + name + ".txt", "w") as f:
 					f.write(data)
 				return
-		return data.to_csv("database/exports/" + name, index=True)
+		return data.to_csv("database/exports/" + name + ".csv", index=True)
 	except OSError:  # create the folder if it does not exist
 		os.makedirs("database/exports/", exist_ok=True)
 		return export(data, name)
@@ -34,43 +34,43 @@ def export_database() -> None:
 	"""
 	Exports DataFrames and text to the data/testing/exports folder.
 	"""
-	export(v.chat, "v_chat.csv")
-	export(v.chat_og, "v_chat_og.csv")
-	export(v.stats, "v_stats.csv")
-	export(v.tstats, "v_time_stats.csv")
-	export(v.sender, "v_sender.csv")
-	export(v.msg_ranges, "v_msg_ranges.csv")
-	export(v.txt_reports, "v_txt_reports.csv")
-	export(v.time_reports, "v_time_reports.csv")
-	export(v.ts, "v_timestamps.csv")
-	export(v.msg_per_s[v.sc], f"v_msg_per_sc.csv")
+	export(v.chat, "v_chat")
+	export(v.chat_og, "v_chat_og")
+	export(v.stats, "v_stats")
+	export(v.tstats, "v_time_stats")
+	export(v.sender, "v_sender")
+	export(v.msg_ranges, "v_msg_ranges")
+	export(v.txt_reports, "v_txt_reports")
+	export(v.time_reports, "v_time_reports")
+	export(v.ts, "v_timestamps")
+	export(v.msg_per_s[v.sc], "v_msg_per_sc")
+	export(v.all_msgs_clean[v.sc], "v_all_msgs_clean_sc")
+	export(v.all_msgs, "v_all_msgs")
 	for i in range(v.sc):
-		export(v.msg_per_s[i], f"v_msg_per_s{i}.csv")
-		export(v.common_words[i], f"v_common_words_s{i}.csv")
-		export(v.common_emojis[i], f"v_common_emojis_s{i}.csv")
+		export(v.msg_per_s[i], f"v_msg_per_s{i}")
+		export(v.common_words[i], f"v_common_words_s{i}")
+		export(v.common_emojis[i], f"v_common_emojis_s{i}")
+		export(v.word_counts[i], f"v_word_count_s{i}")
+		export(v.char_count[i], f"v_char_count_s{i}")
+		export(v.all_msgs_clean[i], f"v_all_msgs_clean_s{i}")
+
 	return
 
 
-def off(*args, error: bool = True, export: bool = False) -> None:
+def off(*args, error: bool = True) -> None:
 	"""
 	Prints error message and safely exits the program.
 	"""
-	if export:
-		export_database()  # export all variables from the database
-
-	if error:  # program is ending because of a file error
-		exit(" ".join([BOLD(RED("⛔️ Error")), *args, "⛔️"]))
+	# program is ending because of a file error
+	exit(" ".join([BOLD(RED("⛔️ Error")), *args, "⛔️"])) if error else None
 
 	# program has finished successfully
-
-	success_msg = "\n".join(
-		[
-			BOLD(GREEN("\n✅ Success: Analysis finished ✅")),
-			f"Analyzing took {BOLD(round(timer() - v.ts[0], 6))} seconds in total.",
-			f"The PDF Report is located here: '{os.getcwd()}/data/output/Report.pdf'\n",
+	success_msg = [
+		BOLD(GREEN("\n✅ Success: Analysis finished ✅")),
+		f"Analyzing took {BOLD(round(timer() - v.ts[0], 6))} seconds in total.",
+		f"The PDF Report is located here: '{os.getcwd()}/data/output/Report.pdf'\n",
 		]
-	)
-	print(success_msg)
+	print("\n".join(success_msg))
 	return
 
 

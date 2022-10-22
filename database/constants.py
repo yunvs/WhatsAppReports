@@ -7,6 +7,9 @@ from nltk.corpus import stopwords
 STATS_DICT = {"msg_count": "text", "chars_avg": "char", "words_avg": "word", "chars_max": "char", "words_max": "word", "sent_avg": "sentiment", "media": "media", "image": "image", "video": "video", "GIF": "GIF", "sticker": "sticker", "audio": "audio", "contact": "contact", "location": "location", "file": "file", "deleted": "message", "calls": "video/audio call", "link": "link", "emoji": "emoji", "emoji_unique": "distinct emoji", "sent_pos": "positive message", "sent_neg": "negative message"}
 """ Dictionary of statistics and their corresponding names """
 
+TSTATS_COLS = ["first_msg", "last_msg", "max_day", "max_msg", "msg_days", "zero_days", "msg_span_days", "no_msg_span"]
+""" List of time statistics column names """
+
 STATS_PATTERN = {"audio": ("exact", "‎audio omitted"), "image": ("exact", "‎image omitted"), "video": ("exact", "‎video omitted"), "sticker": ("exact", "‎sticker omitted"), "GIF": ("exact", "‎GIF omitted"), "location": ("", "‎Location: xURL"), "file": ("", "‎document omitted"), "contact": ("exact", "‎Contact card omitted"), "media": ("", ""), "calls": ("", "‎Missed "), "deleted": ("", "‎You deleted |‎This message was deleted."), "rest": ("", "‎")}
 """ Dictionary of media types and their corresponding patterns """
 
@@ -16,5 +19,5 @@ STOP_WORDS = [word.upper() for word in set(stopwords.words("german") + ["ich", "
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 """ List of days of the week """
 
-HOURS = [str(i) for i in range(24)]
+HOURS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]
 """ List of hours of the day """

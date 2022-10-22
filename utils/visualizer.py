@@ -3,7 +3,7 @@ from matplotlib import cm, dates
 from matplotlib import pyplot as plt  # to plot figures
 from wordcloud import WordCloud  # to create WordClouds
 
-from utils.helper import *
+from utils.helper import time, v, c
 
 
 def plot_data() -> None:
@@ -11,17 +11,26 @@ def plot_data() -> None:
 	Creates a textual output for some data and plots the graphics for the report.
 	"""
 	for i in range(v.sc):
-		message_time_series(i, f"senderpages/s{str(i)}_")
-		activity_heatmaps(i, f"senderpages/s{str(i)}_")
-		sent_pies(i, f"senderpages/s{str(i)}_")
+		page = f"data/output/images/senderpages/s{str(i)}_"
+		message_time_series(i, page)
+		activity_heatmaps(i, page)
+		sent_pies(i, page)
+
+		word_cloud(v.all_msgs_clean[i], page)
 
 		time(f"Visualizing data for sender {str(i+1)} / {str(v.sc)}")
 
+	
+	page = "data/output/images/generalpage/"
 	msg_pie()
 	grouped_media_bars()
-	message_time_series(v.sc, f"page1/")
-	activity_heatmaps(v.sc, f"page1/")
-	sent_pies(v.sc, f"page1/")
+	message_time_series(v.sc, page)
+	activity_heatmaps(v.sc, page)
+	sent_pies(v.sc, page)
+	violinplot(page)
+
+	word_cloud(" ".join(v.all_msgs_clean), page)
+
 	time("Visualizing remaining data")
 	return
 
@@ -53,7 +62,7 @@ def msg_pie() -> None:
 	ax.axis("equal")
 
 	fig.tight_layout()
-	plt.savefig("data/output/images/page1/msg_pie.png", transparent=True)
+	plt.savefig("data/output/images/generalpage/msg_pie.png", transparent=True)
 	plt.close()
 	return
 
@@ -91,7 +100,7 @@ def grouped_media_bars(w: float = 0.9) -> None:
 	ax.set_xticklabels(labels)
 
 	fig.tight_layout()
-	plt.savefig("data/output/images/page1/media_bars.png", transparent=True)
+	plt.savefig("data/output/images/generalpage/media_bars.png", transparent=True)
 	plt.close()
 	return
 
@@ -115,7 +124,7 @@ def message_time_series(s_no: int, page: str) -> None:
 	)
 
 	fig.tight_layout()
-	fig.savefig(f"data/output/images/{page}ts.png", transparent=True)
+	fig.savefig(page + "ts.png", transparent=True)
 	plt.close()
 	return
 
@@ -158,7 +167,7 @@ def activity_heatmaps(s_no: int, page: str) -> None:
 	ax.set_title("Messages sent by day and hour", loc="left")
 
 	fig.tight_layout()
-	fig.savefig(f"data/output/images/{page}heatmap.png", transparent=True)
+	fig.savefig(page + "heatmap.png", transparent=True)
 	plt.close()
 	return
 
@@ -181,12 +190,34 @@ def sent_pies(s_no: int, page: str) -> None:
 	ax.set_title("Sentiment of rated messages")
 
 	fig.tight_layout()
-	fig.savefig(f"data/output/images/{page}sent_pie.png", transparent=True)
+	fig.savefig(page + "sent_pie.png", transparent=True)
 	plt.close()
 	return
 
 
-def word_cloud(words: str, i: int) -> None:
+def violinplot(page: str) -> None:
+	"""
+	Creates a box plot of the message length and word count.
+	"""
+	for (df, title) in [(v.char_count, "char"), (v.word_counts, "word")]:
+		fig, ax = plt.subplots(figsize=(5, 5))
+		parts = ax.violinplot(df, showmeans=True, showmedians=True, )
+		ax.set_xticks([y + 1 for y in range(len(df))], labels=v.sender)
+
+		for pc in parts['bodies']:
+			pc.set_facecolor('#75C577')
+			pc.set_alpha(0.4)
+
+		ax.set_title(f"{title} count per message")
+		ax.set_ylabel('Observed values')
+		ax.yaxis.grid(True)
+		fig.tight_layout()
+		fig.savefig(page + title + "_violinplot.png", transparent=True)
+		plt.close()
+	return
+
+
+def word_cloud(words: str, page: str) -> None:
 	"""
 	Creates a word cloud of the given words and saves it to the plots folder.
 	"""
@@ -203,5 +234,5 @@ def word_cloud(words: str, i: int) -> None:
 	)
 	if words != "":
 		wc.generate(words)
-		wc.to_file(f"data/output/images/senderpages/s{str(i)}_wc.png")
+		wc.to_file(page + "wc.png")
 	return
