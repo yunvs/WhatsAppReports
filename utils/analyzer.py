@@ -2,7 +2,7 @@ import re
 import emojis
 from unidecode import unidecode
 
-from utils.helper import time, v, c, pd
+from utils.helper import *
 
 
 def analyze_chat() -> None:
@@ -121,7 +121,7 @@ def calc_stats(s_df: pd.DataFrame) -> None:
 	v.stats.at[s, "words_max"] = df_words.max()
 	v.word_counts.append(df_words)
 
-	df_chars = s_df.str.replace("\W", "", regex=True).str.len()  # get number of characters in each message
+	df_chars = s_df.str.replace(r"\W", "", regex=True).str.len()  # get number of characters in each message
 	v.stats.at[s, "chars_avg"] = round(df_chars.mean(), 1)
 	v.stats.at[s, "chars_max"] = df_chars.max()
 	v.char_count.append(df_chars)
@@ -164,7 +164,7 @@ def calc_remaining_stats() -> None:
 
 	for stat in c.STATS_DICT.keys():
 		if any(x in stat for x in ["calls", "unique"]):
-			continue
+			v.stats.at["sum", stat] = 0
 		elif "max" in stat:
 			v.stats.at["sum", stat] = v.stats[stat].max()
 		elif "avg" in stat:

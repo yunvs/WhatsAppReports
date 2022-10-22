@@ -2,8 +2,8 @@ from fpdf import FPDF  # to create PDF
 
 from utils.helper import *
 
-pdf = FPDF()
 
+pdf = FPDF()
 
 def ss(style: int = 0) -> str:
 	"""
@@ -76,7 +76,7 @@ def create_time_reports() -> None:
 		v.time_reports.append(
 			[
 				f"First message: {y(0)}",
-				f"Most messages: {y(2)} ({y(3)} msg.)",
+				f"Most messages: {y(2)} ({int(y(3))} msg.)",
 				f"Last message: {y(1)}",
 				f"{s} sent at lest one message on {y(4)} days "
 				+ f"and no messages on {y(5)} days.",
@@ -138,7 +138,7 @@ def add_title_footer(n: int = -1) -> None:
 
 	# Create footer of current page
 	new_section(10, "I", xy=(20, 270))
-	desc = str("General" if page == 1 else "Sender specific") + " statistics"
+	desc = str("General" if n == -1 else "Sender specific") + " statistics"
 	s_str = ss(1) if n == -1 else v.sender[n]
 	pdf.cell(0, 5, f"Page {str(page)}: {desc} for {s_str}", align="C")
 
@@ -249,9 +249,15 @@ def make_pdf_report() -> None:
 
 	add_title_footer()  # Add second page of report
 
-	pdf.image(path + "char_violinplot.png", x=15, y=35, w=90)  # char violinplot
-	pdf.image(path + "word_violinplot.png", x=105, y=35, w=90)  # word violinplot
+	pdf.image(path + "char_violinplot.png", x=15, y=50, w=90)  # char violinplot
+	pdf.image(path + "char_boxplot.png", x=105, y=50, w=90)  # word violinplot
 
+	pdf.image(path + "word_violinplot.png", x=15, y=160, w=90)  # char boxplot
+	pdf.image(path + "word_boxplot.png", x=105, y=160, w=90)  # word boxplot
+
+	add_title_footer()  # Add third page of report
+
+	pdf.image(path + "wc.png", x=20, y=37.5, w=170)  # WordCloud
 
 	# insert the 20 most common words and emojis of the sender
 	commons_table(v.common_words[v.sc].head(20), x=20, y=130)

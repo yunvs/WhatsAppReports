@@ -3,7 +3,7 @@ from matplotlib import cm, dates
 from matplotlib import pyplot as plt  # to plot figures
 from wordcloud import WordCloud  # to create WordClouds
 
-from utils.helper import time, v, c
+from utils.helper import *
 
 
 def plot_data() -> None:
@@ -28,6 +28,7 @@ def plot_data() -> None:
 	activity_heatmaps(v.sc, page)
 	sent_pies(v.sc, page)
 	violinplot(page)
+	boxplot(page)
 
 	word_cloud(" ".join(v.all_msgs_clean), page)
 
@@ -76,7 +77,7 @@ def grouped_media_bars(w: float = 0.9) -> None:
 	x = np.arange(len(nums))  # the label locations
 	max_val = v.stats.iloc[: v.sc, nums].max().max()
 
-	fig, ax = plt.subplots(figsize=(9, 2.5))
+	fig, ax = plt.subplots(figsize=(7.2, 2))
 	cmap = c_m(v.sender)
 	for i, s in enumerate(v.sender):
 		rect = ax.bar(
@@ -110,7 +111,7 @@ def message_time_series(s_no: int, page: str) -> None:
 	Creates a time series plot of the messages sent over time.
 	"""
 	msg_range = v.msg_ranges[s_no]
-	fig, ax = plt.subplots(figsize=(9, 2.5))
+	fig, ax = plt.subplots(figsize=(7.2, 2))
 
 	ax.plot(msg_range.index, msg_range.values, color="#10590B")
 	# Major ticks every half year, minor ticks every month
@@ -135,7 +136,7 @@ def activity_heatmaps(s_no: int, page: str) -> None:
 	"""
 	df = v.msg_per_s[s_no] if s_no != v.sc else v.chat_og
 
-	fig, ax = plt.subplots(figsize=(9, 2.5))
+	fig, ax = plt.subplots(figsize=(7.2, 2))
 	vals = df.groupby(["weekday", "hour"]).size().unstack().fillna(0).astype(int)
 	im = ax.imshow(vals, cmap="Greens")
 
@@ -200,19 +201,31 @@ def violinplot(page: str) -> None:
 	Creates a box plot of the message length and word count.
 	"""
 	for (df, title) in [(v.char_count, "char"), (v.word_counts, "word")]:
-		fig, ax = plt.subplots(figsize=(5, 5))
-		parts = ax.violinplot(df, showmeans=True, showmedians=True, )
+		fig, ax = plt.subplots(figsize=(4, 4))
+		ax.violinplot(df, showmeans=True, showmedians=True)
 		ax.set_xticks([y + 1 for y in range(len(df))], labels=v.sender)
 
-		for pc in parts['bodies']:
-			pc.set_facecolor('#75C577')
-			pc.set_alpha(0.4)
-
-		ax.set_title(f"{title} count per message")
-		ax.set_ylabel('Observed values')
+		ax.set_title(f"Violinplot: {title} count per message")
+		ax.set_ylabel("Observed values")
 		ax.yaxis.grid(True)
 		fig.tight_layout()
 		fig.savefig(page + title + "_violinplot.png", transparent=True)
+		plt.close()
+	return
+
+
+def boxplot(page: str) -> None:
+	"""
+	Creates a box plot of the message length and word count.
+	"""
+	for (df, title) in [(v.char_count, "char"), (v.word_counts, "word")]:
+		fig, ax = plt.subplots(figsize=(4, 4))
+		ax.boxplot(df, True, "", True, patch_artist=True, labels=v.sender)
+		ax.set_title(f"Boxplot: {title} count per message")
+		ax.set_ylabel("Observed values")
+		ax.yaxis.grid(True)
+		fig.tight_layout()
+		fig.savefig(page + title + "_boxplot.png", transparent=True)
 		plt.close()
 	return
 

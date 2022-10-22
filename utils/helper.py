@@ -1,6 +1,5 @@
 import os  # to access the operating system
 from timeit import default_timer as timer  # for timing
-
 import pandas as pd  # to create DataFrames
 
 from database import constants as c, variables as v  # to access the database

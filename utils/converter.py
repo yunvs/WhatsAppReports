@@ -1,7 +1,7 @@
-from utils.helper import *
-
 import re  # for regex
 from textblob_de import TextBlobDE as TextBlob  # for sentiment analysis
+
+from utils.helper import *
 
 
 def convert_lines(lines: str) -> None:
