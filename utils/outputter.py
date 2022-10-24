@@ -70,8 +70,8 @@ def create_txt_reports() -> None:
 		if v.stats.iat[i, 16] != 0:
 			ls[-1] += f"\n{y(16)} by {s} were missed."
 		ls.append(
-			f"{s} used {v.nlp_stats.iat[i, 5]} distinct words"
-			+ " and {len(v.common_emojis[i])} distinct emojis."
+			f"{s} used {v.nlp_stats.iat[i, 4]} distinct words"
+			+ f" and {len(v.common_emojis[i])} distinct emojis."
 		)
 		v.txt_reports.append(ls)
 	return
