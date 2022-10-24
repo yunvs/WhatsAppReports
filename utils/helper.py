@@ -36,7 +36,8 @@ def export_database() -> None:
 	export(v.chat, "v_chat")
 	export(v.chat_og, "v_chat_og")
 	export(v.stats, "v_stats")
-	export(v.tstats, "v_time_stats")
+	export(v.time_stats, "v_time_stats")
+	export(v.nlp_stats, "v_nlp_stats")
 	export(v.sender, "v_sender")
 	export(v.msg_ranges, "v_msg_ranges")
 	export(v.txt_reports, "v_txt_reports")
@@ -47,10 +48,14 @@ def export_database() -> None:
 	export(v.all_msgs, "v_all_msgs")
 	for i in range(v.sc):
 		export(v.msg_per_s[i], f"v_msg_per_s{i}")
-		export(v.common_words[i], f"v_common_words_s{i}")
+		export(v.frequencies[i][0], f"v_word_frequencies_s{i}")
+		export(v.frequencies[i][1], f"v_lemma_frequencies_s{i}")
+		export(v.frequencies[i][2], f"v_stop_frequencies_s{i}")
+		export(v.frequencies[i][3], f"v_clean_frequencies_s{i}")
 		export(v.common_emojis[i], f"v_common_emojis_s{i}")
+		export(v.named_entities[i], f"v_named_entities_s{i}")
 		export(v.word_counts[i], f"v_word_count_s{i}")
-		export(v.char_count[i], f"v_char_count_s{i}")
+		export(v.char_counts[i], f"v_char_count_s{i}")
 		export(v.all_msgs_clean[i], f"v_all_msgs_clean_s{i}")
 
 	return

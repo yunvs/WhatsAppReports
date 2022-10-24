@@ -1,23 +1,33 @@
-from nltk.corpus import stopwords
-
 # ------------------------------------------------------------------------------
-# 			This file contains constants used in the program
+# 		This file contains constants that will be used in the program
 # ------------------------------------------------------------------------------
 
-STATS_DICT = {"msg_count": "text", "chars_avg": "char", "words_avg": "word", "chars_max": "char", "words_max": "word", "sent_avg": "sentiment", "media": "media", "image": "image", "video": "video", "GIF": "GIF", "sticker": "sticker", "audio": "audio", "contact": "contact", "location": "location", "file": "file", "deleted": "message", "calls": "video/audio call", "link": "link", "emoji": "emoji", "emoji_unique": "distinct emoji", "sent_pos": "positive message", "sent_neg": "negative message"}
-""" Dictionary of statistics and their corresponding names """
-
-TSTATS_COLS = ["first_msg", "last_msg", "max_day", "max_msg", "msg_days", "zero_days", "msg_span_days", "no_msg_span"]
-""" List of time statistics column names """
 
 STATS_PATTERN = {"audio": ("exact", "‎audio omitted"), "image": ("exact", "‎image omitted"), "video": ("exact", "‎video omitted"), "sticker": ("exact", "‎sticker omitted"), "GIF": ("exact", "‎GIF omitted"), "location": ("", "‎Location: xURL"), "file": ("", "‎document omitted"), "contact": ("exact", "‎Contact card omitted"), "media": ("", ""), "calls": ("", "‎Missed "), "deleted": ("", "‎You deleted |‎This message was deleted."), "rest": ("", "‎")}
 """ Dictionary of media types and their corresponding patterns """
 
-STOP_WORDS = [word.upper() for word in set(stopwords.words("german") + ["ich", "du", "und", "der", "die", "das", "ist", "nicht", "sich", "mit", "wie", "an", "auf", "aus", "bei", "bis", "bist", "da", "dann", "das", "dass", "dein", "deine", "dem", "den", "der", "des", "dessen", "dich", "dir", "doch", "dort", "durch", "ein", "eine", "einem", "einen", "einer", "eines", "einmal", "er", "es", "etwas", "für", "gegen", "habe", "haben", "hat", "hatte", "hatten", "hier", "hin", "hinter", "ich", "ihr", "ihre", "im", "in", "indem", "ins", "ist", "jede", "jedem", "jeden", "jeder", "jedes", "jene", "jenem", "jenen", "jener", "jenes", "jetzt", "kann", "kannst", "können", "könnt", "machen", "mein", "meine", "meinst", "meinst", "mich", "mir", "mit", "muss", "müssen", "musst", "nach", "nicht", "nichts", "noch", "nun", "nur", "ob", "oder", "ohne", "seid", "seien", "seinem", "sein", "seine", "seinst", "seinst", "sich", "sie", "sind", "soll", "sollen", "sollst", "sollt", "sollte", "sollten", "solltest", "sonst", "soweit", "über", "überhaupt", "übrigens", "unter", "viel", "viele", "vom", "von", "vor", "wann", "war", "waren", "warst", "wart", "warum", "was", "weg", "wegen", "weil"])]
-""" List of stopwords for WordCloud """
+STATS_DICT = {"msg_count": "text", "chars_avg": "char", "words_avg": "word", "chars_max": "char", "words_max": "word", "sent_avg": "sentiment", "media": "media", "image": "image", "video": "video", "GIF": "GIF", "sticker": "sticker", "audio": "audio", "contact": "contact", "location": "location", "file": "file", "deleted": "message", "calls": "video/audio call", "link": "link", "emoji": "emoji", "emoji_unique": "distinct emoji", "sent_pos": "positive message", "sent_neg": "negative message"}
+""" Dictionary of statistics and their corresponding names """
+
+
+HOURS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]
+""" List of hours of the day """
 
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 """ List of days of the week """
 
-HOURS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"]
-""" List of hours of the day """
+MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+""" List of months of the year """
+
+TIME_STATS_COLS = ["first_msg", "last_msg", "max_day", "max_msg", "msg_days", "zero_days", "msg_span_days", "max_no_msg_span", "avg_no_msg_span", "msg_per_day", "avg_msg_per_day"]
+""" List of time statistics column names """
+
+
+POS_TAGS = {"ADJ": "Adjective", "ADP": "Adposition", "ADV": "Adverb", "AUX": "Auxiliary", "CCONJ": "Coordinating conjunction", "DET": "Determiner", "INTJ": "Interjection", "NOUN": "Noun", "NUM": "Numeral", "PART": "Particle", "PRON": "Pronoun", "PROPN": "Proper noun", "PUNCT": "Punctuation", "SCONJ": "Subordinating conjunction", "SYM": "Symbol", "VERB": "Verb", "X": "Other"}
+""" Dictionary of POS tags and their corresponding names (pos_tag: name) """
+
+NER_TAGS = {"LOC": "Locations", "MISC": "Miscellaneous entities", "ORG": "Companies/organizations", "PER": "Named person/family"}
+""" Dictionary of NER tags and their corresponding names (ner_tag: name) """
+
+NLP_STATS_COLS = ["words", "lemmas", "stopwords", "words_clean", "unique_words", "unique_lemmas", "unique_stopwords", "unique_clean_words", "avg_word_len"]
+""" List of NLP statistics column names """

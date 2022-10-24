@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import cm, dates
 from matplotlib import pyplot as plt  # to plot figures
 from wordcloud import WordCloud  # to create WordClouds
+from nltk.corpus import stopwords
 
 from utils.helper import *
 
@@ -20,7 +21,7 @@ def plot_data() -> None:
 
 		time(f"Visualizing data for sender {str(i+1)} / {str(v.sc)}")
 
-	
+
 	page = "data/output/images/generalpage/"
 	msg_pie()
 	grouped_media_bars()
@@ -200,7 +201,7 @@ def violinplot(page: str) -> None:
 	"""
 	Creates a box plot of the message length and word count.
 	"""
-	for (df, title) in [(v.char_count, "char"), (v.word_counts, "word")]:
+	for (df, title) in [(v.char_counts, "char"), (v.word_counts, "word")]:
 		fig, ax = plt.subplots(figsize=(4, 4))
 		ax.violinplot(df, showmeans=True, showmedians=True)
 		ax.set_xticks([y + 1 for y in range(len(df))], labels=v.sender)
@@ -218,7 +219,7 @@ def boxplot(page: str) -> None:
 	"""
 	Creates a box plot of the message length and word count.
 	"""
-	for (df, title) in [(v.char_count, "char"), (v.word_counts, "word")]:
+	for (df, title) in [(v.char_counts, "char"), (v.word_counts, "word")]:
 		fig, ax = plt.subplots(figsize=(4, 4))
 		ax.boxplot(df, True, "", True, patch_artist=True, labels=v.sender)
 		ax.set_title(f"Boxplot: {title} count per message")
@@ -242,9 +243,9 @@ def word_cloud(words: str, page: str) -> None:
 		colormap="summer",
 		mode="RGBA",
 		background_color=None,
-		stopwords=c.STOP_WORDS,
-		min_word_length=2,
-	)
+		stopwords= set(stopwords.words("german")),
+		min_word_length=2
+		)
 	if words != "":
 		wc.generate(words)
 		wc.to_file(page + "wc.png")

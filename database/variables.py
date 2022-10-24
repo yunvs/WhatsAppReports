@@ -1,3 +1,4 @@
+from html import entities
 import pandas as pd
 
 # ------------------------------------------------------------------------------
@@ -8,97 +9,129 @@ last_txt_size = 11
 
 chat: pd.DataFrame = pd.DataFrame()
 """
-Will be filled by program automatically: clean chat
+Filled automatically by program: clean chat
 [date, datetime, sender, message, sentiment]
 """
 
 chat_og: pd.DataFrame = pd.DataFrame()
 """
-Will be filled by program automatically: original chat
+Filled automatically by program: original chat
 [date, datetime, sender, message, sentiment]
 """
 
 stats: pd.DataFrame = pd.DataFrame()
 """
-Will be filled by program automatically: statistics
+Filled automatically by program: statistics
 0: msg_count, 1: chars_avg, 2: words_avg, 3: chars_max, 4: words_max, 5: polarity_avg, 6: media, 7: image, 8: video, 9: GIF, 10: sticker, 11: audio, 12: contact, 13: location, 14: file, 15: deleted, 16: calls, 17: link, 18: emoji, 19: emoji_unique, 20: sent_pos, 21: sent_neg
 """
 
-tstats: pd.DataFrame = pd.DataFrame()
+time_stats: pd.DataFrame = pd.DataFrame()
 """
-Will be filled by program automatically: time statistics
-0: first_msg, 1: last_mgs, 2: max_day, 3: max_msg, 3: msg_days, 4: zero_days, 5: msg_span_days, 6: no_msg_span
+Filled automatically by program: time statistics
+0: first_msg, 1: last_mgs, 2: max_day, 3: max_msg, 4: msg_days, 5: zero_days, 6: msg_span_days, 7: max_no_msg_span, 8: avg_no_msg_span, 9: avg_msg_per_day
+"""
+
+nlp_stats: pd.DataFrame = pd.DataFrame()
+"""
+Filled automatically by program: nlp statistics
+0: words, 1: lemmas, 2: stopwords, 3: words_clean, 4: unique_words, 5: unique_lemmas, 6: unique_stopwords, 7: unique_clean_words, 8: avg_word_len, *POS_TAGS
 """
 
 sender: list[str] = list()
 """
-Will be filled by program automatically: list of all senders
+Filled automatically by program: sender names
+[first sender, second sender, ...]
 """
 
 sc: int = int()
 """
-Will be filled by program automatically: sender count
+Filled automatically by program: sender count
 """
+
 msg_ranges = list()
 """
-Will be filled by program automatically: list of message ranges
-[start, end]
+Filled automatically by program: message ranges per
+[[first sender: start, end], [second sender: start, end], ...]
 """
 
 txt_reports: list[str] = list()
 """
-Will be filled by program automatically: list of text reports
-[0: sender_no0, 1: sender_no1, ..., sc: general]
+Filled automatically by program: text reports
+[stats for first sender, stats for second sender, ..., general stats]
 """
 
 time_reports: list[str] = list()
 """
-Will be filled by program automatically: list of time reports
-[0: sender_no1, 1: sender_no2, ..., sc: general]
+Filled automatically by program: text time reports
+[stats for first sender, stats for second sender, ..., general stats]
+"""
+
+nlp_reports: list[str] = list()
+"""
+Filled automatically by program: text nlp reports
+[stats for first sender, stats for second sender, ..., general stats]
 """
 
 ts = list()
 """
-Will be filled by program automatically: list of timestamps
+Filled automatically by program: timestamps
 """
 
 msg_per_s = list()
 """
-Will be filled by program automatically: list of messages per sender
-[0: messages sender_no1, 1: messages sender_no2, ..., sc: all messages]
-"""
-
-common_words = list()
-"""
-Will be filled by program automatically: word frequencies per sender
-[0: common words of first sender, 1: common words of second sender, ...]
+Filled automatically by program: messages per sender
+[messages first sender, messages second sender, ..., sc: all messages]
 """
 
 common_emojis = list()
 """
-Will be filled by program automatically: emojis frequencies per sender
-[0: common emojis of first sender, 1: common emojis of second sender, ...]
+Filled automatically by program: emojis frequencies per sender
+[common emojis of first sender, common emojis of second sender, ...]
+"""
+
+frequencies = list()
+"""
+Filled automatically by program: different frequencies per sender
+[[words, lemmas, stop_words words_clean frequency DataFrames of first sender], ...]
+"""
+
+named_entities = list()
+"""
+Filled automatically by program: list of entities dicts with named entities
+[{label1: [all entities of first sender, label2: [all entities of first sender, ...}, ...]
+"""
+
+named_entities_counts = list()
+"""
+Filled automatically by program: list of counts of named entities per sender
+[0: count for first sender, 1: count for second sender, ...]
+"""
+
+pos_tags = list()
+"""
+Filled automatically by program: list of pos tag dicts per sender
+[0: pos tags for first sender, 1: pos tags for second sender, ...]
 """
 
 all_msgs_clean = list()
 """
-Will be filled by program automatically: list of all messages per sender as string
+Filled automatically by program: list of all messages per sender as string
 [0: messages of first sender, 1: messages of second sender, ...]
 """
 
 all_msgs = str()
 """
-Will be filled by program automatically: string of all messages
+Filled automatically by program: string of all messages
 """
 
 word_counts = list()
 """
-Will be filled by program automatically: list of word counts per sender
+Filled automatically by program: list of word counts per sender
 [0: word counts of first sender, 1: word counts of second sender, ...]
 """
 
-char_count = list()
+char_counts = list()
 """
-Will be filled by program automatically: list of character counts per sender
+Filled automatically by program: list of character counts per sender
 [0: char counts of first sender, 1: char counts of second sender, ...]
 """
