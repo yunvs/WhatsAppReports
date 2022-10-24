@@ -65,7 +65,7 @@ def off(*args, error: bool = True) -> None:
 	Prints error message and safely exits the program.
 	"""
 	# program is ending because of a file error
-	exit(" ".join([BOLD(RED("⛔️ Error")), *args, "⛔️"])) if error else None
+	exit(" ".join([BOLD(RED("⛔️ Error")), *args, "⛔️", "\n"])) if error else None
 
 	# program has finished successfully
 	success_msg = [

@@ -35,6 +35,8 @@ def convert_list(lines: list[str]) -> list[list[str]]:
 			last_msg = line.strip().strip("\n").strip()  # add new message to buffer
 		else:  # line is the continuation of the last message
 			last_msg += " " + line.strip().strip("\n").strip()  # add line to buffer
+	if not first_msg_reached:
+		off("No messages found in that file.\nDid you select the correct file?")
 	# add buffer to list if it is not added yet
 	chat.append(convert_ln(last_msg)) if chat[-1] != convert_ln(last_msg) else None
 

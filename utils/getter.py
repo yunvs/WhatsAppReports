@@ -14,8 +14,8 @@ def get_file(path_to_file: str = "") -> list[str]:
 	v.ts = [timer()]
 	print("\n" + BOLD("Analyzing file"), f"@ '{GREEN(path_to_file)}'\n")
 
-	file1 = open(check_file_format(path_to_file), "r", encoding="utf8")
 	try:
+		file1 = open(check_file_format(path_to_file), "r", encoding="utf8")
 		lines = file1.readlines()
 		file1.close()
 	except FileNotFoundError:  # file does not exist
@@ -52,4 +52,4 @@ def check_file_format(path_to_file: str) -> str:
 			zip_ref.extractall("data")
 		return "data/_chat.txt"
 	else:
-		return off("Only .txt or .zip files are supported")
+		return off("Wrong file type\nOnly .txt or .zip files are supported")
