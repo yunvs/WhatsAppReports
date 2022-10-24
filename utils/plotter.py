@@ -21,7 +21,6 @@ def plot_data() -> None:
 
 		time(f"Visualizing data for sender {str(i+1)} / {str(v.sc)}")
 
-
 	page = "data/output/images/generalpage/"
 	msg_pie()
 	grouped_media_bars()
@@ -235,17 +234,7 @@ def word_cloud(words: str, page: str) -> None:
 	"""
 	Creates a word cloud of the given words and saves it to the plots folder.
 	"""
-	wc = WordCloud(
-		None,
-		1000,
-		500,
-		prefer_horizontal=0.6,
-		colormap="summer",
-		mode="RGBA",
-		background_color=None,
-		stopwords= set(stopwords.words("german")),
-		min_word_length=2
-		)
+	wc = WordCloud( None, 1000, 500, prefer_horizontal=0.6, colormap="summer", mode="RGBA", background_color=None, stopwords=set(stopwords.words("german")), min_word_length=2,)
 	if words != "":
 		wc.generate(words)
 		wc.to_file(page + "wc.png")

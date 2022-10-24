@@ -33,7 +33,7 @@ def prepare_database() -> None:
 	v.sender = list(v.chat["sender"].unique())  # Creates list of senders
 	v.sc = len(v.sender)  # Number of senders
 
-	indexes = [*v.sender, "sum"] # Create list of indexes for stats DataFrame
+	indexes = [*v.sender, "sum"]  # Create list of indexes for stats DataFrame
 	v.stats = pd.DataFrame(None, indexes, c.STATS_DICT.keys())
 	v.time_stats = pd.DataFrame(None, indexes, c.TIME_STATS_COLS)
 	v.nlp_stats = pd.DataFrame(None, indexes, c.NLP_STATS_COLS)
@@ -51,7 +51,7 @@ def analysis_per_sender() -> None:
 
 		clean_df = cleanse_df(df["message"], s)  # get stats for each sender
 		count_emojis(clean_df, i)  # count occurrences of words and emojis
-		nlp_analysis(i) # perform nlp analysis
+		nlp_analysis(i)  # perform nlp analysis
 
 		calc_stats(clean_df.rename(s))  # calculate the stats for each sender
 		time(f"Analyzing chat for sender {str(i+1)} / {str(v.sc)}")
@@ -99,7 +99,7 @@ def count_emojis(df: pd.DataFrame, i: int) -> None:
 		v.stats.at[v.sender[i], "emoji"] = sum(emj_dct.values())
 		v.stats.at[v.sender[i], "link"] = len(re.findall("xurlx", msgs))
 
-	v.all_msgs += msgs if i != v.sc else "" # all messages in one string
+	v.all_msgs += msgs if i != v.sc else ""  # all messages in one string
 
 	msgs = re.sub(r"(xurlx)|(\W)|(\d)", " ", unidecode(msgs))
 
@@ -111,14 +111,14 @@ def nlp_analysis(s_no: int) -> None:
 	"""
 	Performs nlp analysis for the sender s_no.
 	"""
-	doc = nlp(v.all_msgs_clean[s_no]) # spacy nlp object
+	doc = nlp(v.all_msgs_clean[s_no])  # spacy nlp object
 
 	words, lemmas, stop_words, words_clean = list(), list(), list(), list()
 	pos_tag_dict = dict()
 
 	for token in doc:
 		# extract words, lemmas and stop words
-		if token.is_alpha: # token is an alpha character
+		if token.is_alpha:  # token is an alpha character
 			words.append(token.text)
 			if token.is_stop:
 				stop_words.append(token.text)
@@ -137,7 +137,7 @@ def nlp_analysis(s_no: int) -> None:
 	for i, ls in enumerate([words, lemmas, stop_words, words_clean]):
 		# counts and unique counts of words, lemmas, stop words and clean words
 		v.nlp_stats.iat[s_no, i] = len(ls)
-		v.nlp_stats.iat[s_no, i+4] = len(set(ls))
+		v.nlp_stats.iat[s_no, i + 4] = len(set(ls))
 
 	# average word length
 	v.nlp_stats.iat[s_no, 8] = round(sum(len(w) for w in words) / len(words), 2)
@@ -212,7 +212,7 @@ def calc_remaining_stats() -> None:
 		else:
 			v.stats.at["sum", stat] = v.stats[stat].sum()
 
-	calc_time_stats() # calculate time statistics
+	calc_time_stats()  # calculate time statistics
 	return
 
 

@@ -64,9 +64,7 @@ def convert_list_to_df(chat_list: list[list[str]]) -> pd.DataFrame:
 	"""
 	Converts the list of messages into a pandas DataFrame and returns it.
 	"""
-	df = pd.DataFrame(chat_list, columns=["date", "datetime", "sender", "message", "sentiment"])  # convert into DataFrame
-	df["date"] = pd.to_datetime(
-		df["date"], infer_datetime_format=True, format="%d.%m.%Y")  # format date
-	df["datetime"] = pd.to_datetime(
-		df["datetime"], infer_datetime_format=True)  # format datetime
+	df = pd.DataFrame(chat_list, columns=["date", "datetime", "sender", "message", "sentiment"])
+	df["date"] = pd.to_datetime(df["date"], infer_datetime_format=True, format="%d.%m.%Y")  # format date
+	df["datetime"] = pd.to_datetime(df["datetime"], infer_datetime_format=True)  # format datetime
 	return df

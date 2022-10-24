@@ -57,7 +57,6 @@ def export_database() -> None:
 		export(v.word_counts[i], f"v_word_count_s{i}")
 		export(v.char_counts[i], f"v_char_count_s{i}")
 		export(v.all_msgs_clean[i], f"v_all_msgs_clean_s{i}")
-
 	return
 
 
@@ -73,7 +72,7 @@ def off(*args, error: bool = True) -> None:
 		BOLD(GREEN("\n✅ Success: Analysis finished ✅")),
 		f"Analyzing took {BOLD(round(timer() - v.ts[0], 6))} seconds in total.",
 		f"The PDF Report is located here: '{os.getcwd()}/data/output/Report.pdf'\n",
-		]
+	]
 	print("\n".join(success_msg))
 	return
 

@@ -34,7 +34,8 @@ def get_path() -> str:
 		BOLD("\nPlease enter the path to the chat file")
 		+ "\nOnly .txt or .zip files are supported"
 		+ "\nEnter 'sample' if you do not have a file at hand"
-		+ "\nEnter the path here: ")
+		+ "\nEnter the path here: "
+	)
 	return path_to_file
 
 
