@@ -4,7 +4,7 @@ from textblob_de import TextBlobDE as TextBlob  # for sentiment analysis
 from utils.helper import *
 
 
-def convert_lines(lines: str) -> None:
+def convert_lines(lines: list) -> None:
 	"""
 	Checks and converts a file of messages into a pandas DataFrame
 	with the columns date, datetime, sender, message and sentiment.
