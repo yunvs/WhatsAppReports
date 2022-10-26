@@ -15,7 +15,11 @@
 >		4.1. [General Statistics](#general-stats)  
 >		4.2. [Sender specific Statistics](#sender-stats)  
 >		4.3. [Time based Statistics](#time-stats)  
+>		4.4. [NLP Statistics](#nlp-stats)   
 > 5. [**Graphics**](#graphics) *created by the program*  
+>		5.1. [Matplotlib Graphics](#matplotlib-graphics)  
+>		5.2. [Other Graphics](#other-graphics)  
+>		5.3. [PDF Output](#PDF)   
 
 
 <div id="information"/> <div id="about-me"/>
@@ -130,8 +134,8 @@ After completing the analysis, you will get a PDF report, which contains all the
 The PDF report is structured like this:
 
 <dl>
-    <dt>First, second and third Page: General information </dt>
-        <dd>The information on this page is about the messages sent by all users in the chat. This page gives a general overview of the chat by showing the total number of messages, media and emojis; the number of users; the total number of messages and media sent by each user; average word length and more statistics and graphics.</dd>
+    <dt>Pages 1-4: General information </dt>
+        <dd>The information on this page is about the messages sent by all users in the chat. This page gives a general overview of the chat by showing the total number of messages, media and emojis; the number of users; the total number of messages and media sent by each user; average word length and more NLP statistics and graphics.</dd>
     <dt>Following Pages: Sender specific information </dt>
         <dd>The information on these pages is specific to the sender specified in the title and footer. Per sender there will be two pages, the first one containing general information about the messages sent by that sender and the second one containing time-wise statistics and graphics. </dd>
 </dl>
@@ -202,7 +206,8 @@ Library  | Version | Usage
 [Matplotlib](https://matplotlib.org/) | 3.6.1 | Data Visualization
 [WordCloud](https://wordcloud.readthedocs.io/) | 1.8.2.2 | WordCloud generation
 [Pyfpdf](https://pyfpdf.readthedocs.io/en/latest/) | 1.7.2 | PDF generation
-[Nltk](https://www.nltk.org/) | 3.7 | Natural language processing
+[Nltk](https://www.nltk.org/) | 3.7 | Stopwords 
+[Spacy](https://spacy.io/) | 3.4.2 | Natural language processing
 [os](https://docs.python.org/3/library/os.html) | Python3 | Operating system functionality
 [timeit](https://docs.python.org/3/library/timeit.html) | Python3 | Time measuring functionality
 [re](https://docs.python.org/3/library/re.html) | Python3 | Regular expression operations
@@ -305,6 +310,34 @@ To do so, open a terminal and navigate to the project folder. Then run the follo
 
 - **Longest time span without any messages in general and per sender**
 
+<br>
+
+<div id="nlp-stats">
+
+##
+
+<div align="right">
+    <b><a href="#top">⇧ back to top</a></b>
+</div>
+
+### NLP Statistics:
+> #### Statistics derived by natural language processing
+
+- **Total amount of found words, lemmas, stopwords and non-stopwords in general and per sender**
+
+- **Amount of unique words, lemmas, stopwords and non-stopwords in general and per sender**
+
+- **Most used words, lemmas, stopwords and non-stopwords in general and per sender**
+
+- **Amount of different POS-Tag Usages in general and per sender**
+
+- **Average char and word count per message in general and per sender**
+
+- **Average word length in general and per sender**
+
+- **Amount of recognized named entities in general and per sender**
+
+
 
 <br>
 
@@ -324,9 +357,9 @@ Check them out in the [**images**](data/output/images) folder and download them 
 
 <br>
 
-- **WordClouds** using the wordcloud module 
+<div id="matplotlib-graphics">
 
-> ![WordCloud Example](data/output/images/senderpages/s0_wc.png "WordCloud Example")
+### Matplotlib Graphics:
 
 - **Bar charts** using the matplotlib module
 
@@ -353,6 +386,20 @@ Check them out in the [**images**](data/output/images) folder and download them 
 > ![Violinplot Example](data/output/images/generalpage/word_violinplot.png "Violinplot Example")
 
 <br>
+
+<div id="other-graphics">
+
+### Other Graphics:
+
+- **WordClouds** using the wordcloud module 
+
+> ![WordCloud Example](data/output/images/senderpages/s0_wc.png "WordCloud Example")
+
+<br>
+
+<div id="PDF">
+
+### PDF Report:
 
 - **PDFs** using the fpdf module
     - including text
